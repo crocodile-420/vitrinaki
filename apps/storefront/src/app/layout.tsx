@@ -30,7 +30,7 @@ export default async function RootLayout({
   const cart = await retrieveCart();
 
   // default lang updated by HtmlLangSetter
-  const htmlLang = 'en';
+  const htmlLang = 'el';
 
   return (
     <html

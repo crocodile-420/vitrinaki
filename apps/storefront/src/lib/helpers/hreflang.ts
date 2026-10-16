@@ -31,7 +31,7 @@ export const toHreflang = (code: string): string => {
   return map[code] || code
 }
 
-const DEFAULT_REGION = process.env.NEXT_PUBLIC_DEFAULT_REGION || "us"
+const DEFAULT_REGION = process.env.NEXT_PUBLIC_DEFAULT_REGION || "gr"
 
 // The storefront serves every page under a locale prefix (/de, /se, ...);
 // requests without one are 307-redirected by the middleware. x-default must

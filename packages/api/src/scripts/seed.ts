@@ -238,7 +238,7 @@ export default async function seedDemoData({ container }: ExecArgs) {
   const salesChannelModuleService = container.resolve(Modules.SALES_CHANNEL);
   const storeModuleService = container.resolve(Modules.STORE);
 
-  const countries = ["gb", "de", "dk", "se", "fr", "es", "it"];
+  const countries = ["gr"];
 
   logger.info("Seeding store data...");
   const [store] = await storeModuleService.listStores();
@@ -269,9 +269,6 @@ export default async function seedDemoData({ container }: ExecArgs) {
           currency_code: "eur",
           is_default: true,
         },
-        {
-          currency_code: "usd",
-        },
       ],
     },
   });
@@ -280,7 +277,7 @@ export default async function seedDemoData({ container }: ExecArgs) {
     input: {
       selector: { id: store.id },
       update: {
-        name: 'Mercur Marketplace',
+        name: "Vitrinaki",
         default_sales_channel_id: defaultSalesChannel[0].id,
       },
     },
@@ -313,7 +310,7 @@ export default async function seedDemoData({ container }: ExecArgs) {
       input: {
         regions: [
           {
-            name: "Europe",
+            name: "Ελλάδα",
             currency_code: "eur",
             countries: unassignedCountries,
             payment_providers: ["pp_system_default"],
@@ -327,7 +324,7 @@ export default async function seedDemoData({ container }: ExecArgs) {
       input: {
         regions: [
           {
-            name: "Europe",
+            name: "Ελλάδα",
             currency_code: "eur",
             countries,
             payment_providers: ["pp_system_default"],
@@ -350,6 +347,7 @@ export default async function seedDemoData({ container }: ExecArgs) {
       input: countriesToCreate.map((country_code) => ({
         country_code,
         provider_id: "tp_system",
+        default_tax_rate: { rate: 24, code: "GR-VAT", name: "ΦΠΑ 24%" },
       })),
     });
   } else {
@@ -596,9 +594,9 @@ export default async function seedDemoData({ container }: ExecArgs) {
 
   const SELLER_PASSWORD = "supersecret";
   const SELLER_CONFIGS = [
-    { name: "Sole Society", email: "seller@mercur.dev", first_name: "Demo", last_name: "Seller", city: "Berlin", country_code: "DE", address_1: "Alexanderplatz 1" },
-    { name: "Kickz Corner", email: "kickz@mercur.dev", first_name: "Kai", last_name: "Corner", city: "Amsterdam", country_code: "NL", address_1: "Damrak 12" },
-    { name: "Trailhead Outfitters", email: "trailhead@mercur.dev", first_name: "Tara", last_name: "Head", city: "Munich", country_code: "DE", address_1: "Marienplatz 3" },
+    { name: "Sole Society", email: "seller@mercur.dev", first_name: "Demo", last_name: "Seller", city: "Αθήνα", country_code: "GR", address_1: "Ερμού 10" },
+    { name: "Kickz Corner", email: "kickz@mercur.dev", first_name: "Kai", last_name: "Corner", city: "Θεσσαλονίκη", country_code: "GR", address_1: "Τσιμισκή 25" },
+    { name: "Trailhead Outfitters", email: "trailhead@mercur.dev", first_name: "Tara", last_name: "Head", city: "Πάτρα", country_code: "GR", address_1: "Μαιζώνος 40" },
   ];
   const PRIMARY_SELLER_EMAIL = SELLER_CONFIGS[0].email;
 
@@ -794,20 +792,19 @@ export default async function seedDemoData({ container }: ExecArgs) {
         seller_id: seller.id,
         shipping_options: [
           {
-            name: "Standard Shipping",
+            name: "Κανονική αποστολή",
             price_type: "flat",
             provider_id: "manual_manual",
             service_zone_id: serviceZoneId,
             shipping_profile_id: shippingProfileId,
             type: {
-              label: "Standard",
-              description: "Ship in 2-3 days.",
+              label: "Κανονική",
+              description: "Παράδοση σε 2-3 εργάσιμες.",
               code: "standard",
             },
             prices: [
-              { currency_code: "usd", amount: 10 },
-              { currency_code: "eur", amount: 10 },
-              { region_id: region.id, amount: 10 },
+              { currency_code: "eur", amount: 3.5 },
+              { region_id: region.id, amount: 3.5 },
             ],
             rules: [
               { attribute: "enabled_in_store", value: "true", operator: "eq" },
@@ -815,20 +812,19 @@ export default async function seedDemoData({ container }: ExecArgs) {
             ],
           },
           {
-            name: "Express Shipping",
+            name: "Express αποστολή",
             price_type: "flat",
             provider_id: "manual_manual",
             service_zone_id: serviceZoneId,
             shipping_profile_id: shippingProfileId,
             type: {
               label: "Express",
-              description: "Ship in 24 hours.",
+              description: "Παράδοση την επόμενη εργάσιμη.",
               code: "express",
             },
             prices: [
-              { currency_code: "usd", amount: 10 },
-              { currency_code: "eur", amount: 10 },
-              { region_id: region.id, amount: 10 },
+              { currency_code: "eur", amount: 6 },
+              { region_id: region.id, amount: 6 },
             ],
             rules: [
               { attribute: "enabled_in_store", value: "true", operator: "eq" },
