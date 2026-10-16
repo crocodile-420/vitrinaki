@@ -21,6 +21,7 @@ cd packages/api
 cp .env.template .env      # βάλε το DATABASE_URL
 bunx medusa db:migrate
 bun run seed               # δοκιμαστικά δεδομένα
+bun run storefront-key     # γράφει το κλειδί στο apps/storefront/.env
 cd ../.. && bun dev
 ```
 
