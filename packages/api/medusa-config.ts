@@ -57,7 +57,7 @@ module.exports = withMercur({
               // The local provider bakes this into every uploaded file URL.
               // It must be the publicly reachable origin in production, or
               // images resolve to localhost and render broken.
-              backend_url: process.env.FILE_BACKEND_URL || 'http://localhost:9000/static',
+              backend_url: process.env.FILE_BACKEND_URL || 'http://localhost:9100/static',
             },
           },
         ],
