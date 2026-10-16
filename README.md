@@ -24,6 +24,6 @@ bun run seed               # δοκιμαστικά δεδομένα
 cd ../.. && bun dev
 ```
 
-- Backend: http://localhost:9000
-- Admin: http://localhost:9000/dashboard
-- Πάνελ πωλητή: http://localhost:9000/seller
+- Backend: http://localhost:9100
+- Admin: http://localhost:9100/dashboard
+- Πάνελ πωλητή: http://localhost:9100/seller

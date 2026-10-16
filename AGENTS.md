@@ -42,6 +42,6 @@ bun run dev
 
 This starts:
 
-- Backend API at `http://localhost:9000`
-- Admin Panel at `http://localhost:9000/seller`
-- Vendor Panel at `http://localhost:9000/dashboard`
+- Backend API at `http://localhost:9100`
+- Admin Panel at `http://localhost:9100/seller`
+- Vendor Panel at `http://localhost:9100/dashboard`
