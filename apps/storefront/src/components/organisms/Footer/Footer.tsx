@@ -1,67 +1,53 @@
 import LocalizedClientLink from "@/components/molecules/LocalizedLink/LocalizedLink"
-import footerLinks from "@/data/footerLinks"
+
+const footerGroups = [
+  {
+    title: "Η πλατφόρμα",
+    links: [
+      { label: "Οι λύσεις μας", href: "/#solutions" },
+      { label: "Πώς λειτουργεί", href: "/#how-it-works" },
+      { label: "Παραδείγματα", href: "/#examples" },
+    ],
+  },
+  {
+    title: "Ανακάλυψη",
+    links: [
+      { label: "Προϊόντα", href: "/categories" },
+      { label: "Κατηγορίες", href: "/categories" },
+    ],
+  },
+]
 
 export function Footer() {
   return (
-    <footer className="bg-primary container" data-testid="footer">
-      <div className="grid grid-cols-1 lg:grid-cols-3">
-        <div className="p-6 border rounded-sm" data-testid="footer-customer-services">
-          <h2 className="heading-sm text-primary mb-3 uppercase">
-            Customer services
-          </h2>
-          <nav className="space-y-3" aria-label="Customer services navigation">
-            {footerLinks.customerServices.map(({ label, path }) => (
-              <LocalizedClientLink
-                key={label}
-                href={path}
-                className="block label-md"
-                data-testid={`footer-link-${label.toLowerCase().replace(/\s+/g, '-')}`}
-              >
-                {label}
-              </LocalizedClientLink>
-            ))}
-          </nav>
+    <footer className="bg-[#103d32] text-[#f8f2e8]" data-testid="footer">
+      <div className="mx-auto grid max-w-[1600px] gap-10 px-5 py-12 sm:px-8 md:grid-cols-[1.4fr_1fr_1fr] lg:px-10">
+        <div>
+          <LocalizedClientLink href="/" className="inline-flex items-center text-2xl font-extrabold tracking-tight text-white">
+            Vitrinaki<span className="ml-1 text-[#ff6a37]">.</span>
+          </LocalizedClientLink>
+          <p className="mt-4 max-w-sm text-sm leading-6 text-[#d3e0d8]">
+            Η ψηφιακή βάση για τις μικρές ελληνικές επιχειρήσεις. Δημιούργησε τη δική σου παρουσία online και μεγάλωσε με τον δικό σου ρυθμό.
+          </p>
         </div>
-
-        <div className="p-6 border rounded-sm" data-testid="footer-about">
-          <h2 className="heading-sm text-primary mb-3 uppercase">About</h2>
-          <nav className="space-y-3" aria-label="About navigation">
-            {footerLinks.about.map(({ label, path }) => (
-              <LocalizedClientLink
-                key={label}
-                href={path}
-                className="block label-md"
-                data-testid={`footer-link-${label.toLowerCase().replace(/\s+/g, '-')}`}
-              >
-                {label}
-              </LocalizedClientLink>
-            ))}
-          </nav>
-        </div>
-
-        <div className="p-6 border rounded-sm" data-testid="footer-connect">
-          <h2 className="heading-sm text-primary mb-3 uppercase">connect</h2>
-          <nav className="space-y-3" aria-label="Social media navigation">
-            {footerLinks.connect.map(({ label, path }) => (
-              <a
-                aria-label={`Go to ${label} page`}
-                title={`Go to ${label} page`}
-                key={label}
-                href={path}
-                className="block label-md"
-                target="_blank"
-                rel="noopener noreferrer"
-                data-testid={`footer-link-${label.toLowerCase().replace(/\s+/g, '-')}`}
-              >
-                {label}
-              </a>
-            ))}
-          </nav>
-        </div>
+        {footerGroups.map((group) => (
+          <div key={group.title}>
+            <h2 className="text-sm font-bold uppercase tracking-[0.14em] text-white">{group.title}</h2>
+            <nav className="mt-4 flex flex-col items-start gap-3" aria-label={group.title}>
+              {group.links.map((item) => (
+                <LocalizedClientLink key={item.label} href={item.href} className="text-sm text-[#d3e0d8] transition-colors hover:text-white">
+                  {item.label}
+                </LocalizedClientLink>
+              ))}
+            </nav>
+          </div>
+        ))}
       </div>
-
-      <div className="py-6 border rounded-sm " data-testid="footer-copyright">
-        <p className="text-md text-secondary text-center ">© 2026 Fleek</p>
+      <div className="border-t border-white/15">
+        <div className="mx-auto flex max-w-[1600px] flex-col gap-2 px-5 py-5 text-xs text-[#d3e0d8] sm:flex-row sm:items-center sm:justify-between sm:px-8 lg:px-10">
+          <span>© {new Date().getFullYear()} Vitrinaki. Όλα τα δικαιώματα διατηρούνται.</span>
+          <span>Φτιαγμένο για τις μικρές επιχειρήσεις της Ελλάδας.</span>
+        </div>
       </div>
     </footer>
   )
