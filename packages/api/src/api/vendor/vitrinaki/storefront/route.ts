@@ -14,6 +14,8 @@ type StorefrontForm = {
   palette?: unknown
   contactEmail?: unknown
   contactPhone?: unknown
+  logoUrl?: unknown
+  bannerUrl?: unknown
   customDomain?: unknown
 }
 const templates = new Set(["atelier", "local", "services"])
@@ -39,13 +41,28 @@ function normalizeDomain(value: unknown) {
   return domain
 }
 
+function optionalImageUrl(value: unknown): string | null {
+  const raw = text(value, 2048)
+  if (!raw) return null
+  try {
+    const url = new URL(raw)
+    if (url.protocol !== "https:" && url.protocol !== "http:") {
+      throw new Error("Η εικόνα πρέπει να έχει έγκυρη διεύθυνση HTTPS ή HTTP.")
+    }
+    return url.toString()
+  } catch (error) {
+    if (error instanceof Error && error.message.includes("HTTPS")) throw error
+    throw new Error("Η διεύθυνση εικόνας δεν είναι έγκυρη.")
+  }
+}
+
 async function getSeller(req: SellerRequest) {
   const sellerId = req.seller_context?.seller_id
   if (!sellerId) return null
   const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
   const result = await query.graph({
     entity: "seller",
-    fields: ["id", "name", "handle", "email", "phone", "description", "metadata"],
+    fields: ["id", "name", "handle", "email", "phone", "description", "logo", "banner", "metadata"],
     filters: { id: sellerId },
   })
   return result.data?.[0] as any || null
@@ -59,6 +76,8 @@ const defaults = (seller: any) => ({
   palette: "forest",
   contactEmail: seller.email || "",
   contactPhone: seller.phone || "",
+  logoUrl: seller.logo || "",
+  bannerUrl: seller.banner || "",
   customDomain: "",
   domainStatus: "not_configured",
   domainVerificationToken: "",
@@ -73,7 +92,7 @@ export async function GET(req: SellerRequest, res: MedusaResponse) {
   const storefront = seller.metadata?.vitrinaki_storefront || defaults(seller)
   const subscription = seller.metadata?.vitrinaki_subscription || null
   return res.json({
-    seller: { id: seller.id, name: seller.name, handle: seller.handle, email: seller.email },
+    seller: { id: seller.id, name: seller.name, handle: seller.handle, email: seller.email, logo: seller.logo, banner: seller.banner },
     storefront,
     subscription: subscription ? {
       planId: subscription.planId || subscription.plan_id,
@@ -123,6 +142,8 @@ export async function POST(req: SellerRequest, res: MedusaResponse) {
     palette: palettes.has(String(input.palette)) ? String(input.palette) : String(current.palette || "forest"),
     contactEmail: text(input.contactEmail, 254),
     contactPhone: text(input.contactPhone, 50),
+    logoUrl: optionalImageUrl(input.logoUrl),
+    bannerUrl: optionalImageUrl(input.bannerUrl),
     customDomain,
     domainStatus: customDomain ? (domainChanged ? "pending" : current.domainStatus || "pending") : "not_configured",
     domainVerificationToken: customDomain ? (domainChanged ? randomBytes(18).toString("hex") : current.domainVerificationToken || "") : "",
@@ -141,11 +162,18 @@ export async function POST(req: SellerRequest, res: MedusaResponse) {
       : `${baseUrl}/${locale}/store/${seller.handle}`
   } else {
     const existingUrl = metadata.storefront_url
-    if (typeof existingUrl === "string" && existingUrl.includes(`/store/${seller.handle}`)) delete metadata.storefront_url
+    if (
+      typeof existingUrl === "string" &&
+      (existingUrl.includes(`/store/${seller.handle}`) ||
+        (current.customDomain && existingUrl === `https://${current.customDomain}`))
+    ) delete metadata.storefront_url
   }
 
   await updateSellersWorkflow(req.scope).run({
-    input: { selector: { id: seller.id }, update: { metadata } },
+    input: {
+      selector: { id: seller.id },
+      update: { metadata, logo: config.logoUrl, banner: config.bannerUrl },
+    },
   })
   return res.json({ storefront: config, subscription: subscription || null })
 }

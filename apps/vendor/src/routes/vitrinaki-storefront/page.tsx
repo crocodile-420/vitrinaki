@@ -17,6 +17,8 @@ type StorefrontForm = {
   palette: "forest" | "terracotta" | "ocean" | "plum"
   contactEmail: string
   contactPhone: string
+  logoUrl: string
+  bannerUrl: string
   customDomain: string
   domainStatus: string
   domainVerificationToken: string
@@ -171,6 +173,11 @@ export default function VitrinakiStorefrontSettingsPage() {
               <label className="block text-sm font-medium">Email επικοινωνίας<input type="email" value={form.contactEmail} onChange={e => update("contactEmail",e.target.value)} className="mt-2 w-full rounded-lg border border-ui-border-base bg-ui-bg-field px-3 py-2.5" /></label>
               <label className="block text-sm font-medium">Τηλέφωνο<input value={form.contactPhone} onChange={e => update("contactPhone",e.target.value)} className="mt-2 w-full rounded-lg border border-ui-border-base bg-ui-bg-field px-3 py-2.5" /></label>
             </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <label className="block text-sm font-medium">URL λογότυπου<input type="url" value={form.logoUrl} onChange={e => update("logoUrl",e.target.value)} placeholder="https://example.gr/logo.png" className="mt-2 w-full rounded-lg border border-ui-border-base bg-ui-bg-field px-3 py-2.5" /></label>
+              <label className="block text-sm font-medium">URL εικόνας εξωφύλλου<input type="url" value={form.bannerUrl} onChange={e => update("bannerUrl",e.target.value)} placeholder="https://example.gr/cover.jpg" className="mt-2 w-full rounded-lg border border-ui-border-base bg-ui-bg-field px-3 py-2.5" /></label>
+            </div>
+            <p className="text-xs leading-5 text-ui-fg-subtle">Σε αυτή την έκδοση χρησιμοποιούνται URL εικόνων. Η ενσωματωμένη μεταφόρτωση εικόνων θα προστεθεί σε επόμενο βήμα.</p>
           </section>
 
           <section className="space-y-5 rounded-2xl border border-ui-border-base bg-ui-bg-base p-6">

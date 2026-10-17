@@ -68,6 +68,9 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
   const isSetup = event.type.startsWith("checkout.session.") && (object.mode === "payment" || object.metadata?.order_type === "setup_service")
   if (isSetup) {
     const orders = Array.isArray(metadata.vitrinaki_setup_orders) ? metadata.vitrinaki_setup_orders : []
+    if (!orders.some((order: any) => order.id === object.id)) {
+      return res.status(409).json({ message: "Setup order has not been persisted yet. Retry the webhook." })
+    }
     const paid = event.type === "checkout.session.async_payment_succeeded" || object.payment_status === "paid"
     const next = orders.map((order: any) => order.id === object.id ? {
       ...order,
@@ -120,7 +123,11 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
       storefront.publishedAt = null
       metadata.vitrinaki_storefront = storefront
       const url = metadata.storefront_url
-      if (typeof url === "string" && url.includes(`/store/${seller.handle || ""}`)) delete metadata.storefront_url
+      if (
+        typeof url === "string" &&
+        (url.includes(`/store/${seller.handle || ""}`) ||
+          (storefront.customDomain && url === `https://${storefront.customDomain}`))
+      ) delete metadata.storefront_url
     }
   }
 
