@@ -6,6 +6,15 @@ import { randomBytes } from "node:crypto"
 type SellerRequest = AuthenticatedMedusaRequest & {
   seller_context?: { seller_id?: string }
 }
+type SectionBlock = {
+  id: string
+  type: "text" | "image" | "feature"
+  title: string
+  body: string
+  imageUrl: string | null
+}
+const sectionTypes = new Set(["text", "image", "feature"])
+
 type StorefrontForm = {
   storeName?: unknown
   tagline?: unknown
@@ -16,6 +25,7 @@ type StorefrontForm = {
   contactPhone?: unknown
   logoUrl?: unknown
   bannerUrl?: unknown
+  sections?: unknown
   customDomain?: unknown
 }
 const templates = new Set(["atelier", "local", "services"])
@@ -39,6 +49,21 @@ function normalizeDomain(value: unknown) {
     throw new Error("Χρειάζεται domain που ανήκει στην επιχείρησή σου, όχι στο Vitrinaki ή στο localhost.")
   }
   return domain
+}
+
+function normalizeSections(value: unknown): SectionBlock[] {
+  if (!Array.isArray(value)) return []
+  return value.slice(0, 8).map((entry, index) => {
+    const section = (entry || {}) as Record<string, unknown>
+    const type = sectionTypes.has(String(section.type)) ? String(section.type) as SectionBlock["type"] : "text"
+    return {
+      id: text(section.id, 80, `section-${index + 1}`),
+      type,
+      title: text(section.title, 160),
+      body: text(section.body, 1600),
+      imageUrl: optionalImageUrl(section.imageUrl),
+    }
+  })
 }
 
 function optionalImageUrl(value: unknown): string | null {
@@ -78,6 +103,7 @@ const defaults = (seller: any) => ({
   contactPhone: seller.phone || "",
   logoUrl: seller.logo || "",
   bannerUrl: seller.banner || "",
+  sections: seller.description ? [{ id: "about", type: "text", title: "Σχετικά με εμάς", body: seller.description, imageUrl: null }] : [],
   customDomain: "",
   domainStatus: "not_configured",
   domainVerificationToken: "",
@@ -144,6 +170,7 @@ export async function POST(req: SellerRequest, res: MedusaResponse) {
     contactPhone: text(input.contactPhone, 50),
     logoUrl: optionalImageUrl(input.logoUrl),
     bannerUrl: optionalImageUrl(input.bannerUrl),
+    sections: normalizeSections(input.sections ?? current.sections),
     customDomain,
     domainStatus: customDomain ? (domainChanged ? "pending" : current.domainStatus || "pending") : "not_configured",
     domainVerificationToken: customDomain ? (domainChanged ? randomBytes(18).toString("hex") : current.domainVerificationToken || "") : "",

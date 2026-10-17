@@ -60,6 +60,13 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
       contactPhone: storefront.contactPhone || seller.phone || "",
       customDomain: storefront.domainStatus === "verified" ? storefront.customDomain || "" : "",
       domainStatus: storefront.domainStatus || "not_configured",
+      sections: Array.isArray(storefront.sections) ? storefront.sections.slice(0, 8).map((section: any, index: number) => ({
+        id: typeof section.id === "string" ? section.id.slice(0, 80) : `section-${index + 1}`,
+        type: ["text", "image", "feature"].includes(String(section.type)) ? section.type : "text",
+        title: typeof section.title === "string" ? section.title.slice(0, 160) : "",
+        body: typeof section.body === "string" ? section.body.slice(0, 1600) : "",
+        imageUrl: typeof section.imageUrl === "string" ? section.imageUrl : null,
+      })) : [],
     },
   })
 }

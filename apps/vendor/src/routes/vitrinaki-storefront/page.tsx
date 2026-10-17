@@ -9,6 +9,13 @@ export const config: RouteConfig = {
   rank: 45,
 }
 
+type PageSection = {
+  id: string
+  type: "text" | "image" | "feature"
+  title: string
+  body: string
+  imageUrl: string | null
+}
 type StorefrontForm = {
   storeName: string
   tagline: string
@@ -19,6 +26,7 @@ type StorefrontForm = {
   contactPhone: string
   logoUrl: string
   bannerUrl: string
+  sections: PageSection[]
   customDomain: string
   domainStatus: string
   domainVerificationToken: string
@@ -84,6 +92,35 @@ export default function VitrinakiStorefrontSettingsPage() {
 
   const update = (key: keyof StorefrontForm, value: string | boolean) => {
     setForm(current => ({ ...current, [key]: value }))
+  }
+
+  const addSection = () => {
+    setForm(current => ({
+      ...current,
+      sections: [...(current.sections || []), {
+        id: `section-${Date.now()}`,
+        type: "text",
+        title: "Νέα ενότητα",
+        body: "",
+        imageUrl: null,
+      }].slice(0, 8),
+    }))
+  }
+
+  const updateSection = (id: string, key: keyof PageSection, value: string) => {
+    setForm(current => ({
+      ...current,
+      sections: (current.sections || []).map(section => section.id === id
+        ? { ...section, [key]: value }
+        : section),
+    }))
+  }
+
+  const removeSection = (id: string) => {
+    setForm(current => ({
+      ...current,
+      sections: (current.sections || []).filter(section => section.id !== id),
+    }))
   }
 
   const submit = async (event: FormEvent, action: "save" | "publish" | "unpublish" = "save") => {
@@ -178,6 +215,22 @@ export default function VitrinakiStorefrontSettingsPage() {
               <label className="block text-sm font-medium">URL εικόνας εξωφύλλου<input type="url" value={form.bannerUrl} onChange={e => update("bannerUrl",e.target.value)} placeholder="https://example.gr/cover.jpg" className="mt-2 w-full rounded-lg border border-ui-border-base bg-ui-bg-field px-3 py-2.5" /></label>
             </div>
             <p className="text-xs leading-5 text-ui-fg-subtle">Σε αυτή την έκδοση χρησιμοποιούνται URL εικόνων. Η ενσωματωμένη μεταφόρτωση εικόνων θα προστεθεί σε επόμενο βήμα.</p>
+          </section>
+
+          <section className="space-y-5 rounded-2xl border border-ui-border-base bg-ui-bg-base p-6">
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div><h2 className="text-lg font-semibold">Ενότητες σελίδας</h2><p className="mt-1 text-sm text-ui-fg-subtle">Πρόσθεσε και άλλαξε σειρά/περιεχόμενο ενοτήτων. Μέχρι 8 ενότητες σε αυτή την έκδοση.</p></div>
+              <button type="button" disabled={saving || (form.sections || []).length >= 8} onClick={addSection} className="rounded-lg border border-ui-border-base px-3 py-2 text-sm font-semibold disabled:opacity-50">+ Νέα ενότητα</button>
+            </div>
+            {(form.sections || []).length ? (form.sections || []).map((section, index) => (
+              <div key={section.id} className="space-y-3 rounded-xl border border-ui-border-base p-4">
+                <div className="flex items-center justify-between gap-3"><p className="text-sm font-semibold">Ενότητα {index + 1}</p><button type="button" onClick={() => removeSection(section.id)} className="text-xs font-semibold text-ui-fg-subtle hover:text-ui-fg-base">Αφαίρεση</button></div>
+                <label className="block text-sm font-medium">Τύπος<select value={section.type} onChange={e => updateSection(section.id,"type",e.target.value)} className="mt-2 w-full rounded-lg border border-ui-border-base bg-ui-bg-field px-3 py-2.5"><option value="text">Κείμενο</option><option value="feature">Κάρτα / highlight</option><option value="image">Εικόνα και κείμενο</option></select></label>
+                <label className="block text-sm font-medium">Τίτλος<input maxLength={160} value={section.title} onChange={e => updateSection(section.id,"title",e.target.value)} className="mt-2 w-full rounded-lg border border-ui-border-base bg-ui-bg-field px-3 py-2.5" /></label>
+                <label className="block text-sm font-medium">Κείμενο<textarea rows={3} maxLength={1600} value={section.body} onChange={e => updateSection(section.id,"body",e.target.value)} className="mt-2 w-full rounded-lg border border-ui-border-base bg-ui-bg-field px-3 py-2.5" /></label>
+                {section.type === "image" ? <label className="block text-sm font-medium">URL εικόνας<input type="url" value={section.imageUrl || ""} onChange={e => updateSection(section.id,"imageUrl",e.target.value)} placeholder="https://example.gr/image.jpg" className="mt-2 w-full rounded-lg border border-ui-border-base bg-ui-bg-field px-3 py-2.5" /></label> : null}
+              </div>
+            )) : <p className="rounded-xl bg-ui-bg-subtle p-4 text-sm text-ui-fg-subtle">Δεν πρόσθεσες άλλες ενότητες. Η σελίδα θα δείχνει την κεφαλίδα, το προϊόντικό κατάλογο και τα στοιχεία επικοινωνίας.</p>}
           </section>
 
           <section className="space-y-5 rounded-2xl border border-ui-border-base bg-ui-bg-base p-6">

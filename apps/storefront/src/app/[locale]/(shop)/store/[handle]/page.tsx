@@ -27,6 +27,7 @@ type StorefrontResponse = {
     contactPhone?: string | null
     customDomain?: string | null
     domainStatus?: string
+    sections?: { id: string; type: "text" | "image" | "feature"; title: string; body: string; imageUrl?: string | null }[]
   }
 }
 
@@ -129,6 +130,24 @@ export default async function PublicStorePage({
           </div>
         </div>
       </section>
+
+      {(storefront.sections || []).length ? (
+        <section className="mx-auto max-w-7xl space-y-5 px-5 pb-8 sm:px-8 sm:pb-12">
+          {(storefront.sections || []).map((section, index) => (
+            <article key={section.id || index} className={`overflow-hidden rounded-3xl border border-black/5 ${section.type === "feature" ? colors.soft : "bg-white/70"} ${section.type === "image" ? "grid gap-0 sm:grid-cols-2" : ""}`}>
+              {section.type === "image" && section.imageUrl ? (
+                <div className="relative min-h-56 bg-black/5 sm:min-h-72">
+                  <Image src={section.imageUrl} alt={section.title || storefront.storeName} fill sizes="(min-width:640px) 50vw, 100vw" className="object-cover" />
+                </div>
+              ) : null}
+              <div className="p-6 sm:p-9">
+                {section.title ? <h2 className="text-xl font-extrabold tracking-tight sm:text-2xl">{section.title}</h2> : null}
+                {section.body ? <p className="mt-3 whitespace-pre-line text-sm leading-7 opacity-75 sm:text-base">{section.body}</p> : null}
+              </div>
+            </article>
+          ))}
+        </section>
+      ) : null}
 
       <section id="catalog" className="mx-auto max-w-7xl px-5 py-14 sm:px-8 sm:py-20">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
