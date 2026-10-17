@@ -57,7 +57,7 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
   }
   if (!sellerId) return res.json({ received: true, ignored: true, reason: "No seller matched the event." })
 
-  const { data } = await query.graph({ entity: "seller", fields: ["id", "metadata"], filters: { id: sellerId } })
+  const { data } = await query.graph({ entity: "seller", fields: ["id", "handle", "metadata"], filters: { id: sellerId } })
   const seller = data?.[0] as any
   if (!seller) return res.json({ received: true, ignored: true, reason: "Seller no longer exists." })
 

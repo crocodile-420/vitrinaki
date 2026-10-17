@@ -1,15 +1,17 @@
-import { authenticate, defineMiddlewares } from "@medusajs/framework/http"
+import { authenticate, defineMiddlewares } from "@medusajs/medusa"
+
+const sellerAuth = authenticate("seller", ["session", "bearer"])
+const adminAuth = authenticate("user", ["session", "bearer", "api-key"])
 
 export default defineMiddlewares({
   routes: [
-    {
-      matcher: "/vendor/vitrinaki/*",
-      middlewares: [authenticate("seller", ["session", "bearer"])],
-    },
-    {
-      matcher: "/admin/vitrinaki/*",
-      middlewares: [authenticate("user", ["session", "bearer", "api-key"])],
-    },
+    { matcher: "/vendor/vitrinaki/storefront", middlewares: [sellerAuth] },
+    { matcher: "/vendor/vitrinaki/storefront/domain/verify", middlewares: [sellerAuth] },
+    { matcher: "/vendor/vitrinaki/billing", middlewares: [sellerAuth] },
+    { matcher: "/vendor/vitrinaki/billing/checkout", middlewares: [sellerAuth] },
+    { matcher: "/vendor/vitrinaki/billing/portal", middlewares: [sellerAuth] },
+    { matcher: "/vendor/vitrinaki/billing/setup-checkout", middlewares: [sellerAuth] },
+    { matcher: "/admin/vitrinaki/overview", middlewares: [adminAuth] },
     {
       matcher: "/webhooks/stripe",
       methods: ["POST"],

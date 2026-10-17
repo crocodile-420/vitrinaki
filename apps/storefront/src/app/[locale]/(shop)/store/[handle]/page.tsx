@@ -88,7 +88,10 @@ export default async function PublicStorePage({
               <span className="block text-[11px] font-semibold opacity-60">Μια ανεξάρτητη βιτρίνα στο Vitrinaki</span>
             </span>
           </Link>
-          <Link href={`/${locale}/categories`} className="shrink-0 text-sm font-bold opacity-70 hover:opacity-100">Ανακάλυψε το Vitrinaki ↗</Link>
+          <div className="flex shrink-0 items-center gap-4">
+            <Link href={`/${locale}/cart`} className="text-sm font-bold opacity-70 hover:opacity-100">Καλάθι</Link>
+            <Link href={`/${locale}/categories`} className="text-sm font-bold opacity-70 hover:opacity-100">Ανακάλυψε το Vitrinaki ↗</Link>
+          </div>
         </div>
       </header>
 

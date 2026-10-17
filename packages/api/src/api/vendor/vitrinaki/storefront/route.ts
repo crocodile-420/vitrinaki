@@ -127,7 +127,7 @@ export async function POST(req: SellerRequest, res: MedusaResponse) {
     domainStatus: customDomain ? (domainChanged ? "pending" : current.domainStatus || "pending") : "not_configured",
     domainVerificationToken: customDomain ? (domainChanged ? randomBytes(18).toString("hex") : current.domainVerificationToken || "") : "",
     domainVerifiedAt: customDomain && !domainChanged ? current.domainVerifiedAt || null : null,
-    isPublished: action === "publish" ? true : action === "unpublish" ? false : Boolean(current.isPublished),
+    isPublished: action === "publish" ? true : action === "unpublish" ? false : Boolean(current.isPublished && paidStatus),
     publishedAt: action === "publish" ? current.publishedAt || new Date().toISOString() : action === "unpublish" ? null : current.publishedAt || null,
     updatedAt: new Date().toISOString(),
   }
