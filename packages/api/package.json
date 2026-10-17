@@ -27,7 +27,8 @@
     "test:integration:modules": "TEST_TYPE=integration:modules NODE_OPTIONS=--experimental-vm-modules jest --silent=false --runInBand --forceExit",
     "test:unit": "TEST_TYPE=unit NODE_OPTIONS=--experimental-vm-modules jest --silent --runInBand --forceExit",
     "codegen": "mercurjs codegen",
-    "cloud:prebuild": "mercurjs codegen"
+    "cloud:prebuild": "mercurjs codegen",
+    "check-local-config": "tsx ./src/scripts/check-local-config.ts"
   },
   "dependencies": {
     "@medusajs/admin-sdk": "2.21.2",
