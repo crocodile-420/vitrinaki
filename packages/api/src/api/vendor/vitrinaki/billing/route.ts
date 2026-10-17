@@ -1,4 +1,5 @@
 import type { AuthenticatedMedusaRequest, MedusaResponse } from "@medusajs/framework/http"
+import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 
 type SellerRequest = AuthenticatedMedusaRequest & { seller_context?: { seller_id?: string } }
 const planPrices = {
@@ -11,7 +12,7 @@ export async function GET(req: SellerRequest, res: MedusaResponse) {
   const sellerId = req.seller_context?.seller_id
   if (!sellerId) return res.status(401).json({ message: "Συνδέσου στον λογαριασμό της επιχείρησής σου." })
 
-  const { data } = await req.scope.resolve("query").graph({
+  const { data } = await req.scope.resolve(ContainerRegistrationKeys.QUERY).graph({
     entity: "seller",
     fields: ["id", "metadata"],
     filters: { id: sellerId },

@@ -42,6 +42,9 @@ export default function VitrinakiStorefrontSettingsPage() {
   const [form, setForm] = useState<StorefrontForm>(blank)
   const [subscription, setSubscription] = useState<Subscription>(null)
   const [billingConfigured, setBillingConfigured] = useState(false)
+  const [availablePlans, setAvailablePlans] = useState<Record<string, string[]>>({})
+  const [setupServicesConfigured, setSetupServicesConfigured] = useState(false)
+  const [domainTarget, setDomainTarget] = useState("")
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState("")
@@ -66,6 +69,9 @@ export default function VitrinakiStorefrontSettingsPage() {
       setForm({ ...blank, ...data.storefront })
       setSubscription(data.subscription || null)
       setBillingConfigured(Boolean(data.billingConfigured))
+      setAvailablePlans(data.availablePlans || {})
+      setSetupServicesConfigured(Boolean(data.setupServicesConfigured))
+      setDomainTarget(data.domainTarget || "")
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "Δεν ήταν δυνατή η φόρτωση των ρυθμίσεων.")
     } finally {
@@ -178,7 +184,7 @@ export default function VitrinakiStorefrontSettingsPage() {
           <section className="space-y-4 rounded-2xl border border-ui-border-base bg-ui-bg-base p-6">
             <div><h2 className="text-lg font-semibold">Domain</h2><p className="mt-1 text-sm text-ui-fg-subtle">Η επαλήθευση DNS είναι μόνο ένα βήμα. Το hosting πρέπει επίσης να έχει ρυθμιστεί για το domain σου.</p></div>
             <label className="block text-sm font-medium">Το domain σου<input placeholder="shop.example.gr" value={form.customDomain} onChange={e => update("customDomain",e.target.value)} className="mt-2 w-full rounded-lg border border-ui-border-base bg-ui-bg-field px-3 py-2.5" /></label>
-            {form.customDomain && form.domainVerificationToken ? <div className="rounded-xl bg-ui-bg-subtle p-4 text-sm"><p className="font-semibold">1. TXT verification</p><p className="mt-1 break-all text-ui-fg-subtle">Host: _vitrinaki-verification.{form.customDomain}</p><p className="break-all text-ui-fg-subtle">Value: vitrinaki-verification={form.domainVerificationToken}</p><p className="mt-3 font-semibold">2. CNAME</p><p className="mt-1 text-ui-fg-subtle">Host: {form.customDomain}</p><p className="text-ui-fg-subtle">Target: ορίζεται από το περιβάλλον hosting του Vitrinaki.</p></div> : null}
+            {form.customDomain && form.domainVerificationToken ? <div className="rounded-xl bg-ui-bg-subtle p-4 text-sm"><p className="font-semibold">1. TXT verification</p><p className="mt-1 break-all text-ui-fg-subtle">Host: _vitrinaki-verification.{form.customDomain}</p><p className="break-all text-ui-fg-subtle">Value: vitrinaki-verification={form.domainVerificationToken}</p><p className="mt-3 font-semibold">2. CNAME</p><p className="mt-1 text-ui-fg-subtle">Host: {form.customDomain}</p><p className="text-ui-fg-subtle">Target: {domainTarget || "Δεν έχει ρυθμιστεί από το hosting του Vitrinaki ακόμη."}</p></div> : null}
             {form.domainStatus === "verified" ? <p className="text-sm font-semibold text-ui-tag-green-text">Το DNS domain έχει επαληθευτεί.</p> : null}
             <button type="button" disabled={saving || !form.customDomain || !form.domainVerificationToken} onClick={() => void verifyDomain()} className="rounded-lg border border-ui-border-base px-4 py-2.5 text-sm font-semibold disabled:opacity-50">Επαλήθευση domain</button>
           </section>
@@ -196,15 +202,15 @@ export default function VitrinakiStorefrontSettingsPage() {
             <div><h2 className="text-lg font-semibold">Συνδρομή</h2><p className="mt-1 text-sm text-ui-fg-subtle">Η συνδρομή καλύπτει την πλατφόρμα και τη λειτουργία του website. Η προαιρετική υπηρεσία setup είναι ξεχωριστή.</p></div>
             <div className="rounded-xl bg-ui-bg-subtle p-4"><p className="text-xs uppercase tracking-wide text-ui-fg-subtle">Κατάσταση</p><p className="mt-1 font-semibold">{subscription?.status || "Δεν έχει ενεργοποιηθεί"}</p>{subscription?.planId ? <p className="mt-1 text-sm text-ui-fg-subtle">Πλάνο: {subscription.planId} · {subscription.interval || "—"}</p> : null}</div>
             {!billingConfigured ? <p className="text-sm leading-6 text-ui-fg-subtle">Χρειάζεται να ρυθμιστούν τα στοιχεία Stripe στο backend πριν ενεργοποιηθούν πραγματικές πληρωμές.</p> : null}
-            <div className="space-y-2">{[{id:"starter",label:"Starter"},{id:"growth",label:"Growth"},{id:"pro",label:"Pro"}].map(plan => <div key={plan.id} className="rounded-xl border border-ui-border-base p-3"><div className="font-semibold">{plan.label}</div><div className="mt-2 grid grid-cols-2 gap-2"><button type="button" disabled={saving || !billingConfigured} onClick={() => void startBilling(plan.id,"month")} className="rounded-lg border border-ui-border-base px-2 py-2 text-xs font-semibold disabled:opacity-50">Μηνιαία</button><button type="button" disabled={saving || !billingConfigured} onClick={() => void startBilling(plan.id,"year")} className="rounded-lg border border-ui-border-base px-2 py-2 text-xs font-semibold disabled:opacity-50">Ετήσια</button></div></div>)}</div>
+            <div className="space-y-2">{[{id:"starter",label:"Starter"},{id:"growth",label:"Growth"},{id:"pro",label:"Pro"}].map(plan => <div key={plan.id} className="rounded-xl border border-ui-border-base p-3"><div className="font-semibold">{plan.label}</div><div className="mt-2 grid grid-cols-2 gap-2"><button type="button" disabled={saving || !billingConfigured || !(availablePlans[plan.id] || []).includes("month")} onClick={() => void startBilling(plan.id,"month")} className="rounded-lg border border-ui-border-base px-2 py-2 text-xs font-semibold disabled:opacity-50">Μηνιαία</button><button type="button" disabled={saving || !billingConfigured || !(availablePlans[plan.id] || []).includes("year")} onClick={() => void startBilling(plan.id,"year")} className="rounded-lg border border-ui-border-base px-2 py-2 text-xs font-semibold disabled:opacity-50">Ετήσια</button></div></div>)}</div>
             {subscription ? <button type="button" disabled={saving || !billingConfigured} onClick={() => void openBillingPortal()} className="w-full rounded-lg border border-ui-border-base px-3 py-2.5 text-sm font-semibold disabled:opacity-50">Διαχείριση συνδρομής</button> : null}
           </section>
 
           <section className="space-y-3 rounded-2xl border border-ui-border-base bg-ui-bg-base p-6">
             <h2 className="text-lg font-semibold">Υπηρεσίες setup</h2>
             <p className="text-sm leading-6 text-ui-fg-subtle">Προαιρετική εφάπαξ εργασία: ρύθμιση brand, περιεχομένου και αρχικού καταλόγου. Η συνδρομή εξακολουθεί να ισχύει ξεχωριστά.</p>
-            <button type="button" disabled={saving || !billingConfigured} onClick={() => void callAPI("/vendor/vitrinaki/billing/setup-checkout",{method:"POST",body:JSON.stringify({packageId:"assisted"})}).then(data => data.url && window.location.assign(data.url)).catch(cause => setError(cause instanceof Error ? cause.message : "Δεν ήταν δυνατή η έναρξη πληρωμής."))} className="w-full rounded-lg border border-ui-border-base px-3 py-2.5 text-sm font-semibold disabled:opacity-50">Assisted Setup</button>
-            <button type="button" disabled={saving || !billingConfigured} onClick={() => void callAPI("/vendor/vitrinaki/billing/setup-checkout",{method:"POST",body:JSON.stringify({packageId:"done_for_you"})}).then(data => data.url && window.location.assign(data.url)).catch(cause => setError(cause instanceof Error ? cause.message : "Δεν ήταν δυνατή η έναρξη πληρωμής."))} className="w-full rounded-lg border border-ui-border-base px-3 py-2.5 text-sm font-semibold disabled:opacity-50">Done-for-you</button>
+            <button type="button" disabled={saving || !billingConfigured || !setupServicesConfigured} onClick={() => void callAPI("/vendor/vitrinaki/billing/setup-checkout",{method:"POST",body:JSON.stringify({packageId:"assisted"})}).then(data => data.url && window.location.assign(data.url)).catch(cause => setError(cause instanceof Error ? cause.message : "Δεν ήταν δυνατή η έναρξη πληρωμής."))} className="w-full rounded-lg border border-ui-border-base px-3 py-2.5 text-sm font-semibold disabled:opacity-50">Assisted Setup</button>
+            <button type="button" disabled={saving || !billingConfigured || !setupServicesConfigured} onClick={() => void callAPI("/vendor/vitrinaki/billing/setup-checkout",{method:"POST",body:JSON.stringify({packageId:"done_for_you"})}).then(data => data.url && window.location.assign(data.url)).catch(cause => setError(cause instanceof Error ? cause.message : "Δεν ήταν δυνατή η έναρξη πληρωμής."))} className="w-full rounded-lg border border-ui-border-base px-3 py-2.5 text-sm font-semibold disabled:opacity-50">Done-for-you</button>
           </section>
         </aside>
       </form>

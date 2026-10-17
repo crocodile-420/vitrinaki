@@ -14,15 +14,20 @@ export const OfferCard = ({
   offer,
   locale,
   className,
+  storeHandle,
 }: {
   offer: StoreOffer
   locale: string
   className?: string
+  storeHandle?: string
 }) => {
   const { addToCart, onAddToCart, cart, isAddingItem } = useCartContext()
 
   const product = offer.product
   const productName = String(product?.title || "Product")
+  const productHref = storeHandle
+    ? `/${locale}/store/${encodeURIComponent(storeHandle)}/products/${encodeURIComponent(String(product?.handle || ""))}`
+    : `/products/${product?.handle}`
 
   const amount = getOfferAmount(offer)
   const currency = offer.calculated_price?.currency_code || cart?.currency_code || "eur"
@@ -81,7 +86,7 @@ export const OfferCard = ({
     >
       <div className="relative w-full h-full bg-primary aspect-square" data-testid="offer-card-image-container">
         <LocalizedClientLink
-          href={`/products/${product?.handle}`}
+          href={productHref}
           aria-label={`View ${productName}`}
           title={`View ${productName}`}
           data-testid="offer-card-link"
@@ -103,7 +108,7 @@ export const OfferCard = ({
       </div>
       <div className="flex flex-col gap-3 p-4" data-testid="offer-card-info">
         <LocalizedClientLink
-          href={`/products/${product?.handle}`}
+          href={productHref}
           aria-label={`Go to ${productName} page`}
           title={`Go to ${productName} page`}
         >

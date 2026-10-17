@@ -3,7 +3,8 @@ import Link from "next/link"
 import { notFound } from "next/navigation"
 
 import { listOffers } from "@/lib/data/offers"
-import { convertToLocale } from "@/lib/helpers/money"
+import { OfferCard } from "@/components/organisms/OfferCard/OfferCard"
+import type { StoreOffer } from "@/lib/helpers/buybox"
 
 type StorefrontResponse = {
   seller: {
@@ -71,7 +72,7 @@ export default async function PublicStorePage({
   const colors = paletteStyles[storefront.palette] || paletteStyles.forest
   const result = await listOffers({ sellerId: seller.id, countryCode: locale, limit: 24, offset: 0 })
     .catch(() => ({ offers: [], count: 0 }))
-  const offers = result.offers as any[]
+  const offers = result.offers as StoreOffer[]
   const isServices = storefront.template === "services"
 
   return (
@@ -124,28 +125,10 @@ export default async function PublicStorePage({
         </div>
 
         {offers.length ? (
-          <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-5 lg:grid-cols-4">
-            {offers.map((offer) => {
-              const product = offer.product
-              const amount = offer.calculated_price?.calculated_amount
-              const price = typeof amount === "number"
-                ? convertToLocale({ amount, currency_code: offer.calculated_price?.currency_code || "eur", locale: "el-GR" })
-                : null
-              return (
-                <article key={offer.id} className="overflow-hidden rounded-2xl border border-black/10 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
-                  <Link href={`/${locale}/products/${product?.handle || ""}`} className="block">
-                    <div className="relative aspect-[4/3] bg-black/5">
-                      <Image src={product?.thumbnail || "/images/placeholder.svg"} alt={product?.title || "Προϊόν"} fill sizes="(min-width:1024px) 25vw, 50vw" className="object-cover" />
-                    </div>
-                    <div className="p-4">
-                      <h3 className="line-clamp-2 min-h-10 font-bold">{product?.title || "Προϊόν"}</h3>
-                      {price ? <p className="mt-2 font-semibold">{price}</p> : null}
-                      <span className="mt-3 inline-flex text-sm font-bold underline underline-offset-4">Δες λεπτομέρειες ↗</span>
-                    </div>
-                  </Link>
-                </article>
-              )
-            })}
+          <div className="mt-8 flex flex-wrap gap-4">
+            {offers.map((offer) => (
+              <OfferCard key={offer.id} offer={offer} locale={locale} storeHandle={handle} className="!min-w-0 w-full sm:w-[calc(50%-0.5rem)] lg:w-[calc(25%-0.75rem)]" />
+            ))}
           </div>
         ) : (
           <div className={`mt-8 rounded-3xl p-8 sm:p-12 ${colors.soft}`}>

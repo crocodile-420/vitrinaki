@@ -8,6 +8,41 @@ const BACKEND_URL = process.env.MEDUSA_BACKEND_URL;
 const PUBLISHABLE_API_KEY = process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY;
 const DEFAULT_REGION = process.env.NEXT_PUBLIC_DEFAULT_REGION || 'gr';
 
+const configuredPlatformHosts = [
+  process.env.NEXT_PUBLIC_BASE_URL ? new URL(process.env.NEXT_PUBLIC_BASE_URL).hostname : '',
+  ...(process.env.VITRINAKI_PLATFORM_HOSTS || '').split(','),
+  process.env.VERCEL_URL || '',
+].flatMap((value) => {
+  const host = value.trim().toLowerCase().replace(/^https?:\\/\\//, '').split('/')[0].split(':')[0];
+  if (!host) return [];
+  return [host, host.replace(/^www\\./, '')];
+});
+
+const isPlatformHost = (host: string) =>
+  configuredPlatformHosts.includes(host) ||
+  host === 'localhost' ||
+  host === '127.0.0.1' ||
+  host.endsWith('.vercel.app') ||
+  host.endsWith('.pages.dev');
+
+async function resolveCustomDomain(request: NextRequest, host: string) {
+  if (!BACKEND_URL) return null;
+  try {
+    const url = new URL(`${BACKEND_URL.replace(/\\/+$/, '')}/store/vitrinaki/resolve-domain`);
+    url.searchParams.set('domain', host);
+    const headers: Record<string, string> = {};
+    if (PUBLISHABLE_API_KEY) headers['x-publishable-api-key'] = PUBLISHABLE_API_KEY;
+    const response = await fetch(url, { headers, cache: 'no-store' });
+    if (!response.ok) return null;
+    const data = await response.json() as { handle?: string; locale?: string };
+    if (!data.handle || !/^[a-z0-9][a-z0-9-]{0,62}$/.test(data.handle)) return null;
+    const locale = data.locale && /^[a-z]{2}$/i.test(data.locale) ? data.locale : DEFAULT_REGION;
+    return { handle: data.handle, locale };
+  } catch {
+    return null;
+  }
+}
+
 const makeAuthRedirect = (
   req: NextRequest,
   locale: string,
@@ -109,11 +144,24 @@ async function getCountryCode(
 }
 
 export async function middleware(request: NextRequest) {
-  if (request.nextUrl.pathname.includes('.')) {
+  const { pathname } = request.nextUrl;
+
+  if (pathname.includes('.')) {
     return NextResponse.next();
   }
 
-  const { pathname } = request.nextUrl;
+  const rawHost = request.headers.get('host') || '';
+  const host = rawHost.toLowerCase().split(':')[0];
+  if (host && !isPlatformHost(host)) {
+    const resolved = await resolveCustomDomain(request, host);
+    if (!resolved) {
+      return new NextResponse('This domain is not connected to an active Vitrinaki shop.', { status: 404 });
+    }
+    const target = request.nextUrl.clone();
+    const suffix = pathname === '/' ? '' : pathname;
+    target.pathname = `/${resolved.locale}/store/${resolved.handle}${suffix}`;
+    return NextResponse.rewrite(target);
+  }
   const cacheIdCookie = request.cookies.get('_medusa_cache_id');
   const cacheId = cacheIdCookie?.value || crypto.randomUUID();
 

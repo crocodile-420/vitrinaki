@@ -34,7 +34,7 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
     return res.status(404).json({ message: "Το κατάστημα δεν είναι δημοσιευμένο." })
   }
 
-  if (subscription && !["active", "trialing"].includes(String(subscription.status))) {
+  if (!subscription || !["active", "trialing"].includes(String(subscription.status))) {
     return res.status(404).json({ message: "Το κατάστημα δεν είναι διαθέσιμο αυτή τη στιγμή." })
   }
 
