@@ -40,9 +40,10 @@ export const Header = async ({ locale } : {
           <LocalizedClientLink href="/" className="text-2xl font-bold" data-testid="header-logo-link">
             <Image
               src="/Logo.svg"
-              width={126}
+              width={180}
               height={40}
-              alt="Logo"
+              alt="Vitrinaki"
+              className="h-auto w-[118px] lg:w-[180px]"
               priority
             />
           </LocalizedClientLink>
