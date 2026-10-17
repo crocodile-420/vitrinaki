@@ -15,18 +15,22 @@ export const OfferCard = ({
   locale,
   className,
   storeHandle,
+  customDomainMode = false,
 }: {
   offer: StoreOffer
   locale: string
   className?: string
   storeHandle?: string
+  customDomainMode?: boolean
 }) => {
   const { addToCart, onAddToCart, cart, isAddingItem } = useCartContext()
 
   const product = offer.product
   const productName = String(product?.title || "Product")
   const productHref = storeHandle
-    ? `/${locale}/store/${encodeURIComponent(storeHandle)}/products/${encodeURIComponent(String(product?.handle || ""))}`
+    ? customDomainMode
+      ? `/products/${encodeURIComponent(String(product?.handle || ""))}`
+      : `/${locale}/store/${encodeURIComponent(storeHandle)}/products/${encodeURIComponent(String(product?.handle || ""))}`
     : `/products/${product?.handle}`
 
   const amount = getOfferAmount(offer)

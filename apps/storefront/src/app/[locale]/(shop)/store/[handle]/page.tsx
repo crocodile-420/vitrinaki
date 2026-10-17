@@ -1,6 +1,7 @@
 import Image from "next/image"
 import Link from "next/link"
 import { notFound } from "next/navigation"
+import { headers } from "next/headers"
 
 import { listOffers } from "@/lib/data/offers"
 import { OfferCard } from "@/components/organisms/OfferCard/OfferCard"
@@ -24,6 +25,8 @@ type StorefrontResponse = {
     palette: "forest" | "terracotta" | "ocean" | "plum"
     contactEmail?: string | null
     contactPhone?: string | null
+    customDomain?: string | null
+    domainStatus?: string
   }
 }
 
@@ -69,6 +72,15 @@ export default async function PublicStorePage({
   if (!data) notFound()
 
   const { seller, storefront } = data
+  const requestHeaders = await headers()
+  const requestHost = (requestHeaders.get("host") || "").toLowerCase().split(":")[0]
+  const isCustomDomain = Boolean(
+    storefront.customDomain &&
+    storefront.domainStatus === "verified" &&
+    requestHost === storefront.customDomain.toLowerCase()
+  )
+  const shopHome = isCustomDomain ? "/" : `/${locale}/store/${handle}`
+  const platformBaseUrl = (process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3100").replace(/\/+$/, "")
   const colors = paletteStyles[storefront.palette] || paletteStyles.forest
   const result = await listOffers({ sellerId: seller.id, countryCode: locale, limit: 24, offset: 0 })
     .catch(() => ({ offers: [], count: 0 }))
@@ -79,7 +91,7 @@ export default async function PublicStorePage({
     <main className={`min-h-screen ${colors.page} ${colors.ink}`}>
       <header className="border-b border-black/10 bg-white/75">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-5 px-5 py-5 sm:px-8">
-          <Link href={`/${locale}`} className="flex min-w-0 items-center gap-3" aria-label="Vitrinaki">
+          <Link href={shopHome} className="flex min-w-0 items-center gap-3" aria-label="Vitrinaki">
             <span className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-[#f15b2a] text-white" aria-hidden="true">
               <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M3 10h18M5 10v10h14V10M3 10l2-6h14l2 6M9 20v-6h6v6"/></svg>
             </span>
@@ -90,7 +102,7 @@ export default async function PublicStorePage({
           </Link>
           <div className="flex shrink-0 items-center gap-4">
             <Link href={`/${locale}/cart`} className="text-sm font-bold opacity-70 hover:opacity-100">Καλάθι</Link>
-            <Link href={`/${locale}/categories`} className="text-sm font-bold opacity-70 hover:opacity-100">Ανακάλυψε το Vitrinaki ↗</Link>
+            <a href={`${platformBaseUrl}/${locale}/categories`} className="text-sm font-bold opacity-70 hover:opacity-100">Ανακάλυψε το Vitrinaki ↗</a>
           </div>
         </div>
       </header>
@@ -130,7 +142,7 @@ export default async function PublicStorePage({
         {offers.length ? (
           <div className="mt-8 flex flex-wrap gap-4">
             {offers.map((offer) => (
-              <OfferCard key={offer.id} offer={offer} locale={locale} storeHandle={handle} className="!min-w-0 w-full sm:w-[calc(50%-0.5rem)] lg:w-[calc(25%-0.75rem)]" />
+              <OfferCard key={offer.id} offer={offer} locale={locale} storeHandle={handle} customDomainMode={isCustomDomain} className="!min-w-0 w-full sm:w-[calc(50%-0.5rem)] lg:w-[calc(25%-0.75rem)]" />
             ))}
           </div>
         ) : (

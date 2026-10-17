@@ -23,7 +23,6 @@ type StorefrontForm = {
   isPublished: boolean
 }
 type Subscription = { status?: string; planId?: string; interval?: string; currentPeriodEnd?: string; cancelAtPeriodEnd?: boolean } | null
-type APIState = { storefront: StorefrontForm; subscription: Subscription; billingConfigured: boolean }
 
 const backend = () => __BACKEND_URL__.replace(/\/+$/, "")
 const blank: StorefrontForm = {

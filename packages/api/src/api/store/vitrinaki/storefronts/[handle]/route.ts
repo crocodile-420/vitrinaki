@@ -58,6 +58,8 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
       palette: storefront.palette || "forest",
       contactEmail: storefront.contactEmail || seller.email || "",
       contactPhone: storefront.contactPhone || seller.phone || "",
+      customDomain: storefront.domainStatus === "verified" ? storefront.customDomain || "" : "",
+      domainStatus: storefront.domainStatus || "not_configured",
     },
   })
 }

@@ -1,4 +1,4 @@
-import { authenticate, defineMiddlewares } from "@medusajs/medusa"
+import { authenticate, defineMiddlewares } from "@medusajs/framework/http"
 
 const sellerAuth = authenticate("seller", ["session", "bearer"])
 const adminAuth = authenticate("user", ["session", "bearer", "api-key"])

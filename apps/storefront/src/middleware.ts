@@ -169,9 +169,29 @@ export async function middleware(request: NextRequest) {
     if (!resolved) {
       return new NextResponse('This domain is not connected to an active Vitrinaki shop.', { status: 404 });
     }
+
+    const localePath = `/${resolved.locale}`;
+    const shopPath = `${localePath}/store/${resolved.handle}`;
+    const isShopPath = pathname === shopPath || pathname.startsWith(`${shopPath}/`);
+    const isCheckoutPath =
+      pathname === `${localePath}/cart` ||
+      pathname === `${localePath}/checkout` ||
+      pathname.startsWith(`${localePath}/checkout/`) ||
+      pathname.startsWith(`${localePath}/order/`);
+
+    if (isShopPath || isCheckoutPath) {
+      return NextResponse.next();
+    }
+
     const target = request.nextUrl.clone();
-    const suffix = pathname === '/' ? '' : pathname;
-    target.pathname = `/${resolved.locale}/store/${resolved.handle}${suffix}`;
+    if (pathname === localePath || pathname === `${localePath}/`) {
+      target.pathname = shopPath;
+    } else if (pathname === '/cart' || pathname === '/checkout' || pathname.startsWith('/order/')) {
+      target.pathname = `${localePath}${pathname}`;
+    } else {
+      const suffix = pathname === '/' ? '' : pathname;
+      target.pathname = `${shopPath}${suffix}`;
+    }
     return NextResponse.rewrite(target);
   }
   const cacheIdCookie = request.cookies.get('_medusa_cache_id');
