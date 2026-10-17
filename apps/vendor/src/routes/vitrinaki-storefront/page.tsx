@@ -100,7 +100,7 @@ export default function VitrinakiStorefrontSettingsPage() {
       ...current,
       sections: [...(current.sections || []), {
         id: `section-${Date.now()}`,
-        type: "text",
+        type: "text" as const,
         title: "Νέα ενότητα",
         body: "",
         imageUrl: null,
