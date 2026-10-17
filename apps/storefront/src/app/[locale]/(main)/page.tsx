@@ -3,6 +3,7 @@ import Link from "next/link"
 import type { Metadata } from "next"
 import { headers } from "next/headers"
 import Script from "next/script"
+import { FeaturedProductsSection } from "@/components/sections/FeaturedProductsSection/FeaturedProductsSection"
 import { listRegions } from "@/lib/data/regions"
 import {
   buildHreflangAlternates,
@@ -85,9 +86,9 @@ export async function generateMetadata({
     locales,
   })
 
-  const title = "Η ψηφιακή βιτρίνα της επιχείρησής σου"
+  const title = "Ανακάλυψε ελληνικές επιχειρήσεις και δημιούργησε τη δική σου online βιτρίνα"
   const description =
-    "Δημιούργησε το δικό σου επαγγελματικό website, διαχειρίσου προϊόντα και ανέδειξε την ελληνική επιχείρησή σου με το Vitrinaki."
+    "Ανακάλυψε προϊόντα από ελληνικές επιχειρήσεις και δημιούργησε το δικό σου επαγγελματικό website με το Vitrinaki."
   const ogImage = "/B2C_Storefront_Open_Graph.png"
 
   return {
@@ -170,18 +171,18 @@ export default async function Home({
               Η ψηφιακή πλατφόρμα για μικρές επιχειρήσεις
             </div>
             <h1 className="max-w-2xl text-4xl font-extrabold leading-[1.08] tracking-tight text-[#103d32] sm:text-5xl lg:text-6xl">
-              Η δική σου επιχείρηση <span className="text-[#f15b2a]">σε νέα επίπεδα.</span>
+              Ανακάλυψε ελληνικές επιχειρήσεις. <span className="text-[#f15b2a]">Χτίσε τη δική σου online βιτρίνα.</span>
             </h1>
             <p className="mt-6 max-w-xl text-base leading-7 text-[#456257] sm:text-lg">
-              Δημιούργησε το δικό σου website, παρουσίασε προϊόντα ή υπηρεσίες, διαχειρίσου την online παρουσία σου και βρες περισσότερους πελάτες — όλα από μία πλατφόρμα σχεδιασμένη για τις ελληνικές επιχειρήσεις.
+              Ανακάλυψε προϊόντα από μικρές ελληνικές επιχειρήσεις ή δημιούργησε το δικό σου website για να παρουσιάσεις το brand, τα προϊόντα και τις υπηρεσίες σου. Το Vitrinaki συνδέει την ανακάλυψη με τα ανεξάρτητα καταστήματα των επαγγελματιών.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
-              <a href={businessUrl} className="inline-flex min-h-12 items-center justify-center rounded-full bg-[#f15b2a] px-6 py-3 font-bold text-white shadow-lg shadow-[#f15b2a]/20 transition hover:-translate-y-0.5 hover:bg-[#d94a1f]">
-                Ξεκίνα σήμερα <span className="ml-2" aria-hidden="true">→</span>
-              </a>
-              <Link href="/#examples" className="inline-flex min-h-12 items-center justify-center rounded-full border border-[#aabdb1] bg-white/80 px-6 py-3 font-bold text-[#16483a] transition hover:bg-white">
-                Δες παραδείγματα
+              <Link href="/categories" className="inline-flex min-h-12 items-center justify-center rounded-full bg-[#f15b2a] px-6 py-3 font-bold text-white shadow-lg shadow-[#f15b2a]/20 transition hover:-translate-y-0.5 hover:bg-[#d94a1f]">
+                Ανακάλυψε προϊόντα <span className="ml-2" aria-hidden="true">→</span>
               </Link>
+              <a href={businessUrl} className="inline-flex min-h-12 items-center justify-center rounded-full border border-[#aabdb1] bg-white/80 px-6 py-3 font-bold text-[#16483a] transition hover:bg-white">
+                Δημιούργησε το δικό σου website
+              </a>
             </div>
             <div className="mt-7 flex flex-wrap gap-x-5 gap-y-2 text-sm font-medium text-[#426456]">
               <span>✓ Εύκολη διαχείριση</span>
@@ -274,6 +275,8 @@ export default async function Home({
           </div>
         </div>
       </section>
+
+      <FeaturedProductsSection locale={locale} />
 
       <section id="solutions" className="mx-auto max-w-[1600px] px-4 py-10 sm:px-6 lg:px-10 lg:py-14">
         <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">

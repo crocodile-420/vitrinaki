@@ -28,3 +28,7 @@ cd ../.. && bun dev
 - Backend: http://localhost:9100
 - Admin: http://localhost:9100/dashboard
 - Πάνελ πωλητή: http://localhost:9100/seller
+
+## Product architecture
+
+Vitrinaki is designed as both a public discovery platform for Greek businesses and a SaaS platform for independent business websites. See [the product architecture and rollout plan](docs/VITRINAKI_PRODUCT_ARCHITECTURE.md) for the distinction between current infrastructure and planned features.

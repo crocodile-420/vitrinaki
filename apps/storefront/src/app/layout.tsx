@@ -13,13 +13,13 @@ import { Providers } from './providers';
 export const metadata: Metadata = {
   title: {
     template: `%s | ${
-      process.env.NEXT_PUBLIC_SITE_NAME || 'Mercur B2C Demo - Marketplace Storefront'
+      process.env.NEXT_PUBLIC_SITE_NAME || 'Vitrinaki — η ψηφιακή βιτρίνα της επιχείρησής σου'
     }`,
-    default: process.env.NEXT_PUBLIC_SITE_NAME || 'Mercur B2C Demo - Marketplace Storefront'
+    default: process.env.NEXT_PUBLIC_SITE_NAME || 'Vitrinaki — η ψηφιακή βιτρίνα της επιχείρησής σου'
   },
   description:
-    process.env.NEXT_PUBLIC_SITE_DESCRIPTION || 'Mercur B2C Demo - Marketplace Storefront',
-  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000')
+    process.env.NEXT_PUBLIC_SITE_DESCRIPTION || 'Vitrinaki — η ψηφιακή βιτρίνα της επιχείρησής σου',
+  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3100')
 };
 
 export default async function RootLayout({
