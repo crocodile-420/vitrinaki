@@ -3,10 +3,15 @@ import path from "path"
 
 const root = path.resolve(process.cwd(), "../..")
 const apiEnvFiles = ["packages/api/.env"]
+
+// Ordered from lowest to highest file precedence for Next.js development mode.
+// Next.js checks .env first, then .env.development, then .env.local, then
+// .env.development.local. Variables already present in process.env can override
+// these files and cannot be inferred from the files alone.
 const storefrontEnvFiles = [
   "apps/storefront/.env",
-  "apps/storefront/.env.local",
   "apps/storefront/.env.development",
+  "apps/storefront/.env.local",
   "apps/storefront/.env.development.local",
 ]
 
