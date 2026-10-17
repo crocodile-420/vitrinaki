@@ -38,6 +38,7 @@ const backend = () => __BACKEND_URL__.replace(/\/+$/, "")
 const blank: StorefrontForm = {
   storeName: "", tagline: "Καλώς ήρθες στο κατάστημά μας", description: "",
   template: "atelier", palette: "forest", contactEmail: "", contactPhone: "",
+  logoUrl: "", bannerUrl: "", sections: [],
   customDomain: "", domainStatus: "not_configured", domainVerificationToken: "", isPublished: false,
 }
 const palettes = [
