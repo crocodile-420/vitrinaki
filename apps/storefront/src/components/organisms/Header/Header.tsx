@@ -5,9 +5,10 @@ const businessUrl =
 
 const navigation = [
   { label: "Για ποιον", href: "/#for-whom" },
-  { label: "Πώς λειτουργεί", href: "/#how-it-works" },
-  { label: "Παραδείγματα", href: "/#vitrina" },
-  { label: "Εμφανίσεις", href: "/#examples" },
+  { label: "Καταστήματα", href: "/#vitrina" },
+  { label: "Τι παίρνεις", href: "/#included" },
+  { label: "Πώς ξεκινάς", href: "/#how-it-works" },
+  { label: "Ερωτήσεις", href: "/#faq" },
 ]
 
 function VitrinakiWordmark() {
@@ -23,7 +24,7 @@ export const Header = ({ locale }: { locale: string }) => {
           <VitrinakiWordmark />
         </LocalizedClientLink>
 
-        <nav className="hidden items-center gap-5 xl:flex" aria-label="Κεντρική πλοήγηση">
+        <nav className="hidden items-center gap-6 lg:flex" aria-label="Κεντρική πλοήγηση">
           {navigation.map((item) => (
             <LocalizedClientLink
               key={item.label}
@@ -43,7 +44,7 @@ export const Header = ({ locale }: { locale: string }) => {
             href={businessUrl}
             className="inline-flex min-h-10 items-center justify-center rounded-full bg-[#C0503C] px-4 py-2 text-sm font-bold text-white shadow-sm transition hover:bg-[#a5412f] sm:px-5"
           >
-            Φτιάξε το e-shop σου <span className="ml-2" aria-hidden="true">↗</span>
+            Ξεκίνα το e-shop σου
           </a>
         </div>
       </div>
