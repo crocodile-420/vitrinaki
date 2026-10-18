@@ -5,7 +5,7 @@ import { headers } from "next/headers"
 
 import { listOffers } from "@/lib/data/offers"
 import { OfferCard } from "@/components/organisms/OfferCard/OfferCard"
-import type { StoreOffer } from "@/lib/helpers/buybox"
+import { rankOffers, type StoreOffer } from "@/lib/helpers/buybox"
 
 type StorefrontResponse = {
   seller: {
@@ -86,9 +86,18 @@ export default async function PublicStorePage({
   const shopHome = isCustomDomain ? "/" : `/${locale}/store/${handle}`
   const platformBaseUrl = (process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3100").replace(/\/+$/, "")
   const colors = paletteStyles[storefront.palette] || paletteStyles.forest
-  const result = await listOffers({ sellerId: seller.id, countryCode: locale, limit: 24, offset: 0 })
+  const result = await listOffers({ sellerId: seller.id, countryCode: locale, limit: 500, offset: 0 })
     .catch(() => ({ offers: [], count: 0 }))
-  const offers = result.offers as StoreOffer[]
+  // One card per product: offers are per variant (size), so keep the best-ranked offer of each product.
+  const seenProducts = new Set<string>()
+  const offers = rankOffers(result.offers as StoreOffer[])
+    .filter((offer) => {
+      const key = offer.product_id || offer.id
+      if (seenProducts.has(key)) return false
+      seenProducts.add(key)
+      return true
+    })
+    .slice(0, 24)
   const isServices = storefront.template === "services"
 
   return (

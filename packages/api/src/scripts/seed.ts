@@ -18,6 +18,7 @@ import {
   createSellerAccountWorkflow,
   createSellerShippingOptionsWorkflow,
   createSellerStockLocationsWorkflow,
+  updateSellersWorkflow,
 } from "@mercurjs/core/workflows";
 import {
   createWorkflow,
@@ -39,167 +40,231 @@ import {
   updateStoresWorkflow,
 } from "@medusajs/medusa/core-flows";
 
-// Demo catalog with fictional brands and generic product names. Titles, brands,
-// and colorways are invented for a trademark-safe marketplace demo — they do not
-// reference any real brand or protected product design. Product images are generic
-// AI-generated renders hosted from /static via the jsDelivr GitHub CDN (main branch).
+// Demo catalog for "High Society", a fictional elegant menswear brand. Names,
+// colorways and descriptions are invented; images are text placeholders, not
+// photos of any real brand's products.
+type SeedCategory = "Polo" | "Κοντομάνικα" | "Μακρυμάνικα" | "Πουκάμισα" | "Ζακέτες" | "Παντελόνια" | "Παπούτσια" | "Αξεσουάρ";
 type SeedCatalogItem = {
   title: string;
   brand: string;
   colorway: string;
-  category: "Sandals" | "Sneakers" | "Boots" | "Sport" | "Accessories";
+  category: SeedCategory;
   price: number;
-  footwear: boolean;
+  sizing: "apparel" | "shoes" | "one";
   description: string;
   images: string[];
 };
 
 const seedCatalog: SeedCatalogItem[] = [
   {
-    title: "Meridian Twin-Strap Buckle Sandal",
-    brand: "Meridian",
-    colorway: "Black - Regular/Wide",
-    price: 155,
-    images: [
-      "https://cdn.jsdelivr.net/gh/mercurjs/mercur@main/static/meridian-twin-strap-buckle-sandal-1.png",
-    ],
-    category: "Sandals",
-    footwear: true,
-    description: "Meridian Twin-Strap Buckle Sandal in Black - Regular/Wide.",
+    title: "Signature Piqué Polo",
+    brand: "High Society",
+    colorway: "Navy",
+    price: 89,
+    images: ["https://placehold.co/800x1000/1c2b3a/f5efe6/png?text=HIGH+SOCIETY%0ASignature+Piqué+Polo"],
+    category: "Polo",
+    sizing: "apparel",
+    description: "Signature Piqué Polo από τη High Society σε χρώμα Navy. Κομψή, διαχρονική γραμμή.",
   },
   {
-    title: "Meridian Twin-Strap Sandal",
-    brand: "Meridian",
-    colorway: "Pearl White - Narrow",
-    price: 125,
-    images: [
-      "https://cdn.jsdelivr.net/gh/mercurjs/mercur@main/static/meridian-twin-strap-sandal-1.png",
-    ],
-    category: "Sandals",
-    footwear: true,
-    description: "Meridian Twin-Strap Sandal in Pearl White - Narrow.",
+    title: "Signature Piqué Polo",
+    brand: "High Society",
+    colorway: "White",
+    price: 89,
+    images: ["https://placehold.co/800x1000/e9e6df/1c2b3a/png?text=HIGH+SOCIETY%0ASignature+Piqué+Polo"],
+    category: "Polo",
+    sizing: "apparel",
+    description: "Signature Piqué Polo από τη High Society σε χρώμα White. Κομψή, διαχρονική γραμμή.",
   },
   {
-    title: "Meridian Clog Slide",
-    brand: "Meridian",
-    colorway: "Anthracite",
-    price: 232,
-    images: [
-      "https://cdn.jsdelivr.net/gh/mercurjs/mercur@main/static/meridian-clog-slide-1.png",
-    ],
-    category: "Sandals",
-    footwear: true,
-    description: "Meridian Clog Slide in Anthracite.",
-  },
-  {
-    title: "Cloudpeak Golden Slide",
-    brand: "Cloudpeak",
-    colorway: "Dark Sand",
-    price: 72,
-    images: [
-      "https://cdn.jsdelivr.net/gh/mercurjs/mercur@main/static/cloudpeak-golden-slide-1.png",
-    ],
-    category: "Sandals",
-    footwear: true,
-    description: "Cloudpeak Golden Slide in Dark Sand.",
-  },
-  {
-    title: "Meridian Wire Buckle Clog",
-    brand: "Meridian",
-    colorway: "Vintage Wood Roast",
-    price: 226,
-    images: [
-      "https://cdn.jsdelivr.net/gh/mercurjs/mercur@main/static/meridian-wire-buckle-clog-1.png",
-    ],
-    category: "Sandals",
-    footwear: true,
-    description: "Meridian Wire Buckle Clog in Vintage Wood Roast.",
-  },
-  {
-    title: "Cloudpeak Golden Sandal",
-    brand: "Cloudpeak",
-    colorway: "Bay Fog",
-    price: 78,
-    images: [
-      "https://cdn.jsdelivr.net/gh/mercurjs/mercur@main/static/cloudpeak-golden-sandal-1.png",
-    ],
-    category: "Sandals",
-    footwear: true,
-    description: "Cloudpeak Golden Sandal in Bay Fog.",
-  },
-  {
-    title: "Apex Pool Slides",
-    brand: "Apex",
+    title: "Twin Tipped Polo",
+    brand: "High Society",
     colorway: "Black",
-    price: 47,
-    images: [
-      "https://cdn.jsdelivr.net/gh/mercurjs/mercur@main/static/apex-pool-slides-1.png",
-      "https://cdn.jsdelivr.net/gh/mercurjs/mercur@main/static/apex-pool-slides-2.png",
-      "https://cdn.jsdelivr.net/gh/mercurjs/mercur@main/static/apex-pool-slides-3.png",
-    ],
-    category: "Sandals",
-    footwear: true,
-    description: "Apex Pool Slides in Black.",
-  },
-  {
-    title: "Strive Mule Slides",
-    brand: "Strive",
-    colorway: "Core Black Gum",
-    price: 106,
-    images: [
-      "https://cdn.jsdelivr.net/gh/mercurjs/mercur@main/static/strive-mule-slides-1.png",
-    ],
-    category: "Sandals",
-    footwear: true,
-    description: "Strive Mule Slides in Core Black Gum.",
-  },
-  {
-    title: "Nimbus Classic Clog",
-    brand: "Nimbus",
-    colorway: "Pond",
-    price: 60,
-    images: [
-      "https://cdn.jsdelivr.net/gh/mercurjs/mercur@main/static/nimbus-classic-clog-1.png",
-    ],
-    category: "Sandals",
-    footwear: true,
-    description: "Nimbus Classic Clog in Pond.",
-  },
-  {
-    title: "Cloudpeak Starlet Sandal",
-    brand: "Cloudpeak",
-    colorway: "Sand",
-    price: 83,
-    images: [
-      "https://cdn.jsdelivr.net/gh/mercurjs/mercur@main/static/cloudpeak-starlet-sandal-1.png",
-    ],
-    category: "Sandals",
-    footwear: true,
-    description: "Cloudpeak Starlet Sandal in Sand.",
-  },
-  {
-    title: "Cityline Canvas High Top",
-    brand: "Cityline",
-    colorway: "Black Denim",
-    price: 82,
-    images: [
-      "https://cdn.jsdelivr.net/gh/mercurjs/mercur@main/static/cityline-canvas-high-top-1.png",
-    ],
-    category: "Sneakers",
-    footwear: true,
-    description: "Cityline Canvas High Top in Black Denim.",
-  },
-  {
-    title: "Vantage 204 Runner",
-    brand: "Vantage",
-    colorway: "Beige Brown",
     price: 95,
-    images: [
-      "https://cdn.jsdelivr.net/gh/mercurjs/mercur@main/static/vantage-204-runner-1.png",
-    ],
-    category: "Sneakers",
-    footwear: true,
-    description: "Vantage 204 Runner in Beige Brown.",
+    images: ["https://placehold.co/800x1000/151515/f5efe6/png?text=HIGH+SOCIETY%0ATwin+Tipped+Polo"],
+    category: "Polo",
+    sizing: "apparel",
+    description: "Twin Tipped Polo από τη High Society σε χρώμα Black. Κομψή, διαχρονική γραμμή.",
+  },
+  {
+    title: "Essential Crew T-Shirt",
+    brand: "High Society",
+    colorway: "Off White Cream",
+    price: 49,
+    images: ["https://placehold.co/800x1000/ece6d6/1c2b3a/png?text=HIGH+SOCIETY%0AEssential+Crew+T-Shirt"],
+    category: "Κοντομάνικα",
+    sizing: "apparel",
+    description: "Essential Crew T-Shirt από τη High Society σε χρώμα Off White Cream. Κομψή, διαχρονική γραμμή.",
+  },
+  {
+    title: "Heavyweight Logo T-Shirt",
+    brand: "High Society",
+    colorway: "Black",
+    price: 59,
+    images: ["https://placehold.co/800x1000/151515/f5efe6/png?text=HIGH+SOCIETY%0AHeavyweight+Logo+T-Shirt"],
+    category: "Κοντομάνικα",
+    sizing: "apparel",
+    description: "Heavyweight Logo T-Shirt από τη High Society σε χρώμα Black. Κομψή, διαχρονική γραμμή.",
+  },
+  {
+    title: "Compass Patch T-Shirt",
+    brand: "High Society",
+    colorway: "Olive",
+    price: 65,
+    images: ["https://placehold.co/800x1000/4a5233/f5efe6/png?text=HIGH+SOCIETY%0ACompass+Patch+T-Shirt"],
+    category: "Κοντομάνικα",
+    sizing: "apparel",
+    description: "Compass Patch T-Shirt από τη High Society σε χρώμα Olive. Κομψή, διαχρονική γραμμή.",
+  },
+  {
+    title: "Ribbed Long Sleeve Tee",
+    brand: "High Society",
+    colorway: "Grey",
+    price: 69,
+    images: ["https://placehold.co/800x1000/6b6e70/f5efe6/png?text=HIGH+SOCIETY%0ARibbed+Long+Sleeve+Tee"],
+    category: "Μακρυμάνικα",
+    sizing: "apparel",
+    description: "Ribbed Long Sleeve Tee από τη High Society σε χρώμα Grey. Κομψή, διαχρονική γραμμή.",
+  },
+  {
+    title: "Garment-Dyed Long Sleeve",
+    brand: "High Society",
+    colorway: "Navy Blue",
+    price: 75,
+    images: ["https://placehold.co/800x1000/1c2b3a/f5efe6/png?text=HIGH+SOCIETY%0AGarment-Dyed+Long+Sleeve"],
+    category: "Μακρυμάνικα",
+    sizing: "apparel",
+    description: "Garment-Dyed Long Sleeve από τη High Society σε χρώμα Navy Blue. Κομψή, διαχρονική γραμμή.",
+  },
+  {
+    title: "Oxford Button-Down Shirt",
+    brand: "High Society",
+    colorway: "Light Blue",
+    price: 110,
+    images: ["https://placehold.co/800x1000/9db8cf/1c2b3a/png?text=HIGH+SOCIETY%0AOxford+Button-Down+Shirt"],
+    category: "Πουκάμισα",
+    sizing: "apparel",
+    description: "Oxford Button-Down Shirt από τη High Society σε χρώμα Light Blue. Κομψή, διαχρονική γραμμή.",
+  },
+  {
+    title: "Linen Resort Shirt",
+    brand: "High Society",
+    colorway: "Sand",
+    price: 125,
+    images: ["https://placehold.co/800x1000/cdb894/1c2b3a/png?text=HIGH+SOCIETY%0ALinen+Resort+Shirt"],
+    category: "Πουκάμισα",
+    sizing: "apparel",
+    description: "Linen Resort Shirt από τη High Society σε χρώμα Sand. Κομψή, διαχρονική γραμμή.",
+  },
+  {
+    title: "Overshirt in Brushed Cotton",
+    brand: "High Society",
+    colorway: "Brown",
+    price: 145,
+    images: ["https://placehold.co/800x1000/5b4030/f5efe6/png?text=HIGH+SOCIETY%0AOvershirt+in+Brushed+Cotton"],
+    category: "Πουκάμισα",
+    sizing: "apparel",
+    description: "Overshirt in Brushed Cotton από τη High Society σε χρώμα Brown. Κομψή, διαχρονική γραμμή.",
+  },
+  {
+    title: "Harrington Jacket",
+    brand: "High Society",
+    colorway: "Black",
+    price: 229,
+    images: ["https://placehold.co/800x1000/151515/f5efe6/png?text=HIGH+SOCIETY%0AHarrington+Jacket"],
+    category: "Ζακέτες",
+    sizing: "apparel",
+    description: "Harrington Jacket από τη High Society σε χρώμα Black. Κομψή, διαχρονική γραμμή.",
+  },
+  {
+    title: "Garment-Dyed Field Jacket",
+    brand: "High Society",
+    colorway: "Olive",
+    price: 289,
+    images: ["https://placehold.co/800x1000/4a5233/f5efe6/png?text=HIGH+SOCIETY%0AGarment-Dyed+Field+Jacket"],
+    category: "Ζακέτες",
+    sizing: "apparel",
+    description: "Garment-Dyed Field Jacket από τη High Society σε χρώμα Olive. Κομψή, διαχρονική γραμμή.",
+  },
+  {
+    title: "Merino Zip Cardigan",
+    brand: "High Society",
+    colorway: "Grey",
+    price: 179,
+    images: ["https://placehold.co/800x1000/6b6e70/f5efe6/png?text=HIGH+SOCIETY%0AMerino+Zip+Cardigan"],
+    category: "Ζακέτες",
+    sizing: "apparel",
+    description: "Merino Zip Cardigan από τη High Society σε χρώμα Grey. Κομψή, διαχρονική γραμμή.",
+  },
+  {
+    title: "Tapered Chino",
+    brand: "High Society",
+    colorway: "Beige",
+    price: 119,
+    images: ["https://placehold.co/800x1000/cbb79a/1c2b3a/png?text=HIGH+SOCIETY%0ATapered+Chino"],
+    category: "Παντελόνια",
+    sizing: "apparel",
+    description: "Tapered Chino από τη High Society σε χρώμα Beige. Κομψή, διαχρονική γραμμή.",
+  },
+  {
+    title: "Cargo Trouser",
+    brand: "High Society",
+    colorway: "Black",
+    price: 149,
+    images: ["https://placehold.co/800x1000/151515/f5efe6/png?text=HIGH+SOCIETY%0ACargo+Trouser"],
+    category: "Παντελόνια",
+    sizing: "apparel",
+    description: "Cargo Trouser από τη High Society σε χρώμα Black. Κομψή, διαχρονική γραμμή.",
+  },
+  {
+    title: "Leather Court Sneaker",
+    brand: "High Society",
+    colorway: "White",
+    price: 159,
+    images: ["https://placehold.co/800x1000/e9e6df/1c2b3a/png?text=HIGH+SOCIETY%0ALeather+Court+Sneaker"],
+    category: "Παπούτσια",
+    sizing: "shoes",
+    description: "Leather Court Sneaker από τη High Society σε χρώμα White. Κομψή, διαχρονική γραμμή.",
+  },
+  {
+    title: "Suede Desert Boot",
+    brand: "High Society",
+    colorway: "Brown",
+    price: 189,
+    images: ["https://placehold.co/800x1000/5b4030/f5efe6/png?text=HIGH+SOCIETY%0ASuede+Desert+Boot"],
+    category: "Παπούτσια",
+    sizing: "shoes",
+    description: "Suede Desert Boot από τη High Society σε χρώμα Brown. Κομψή, διαχρονική γραμμή.",
+  },
+  {
+    title: "Wool Beanie",
+    brand: "High Society",
+    colorway: "Navy",
+    price: 39,
+    images: ["https://placehold.co/800x1000/1c2b3a/f5efe6/png?text=HIGH+SOCIETY%0AWool+Beanie"],
+    category: "Αξεσουάρ",
+    sizing: "one",
+    description: "Wool Beanie από τη High Society σε χρώμα Navy. Κομψή, διαχρονική γραμμή.",
+  },
+  {
+    title: "Canvas Weekender Bag",
+    brand: "High Society",
+    colorway: "Olive",
+    price: 165,
+    images: ["https://placehold.co/800x1000/4a5233/f5efe6/png?text=HIGH+SOCIETY%0ACanvas+Weekender+Bag"],
+    category: "Αξεσουάρ",
+    sizing: "one",
+    description: "Canvas Weekender Bag από τη High Society σε χρώμα Olive. Κομψή, διαχρονική γραμμή.",
+  },
+  {
+    title: "Leather Card Holder",
+    brand: "High Society",
+    colorway: "Black",
+    price: 55,
+    images: ["https://placehold.co/800x1000/151515/f5efe6/png?text=HIGH+SOCIETY%0ALeather+Card+Holder"],
+    category: "Αξεσουάρ",
+    sizing: "one",
+    description: "Leather Card Holder από τη High Society σε χρώμα Black. Κομψή, διαχρονική γραμμή.",
   },
 ];
 
@@ -406,11 +471,10 @@ export default async function seedDemoData({ container }: ExecArgs) {
 
   // Departments (roots) and their sub-categories; array order sets nav `rank`.
   const CATEGORY_TREE: Record<string, string[]> = {
-    Sandals: ["Slides", "Flip Flops", "Clogs"],
-    Sneakers: ["Low Top", "High Top", "Retro"],
-    Boots: ["Chelsea Boots", "Winter Boots", "Work Boots"],
-    Sport: ["Football", "Running", "Basketball"],
-    Accessories: ["Bags", "Headwear", "Wallets"],
+    "Μπλούζες": ["Polo", "Κοντομάνικα", "Μακρυμάνικα"],
+    "Πουκάμισα & Ζακέτες": ["Πουκάμισα", "Ζακέτες"],
+    "Κάτω μέρος": ["Παντελόνια"],
+    "Παπούτσια & Αξεσουάρ": ["Παπούτσια", "Αξεσουάρ"],
   };
   const parentNames = Object.keys(CATEGORY_TREE);
   const childNames = Object.values(CATEGORY_TREE).flat();
@@ -467,6 +531,7 @@ export default async function seedDemoData({ container }: ExecArgs) {
   logger.info("Seeding global product attributes...");
 
   const FOOTWEAR_SIZES = ["40", "41", "42", "43", "44", "45"];
+  const APPAREL_SIZES = ["XS", "S", "M", "L", "XL", "XXL"];
   const COLOR_VALUES = [
     "Black",
     "White",
@@ -485,7 +550,7 @@ export default async function seedDemoData({ container }: ExecArgs) {
   const CONDITION_VALUES = ["New", "Like New", "Used"];
 
   const ATTRIBUTE_DEFS = [
-    { name: "Size", handle: "size", values: FOOTWEAR_SIZES },
+    { name: "Size", handle: "size", values: [...APPAREL_SIZES, ...FOOTWEAR_SIZES] },
     { name: "Color", handle: "color", values: COLOR_VALUES },
     { name: "Condition", handle: "condition", values: CONDITION_VALUES },
   ];
@@ -565,6 +630,7 @@ export default async function seedDemoData({ container }: ExecArgs) {
     ["camo", "Green"],
     ["neon", "Green"],
     ["green", "Green"],
+    ["navy", "Blue"],
     ["sapphire", "Blue"],
     ["cobalt", "Blue"],
     ["turquoise", "Blue"],
@@ -594,9 +660,9 @@ export default async function seedDemoData({ container }: ExecArgs) {
 
   const SELLER_PASSWORD = "supersecret";
   const SELLER_CONFIGS = [
-    { name: "Sole Society", email: "seller@mercur.dev", first_name: "Demo", last_name: "Seller", city: "Αθήνα", country_code: "GR", address_1: "Ερμού 10" },
-    { name: "Kickz Corner", email: "kickz@mercur.dev", first_name: "Kai", last_name: "Corner", city: "Θεσσαλονίκη", country_code: "GR", address_1: "Τσιμισκή 25" },
-    { name: "Trailhead Outfitters", email: "trailhead@mercur.dev", first_name: "Tara", last_name: "Head", city: "Πάτρα", country_code: "GR", address_1: "Μαιζώνος 40" },
+    { name: "High Society", email: "seller@mercur.dev", first_name: "Demo", last_name: "Seller", city: "Αθήνα", country_code: "GR", address_1: "Ερμού 10" },
+    { name: "Aegean Atelier", email: "kickz@mercur.dev", first_name: "Kai", last_name: "Corner", city: "Θεσσαλονίκη", country_code: "GR", address_1: "Τσιμισκή 25" },
+    { name: "Urban Thread", email: "trailhead@mercur.dev", first_name: "Tara", last_name: "Head", city: "Πάτρα", country_code: "GR", address_1: "Μαιζώνος 40" },
   ];
   const PRIMARY_SELLER_EMAIL = SELLER_CONFIGS[0].email;
 
@@ -684,7 +750,7 @@ export default async function seedDemoData({ container }: ExecArgs) {
           name: sellerConfig.name,
           email: sellerConfig.email,
           currency_code: "eur",
-          description: `${sellerConfig.name} — a demo marketplace footwear seller.`,
+          description: `${sellerConfig.name} — δοκιμαστικό κατάστημα κομψού ρουχισμού.`,
           logo: sellerLogo(sellerConfig.name),
           banner: sellerBanner(sellerConfig.name),
         },
@@ -846,6 +912,50 @@ export default async function seedDemoData({ container }: ExecArgs) {
   }
 
   const primarySeller = sellers[0];
+
+  // Publish the High Society demo website with a promo subscription so its
+  // shop page works right after seeding, without Stripe.
+  const storefrontBaseUrl = (process.env.VITRINAKI_STOREFRONT_URL || "http://localhost:3100").replace(/\/+$/, "");
+  await updateSellersWorkflow(container).run({
+    input: {
+      selector: { id: primarySeller.id },
+      update: {
+        metadata: {
+          storefront_url: `${storefrontBaseUrl}/${process.env.VITRINAKI_DEFAULT_LOCALE || "gr"}/store/high-society`,
+          vitrinaki_subscription: {
+            status: "active",
+            source: "promo",
+            promoCode: "SEED",
+            planId: "growth",
+            interval: null,
+            currentPeriodEnd: null,
+            cancelAtPeriodEnd: false,
+            updatedAt: new Date().toISOString(),
+          },
+          vitrinaki_storefront: {
+            storeName: "High Society",
+            tagline: "Κομψό ανδρικό ντύσιμο, διαχρονικές γραμμές",
+            description:
+              "Polo, πουκάμισα, ζακέτες και αξεσουάρ με καθαρές γραμμές και ποιοτικά υφάσματα. Σχεδιασμένα για να φοριούνται κάθε μέρα, για χρόνια.",
+            template: "atelier",
+            palette: "ocean",
+            contactEmail: "seller@mercur.dev",
+            contactPhone: "",
+            logoUrl: "",
+            bannerUrl: "",
+            sections: [],
+            customDomain: "",
+            domainStatus: "not_configured",
+            domainVerificationToken: "",
+            domainVerifiedAt: null,
+            isPublished: true,
+            publishedAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          },
+        },
+      },
+    },
+  });
   logger.info(`Finished seeding ${sellers.length} sellers.`);
 
   logger.info("Seeding product data...");
@@ -871,14 +981,6 @@ export default async function seedDemoData({ container }: ExecArgs) {
     return handle;
   };
 
-  const childCursor: Record<string, number> = {};
-  const nextChildId = (parent: string) => {
-    const children = CATEGORY_TREE[parent];
-    const i = (childCursor[parent] ?? 0) % children.length;
-    childCursor[parent] = i + 1;
-    return catByName.get(children[i])!.id;
-  };
-
   const products: CreateProductDTO[] = catalog.map((item, index) => {
     const handle = uniqueHandle(item.title);
     const skuBase = handle.toUpperCase().replace(/-/g, "");
@@ -886,13 +988,15 @@ export default async function seedDemoData({ container }: ExecArgs) {
 
     const color = mapColor(item.colorway);
     const condition = conditionForIndex(index);
+    const sizes =
+      item.sizing === "apparel" ? APPAREL_SIZES : item.sizing === "shoes" ? FOOTWEAR_SIZES : [];
 
     const attributes = [
-      ...(item.footwear
+      ...(sizes.length
         ? [
             {
               id: sizeAttr.id,
-              value_ids: FOOTWEAR_SIZES.map((size) =>
+              value_ids: sizes.map((size) =>
                 valueId(sizeAttr, size)
               ).filter((id): id is string => Boolean(id)),
             },
@@ -912,10 +1016,10 @@ export default async function seedDemoData({ container }: ExecArgs) {
       },
     ];
 
-    const variants = item.footwear
-      ? FOOTWEAR_SIZES.map((size) => ({
-          title: `EU ${size}`,
-          sku: `${skuBase}-EU${size}`,
+    const variants = sizes.length
+      ? sizes.map((size) => ({
+          title: item.sizing === "shoes" ? `EU ${size}` : size,
+          sku: `${skuBase}-${size}`,
           options: { Size: size, Color: color, Condition: condition },
         }))
       : [
@@ -928,10 +1032,10 @@ export default async function seedDemoData({ container }: ExecArgs) {
 
     return {
       title: item.title,
-      category_ids: [nextChildId(item.category)],
+      category_ids: [catByName.get(item.category)!.id],
       description: item.description,
       handle,
-      weight: item.footwear ? 1200 : 400,
+      weight: item.sizing === "shoes" ? 1200 : 400,
       status: ProductStatus.PUBLISHED,
       thumbnail: images[0].url,
       images,
