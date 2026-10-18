@@ -15,24 +15,43 @@ const businessUrl =
   process.env.NEXT_PUBLIC_VENDOR_URL || "http://localhost:7001"
 
 const steps = [
-  { number: "01", title: "Απάντησε σε λίγες ερωτήσεις", text: "Τι κάνει η επιχείρησή σου, πού βρίσκεσαι, τι ύφος σού ταιριάζει. Χωρίς τεχνικές γνώσεις." },
-  { number: "02", title: "Πάρε έτοιμο e-shop", text: "Διαλέγουμε μαζί ύφος και χρώματα. Προσθέτεις προϊόντα, φωτογραφίες και τιμές, και αλλάζεις ό,τι θέλεις, όποτε θέλεις." },
-  { number: "03", title: "Ξεκίνα να πουλάς", text: "Το e-shop σου ανεβαίνει online με δική του διεύθυνση και δέχεται παραγγελίες από την πρώτη μέρα." },
+  { number: "01", title: "Μας λες για την επιχείρησή σου", text: "Τι κάνεις, σε ποιους απευθύνεσαι, πώς θέλεις να φαίνεσαι. Μια σύντομη κουβέντα, χωρίς τεχνικούς όρους." },
+  { number: "02", title: "Σχεδιάζουμε το e-shop σου", text: "Στήνουμε σελίδες, χρώματα, κατηγορίες και πληρωμές στα μέτρα σου. Το βλέπεις, μας λες αλλαγές, το τελειοποιούμε μαζί." },
+  { number: "03", title: "Ξεκινάς να πουλάς", text: "Το e-shop σου ανοίγει με δική του διεύθυνση. Εσύ διαχειρίζεσαι παραγγελίες, εμείς είμαστε δίπλα σου για ό,τι χρειαστείς." },
 ]
 
 const audiences = [
-  { icon: "🫒", title: "Παραγωγοί τροφίμων", text: "Λάδι, μέλι, κρασί, τυριά: πούλα τα προϊόντα σου απευθείας σε πελάτες σε όλη την Ελλάδα." },
-  { icon: "🧵", title: "Χειροποίητα & δημιουργοί", text: "Κοσμήματα, κεραμικά, ρούχα: δείξε τη δουλειά σου με τον τρόπο που της αξίζει." },
-  { icon: "🏪", title: "Φυσικά καταστήματα", text: "Το μαγαζί σου ανοιχτό και online, 24 ώρες το 24ωρο, για τους πελάτες της γειτονιάς και όχι μόνο." },
-  { icon: "💻", title: "Freelancers & υπηρεσίες", text: "Graphic designer, online δάσκαλος, φωτογράφος, σύμβουλος: προβάλλεις τη δουλειά σου και δέχεσαι κρατήσεις ή παραγγελίες." },
-  { icon: "🌱", title: "Νέες επιχειρήσεις", text: "Ξεκίνα μικρά, με χαμηλό κόστος, και μεγάλωσε το e-shop σου μαζί με την επιχείρηση." },
-]
+  { icon: "leaf", title: "Παραγωγοί τροφίμων", text: "Λάδι, μέλι, κρασί, τυριά: πούλα τα προϊόντα σου απευθείας σε πελάτες σε όλη την Ελλάδα." },
+  { icon: "hand", title: "Χειροποίητα & δημιουργοί", text: "Κοσμήματα, κεραμικά, ρούχα: δείξε τη δουλειά σου με τον τρόπο που της αξίζει." },
+  { icon: "store", title: "Φυσικά καταστήματα", text: "Το μαγαζί σου ανοιχτό και online, 24 ώρες το 24ωρο, για τους πελάτες της γειτονιάς και όχι μόνο." },
+  { icon: "laptop", title: "Freelancers & υπηρεσίες", text: "Graphic designer, online δάσκαλος, φωτογράφος, σύμβουλος: προβάλλεις τη δουλειά σου και δέχεσαι κρατήσεις ή παραγγελίες." },
+  { icon: "sprout", title: "Νέες επιχειρήσεις", text: "Ξεκίνα μικρά, με χαμηλό κόστος, και μεγάλωσε το e-shop σου μαζί με την επιχείρηση." },
+] as const
 
-const benefits = [
-  { title: "Δικό σου e-shop", text: "Με το όνομα, τα χρώματα και το ύφος της επιχείρησής σου, ακόμα και με δικό σου domain." },
-  { title: "Πληρωμές & παραγγελίες", text: "Ο πελάτης σου αγοράζει online και εσύ βλέπεις κάθε παραγγελία σε ένα σημείο." },
-  { title: "Χωρίς προγραμματιστή", text: "Όλα γίνονται από τον πίνακα της επιχείρησής σου, στα ελληνικά, με απλά βήματα." },
-  { title: "Σταθερή μηνιαία τιμή", text: "Μία συνδρομή, χωρίς κρυφές χρεώσεις. Ξεκινάς μικρά και μεγαλώνεις όταν θέλεις." },
+const lineIcons: Record<(typeof audiences)[number]["icon"], string> = {
+  leaf: "M5 19c0-8 5-14 14-14 0 9-6 14-14 14Zm0 0 7-7",
+  hand: "M7 11V6a1.5 1.5 0 0 1 3 0v4m0-5a1.5 1.5 0 0 1 3 0v5m0-4a1.5 1.5 0 0 1 3 0v6c0 4-2.5 7-6 7-2.5 0-4-1.5-5.5-4L4 13a1.5 1.5 0 0 1 2.6-1.5L7 12",
+  store: "M4 9l1.5-5h13L20 9M4 9h16M4 9v11h16V9M9 20v-6h6v6",
+  laptop: "M5 6h14v9H5zM3 18h18",
+  sprout: "M12 20v-8m0 0c0-4-3-6-7-6 0 4 3 6 7 6Zm0 0c0-3 2.5-5 6-5 0 3-2.5 5-6 5Z",
+}
+
+function LineIcon({ name }: { name: keyof typeof lineIcons }) {
+  return (
+    <span className="grid h-10 w-10 place-items-center rounded-xl bg-[#2E4A37]/[0.06] text-[#2E4A37]">
+      <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <path d={lineIcons[name]} />
+      </svg>
+    </span>
+  )
+}
+
+const comparison = [
+  { label: "Στήσιμο", us: "Το σχεδιάζουμε εμείς για σένα", diy: "Το στήνεις μόνος σου από template", agency: "Κατά παραγγελία, σε εβδομάδες" },
+  { label: "Γλώσσα & υποστήριξη", us: "Ελληνικά, από ανθρώπους", diy: "Αγγλικά, μέσω ticket", agency: "Ανάλογα με το συμβόλαιο" },
+  { label: "Κόστος", us: "Σταθερή μηνιαία τιμή", diy: "Συνδρομή + apps + προμήθειες", agency: "Χιλιάδες ευρώ εφάπαξ" },
+  { label: "Αλλαγές μετά", us: "Τις κάνεις εσύ ή μας τις ζητάς", diy: "Μόνος σου", agency: "Χρεώνονται ξεχωριστά" },
+  { label: "Προβολή", us: "Στη βιτρίνα του Vitrinaki", diy: "Καμία", agency: "Καμία" },
 ]
 
 export async function generateMetadata({
@@ -62,7 +81,7 @@ export async function generateMetadata({
 
   const title = "Η βιτρίνα σου στο ψηφιακό εμπόριο"
   const description =
-    "Φτιάξε το δικό σου ηλεκτρονικό κατάστημα σε λίγα λεπτά, χωρίς τεχνικές γνώσεις. Για παραγωγούς, δημιουργούς και φυσικά καταστήματα."
+    "Σου φτιάχνουμε το e-shop που ταιριάζει στην επιχείρησή σου. Για παραγωγούς, δημιουργούς, καταστήματα και freelancers."
   const ogImage = "/B2C_Storefront_Open_Graph.png"
 
   return {
@@ -160,21 +179,20 @@ export default async function Home({
               Η βιτρίνα σου <span className="text-[#C0503C]">στο ψηφιακό εμπόριο.</span>
             </h1>
             <p className="mt-6 max-w-xl text-base leading-7 text-[#456257] sm:text-lg">
-              Φτιάξε το δικό σου ηλεκτρονικό κατάστημα απαντώντας σε λίγες απλές ερωτήσεις. Είτε παράγεις τρόφιμα, φτιάχνεις χειροποίητα, έχεις φυσικό κατάστημα ή προσφέρεις υπηρεσίες ως freelancer, το Vitrinaki είναι το επόμενο βήμα της επιχείρησής σου.
+              Δεν σου δίνουμε ένα ακόμα έτοιμο template. Σου φτιάχνουμε το e-shop που ταιριάζει στην επιχείρησή σου, είτε είσαι παραγωγός, δημιουργός, κατάστημα ή freelancer. Εσύ ασχολείσαι με τη δουλειά σου, εμείς με την online βιτρίνα σου.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <a href={businessUrl} className="inline-flex min-h-12 items-center justify-center rounded-full bg-[#C0503C] px-6 py-3 font-bold text-white shadow-lg shadow-[#C0503C]/20 transition hover:-translate-y-0.5 hover:bg-[#a5412f]">
-                Φτιάξε το e-shop σου <span className="ml-2" aria-hidden="true">→</span>
+                Ξεκίνα το e-shop σου <span className="ml-2" aria-hidden="true">→</span>
               </a>
               <a href="#vitrina" className="inline-flex min-h-12 items-center justify-center rounded-full border border-[#aabdb1] bg-white/80 px-6 py-3 font-bold text-[#2E4A37] transition hover:bg-white">
                 Δες παραδείγματα
               </a>
             </div>
             <div className="mt-7 flex flex-wrap gap-x-5 gap-y-2 text-sm font-medium text-[#426456]">
-              <span>✓ Χωρίς τεχνικές γνώσεις</span>
-              <span>✓ Έτοιμο σε λίγα λεπτά</span>
-              <span>✓ Δικό σου domain</span>
-              <span>✓ Πληρωμές και παραγγελίες</span>
+              <span className="inline-flex items-center gap-1.5"><svg viewBox="0 0 16 16" className="h-4 w-4 text-[#C0503C]" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><path d="M3 8.5 6.5 12 13 4.5" /></svg>Σχεδιασμένο για τη δική σου επιχείρηση</span>
+              <span className="inline-flex items-center gap-1.5"><svg viewBox="0 0 16 16" className="h-4 w-4 text-[#C0503C]" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><path d="M3 8.5 6.5 12 13 4.5" /></svg>Ελληνική υποστήριξη από ανθρώπους</span>
+              <span className="inline-flex items-center gap-1.5"><svg viewBox="0 0 16 16" className="h-4 w-4 text-[#C0503C]" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><path d="M3 8.5 6.5 12 13 4.5" /></svg>Σταθερή μηνιαία τιμή</span>
             </div>
           </div>
 
@@ -195,8 +213,8 @@ export default async function Home({
         <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
           {audiences.map((item) => (
             <article key={item.title} className="rounded-2xl border border-[#eae3d8] bg-white/80 p-6">
-              <span className="text-2xl" aria-hidden="true">{item.icon}</span>
-              <h3 className="mt-3 text-base font-extrabold text-[#2E4A37]">{item.title}</h3>
+              <LineIcon name={item.icon} />
+              <h3 className="mt-4 text-base font-extrabold text-[#2E4A37]">{item.title}</h3>
               <p className="mt-2 text-sm leading-6 text-[#63766c]">{item.text}</p>
             </article>
           ))}
@@ -237,7 +255,7 @@ export default async function Home({
         <div className="mx-auto max-w-[1600px] px-5 py-12 sm:px-8 lg:px-10 lg:py-16">
           <div className="max-w-2xl">
             <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-[#C0503C]">Πώς λειτουργεί</p>
-            <h2 className="font-serif mt-2 text-3xl font-extrabold leading-tight tracking-tight text-[#2E4A37] sm:text-4xl">Από την ιδέα στο e-shop, σε τρία βήματα.</h2>
+            <h2 className="font-serif mt-2 text-3xl font-extrabold leading-tight tracking-tight text-[#2E4A37] sm:text-4xl">Εσύ μας λες τι κάνεις. Εμείς το κάνουμε e-shop.</h2>
           </div>
           <div className="mt-8 grid gap-4 md:grid-cols-3">
             {steps.map((step) => (
@@ -279,13 +297,31 @@ export default async function Home({
       </section>
 
       <section id="solutions" className="mx-auto max-w-[1600px] px-5 pb-12 sm:px-8 lg:px-10 lg:pb-16">
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {benefits.map((item) => (
-            <article key={item.title} className="rounded-2xl border border-[#eae3d8] bg-white/80 p-6">
-              <h3 className="text-base font-extrabold text-[#2E4A37]">{item.title}</h3>
-              <p className="mt-2 text-sm leading-6 text-[#63766c]">{item.text}</p>
-            </article>
-          ))}
+        <div className="max-w-2xl">
+          <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-[#C0503C]">Γιατί Vitrinaki</p>
+          <h2 className="font-serif mt-2 text-3xl font-extrabold tracking-tight text-[#2E4A37] sm:text-4xl">Η επαγγελματική λύση, χωρίς το επαγγελματικό κόστος.</h2>
+        </div>
+        <div className="mt-8 overflow-x-auto rounded-2xl border border-[#e6dfd3] bg-white">
+          <table className="w-full min-w-[640px] text-left text-sm">
+            <thead>
+              <tr className="border-b border-[#eee7db] text-[#61756a]">
+                <th className="px-5 py-4 font-semibold" />
+                <th className="bg-[#2E4A37] px-5 py-4 font-extrabold text-white">Vitrinaki</th>
+                <th className="px-5 py-4 font-semibold">Πλατφόρμες «κάν' το μόνος σου»</th>
+                <th className="px-5 py-4 font-semibold">Κατασκευή από εταιρεία</th>
+              </tr>
+            </thead>
+            <tbody>
+              {comparison.map((row) => (
+                <tr key={row.label} className="border-b border-[#f1ebe1] last:border-0">
+                  <th className="px-5 py-4 font-bold text-[#2E4A37]">{row.label}</th>
+                  <td className="bg-[#2E4A37]/[0.05] px-5 py-4 font-semibold text-[#2E4A37]">{row.us}</td>
+                  <td className="px-5 py-4 text-[#63766c]">{row.diy}</td>
+                  <td className="px-5 py-4 text-[#63766c]">{row.agency}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </section>
 
@@ -294,8 +330,8 @@ export default async function Home({
           <div className="pointer-events-none absolute -right-10 -top-20 h-72 w-72 rounded-full border-[40px] border-white/5" />
           <div className="relative z-10 max-w-2xl">
             <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-[#f2a28f]">Το επόμενο βήμα</p>
-            <h2 className="font-serif mt-3 text-3xl font-extrabold leading-tight tracking-tight sm:text-4xl">Η βιτρίνα σου στο ψηφιακό εμπόριο σε περιμένει.</h2>
-            <p className="mt-3 max-w-xl text-sm leading-6 text-[#d6e3db] sm:text-base">Λίγες ερωτήσεις, ένα έτοιμο e-shop, και η επιχείρησή σου πουλάει online.</p>
+            <h2 className="font-serif mt-3 text-3xl font-extrabold leading-tight tracking-tight sm:text-4xl">Πες μας για την επιχείρησή σου.</h2>
+            <p className="mt-3 max-w-xl text-sm leading-6 text-[#d6e3db] sm:text-base">Σου φτιάχνουμε το e-shop που σου ταιριάζει, και η βιτρίνα σου ανοίγει στο ψηφιακό εμπόριο.</p>
           </div>
           <a href={businessUrl} className="relative z-10 inline-flex min-h-12 shrink-0 items-center justify-center rounded-full bg-[#C0503C] px-6 py-3 font-bold text-white transition hover:bg-[#a5412f]">
             Ξεκίνα τώρα <span className="ml-2" aria-hidden="true">→</span>
