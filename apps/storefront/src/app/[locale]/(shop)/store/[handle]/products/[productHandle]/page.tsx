@@ -15,7 +15,10 @@ type StoreResponse = {
 async function loadStore(handle: string): Promise<StoreResponse | null> {
   const backend = process.env.MEDUSA_BACKEND_URL || "http://localhost:9100"
   try {
-    const response = await fetch(`${backend.replace(/\/+$/, "")}/store/vitrinaki/storefronts/${encodeURIComponent(handle)}`, { cache: "no-store" })
+    const response = await fetch(`${backend.replace(/\/+$/, "")}/store/vitrinaki/storefronts/${encodeURIComponent(handle)}`, {
+      cache: "no-store",
+      headers: { "x-publishable-api-key": process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY || "" },
+    })
     return response.ok ? await response.json() as StoreResponse : null
   } catch {
     return null

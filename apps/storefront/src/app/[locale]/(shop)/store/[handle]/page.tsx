@@ -43,7 +43,10 @@ async function loadStorefront(handle: string): Promise<StorefrontResponse | null
   try {
     const response = await fetch(
       `${backend.replace(/\/+$/, "")}/store/vitrinaki/storefronts/${encodeURIComponent(handle)}`,
-      { cache: "no-store" }
+      {
+        cache: "no-store",
+        headers: { "x-publishable-api-key": process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY || "" },
+      }
     )
     if (!response.ok) return null
     return await response.json() as StorefrontResponse
