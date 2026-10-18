@@ -14,24 +14,60 @@ import {
 const businessUrl =
   process.env.NEXT_PUBLIC_VENDOR_URL || "http://localhost:7001"
 
-const steps = [
-  { number: "01", title: "Απάντησε σε λίγες ερωτήσεις", text: "Τι κάνει η επιχείρησή σου, πού βρίσκεσαι, τι ύφος σού ταιριάζει. Χωρίς τεχνικές γνώσεις." },
-  { number: "02", title: "Πάρε έτοιμο e-shop", text: "Διαλέγουμε μαζί ύφος και χρώματα. Προσθέτεις προϊόντα, φωτογραφίες και τιμές, και αλλάζεις ό,τι θέλεις, όποτε θέλεις." },
-  { number: "03", title: "Ξεκίνα να πουλάς", text: "Το e-shop σου ανεβαίνει online με δική του διεύθυνση και δέχεται παραγγελίες από την πρώτη μέρα." },
-]
-
 const audiences = [
-  { icon: "🫒", title: "Παραγωγοί τροφίμων", text: "Λάδι, μέλι, κρασί, τυριά: πούλα τα προϊόντα σου απευθείας σε πελάτες σε όλη την Ελλάδα." },
-  { icon: "🧵", title: "Χειροποίητα & δημιουργοί", text: "Κοσμήματα, κεραμικά, ρούχα: δείξε τη δουλειά σου με τον τρόπο που της αξίζει." },
-  { icon: "🏪", title: "Φυσικά καταστήματα", text: "Το μαγαζί σου ανοιχτό και online, 24 ώρες το 24ωρο, για τους πελάτες της γειτονιάς και όχι μόνο." },
-  { icon: "🌱", title: "Νέες επιχειρήσεις", text: "Ξεκίνα μικρά, με χαμηλό κόστος, και μεγάλωσε το e-shop σου μαζί με την επιχείρηση." },
+  { icon: "leaf", title: "Παραγωγοί", text: "Λάδι, μέλι, κρασί, τυριά. Το προϊόν σου, απευθείας στον πελάτη, σε όλη την Ελλάδα." },
+  { icon: "hand", title: "Δημιουργοί & χειροποίητα", text: "Κοσμήματα, κεραμικά, ρούχα. Η δουλειά σου, παρουσιασμένη όπως της αξίζει." },
+  { icon: "store", title: "Καταστήματα", text: "Το μαγαζί που ξέρει η γειτονιά, ανοιχτό και online, όλο το εικοσιτετράωρο." },
+  { icon: "laptop", title: "Freelancers & υπηρεσίες", text: "Graphic designer, online δάσκαλος, φωτογράφος. Δείξε τη δουλειά σου και δέξου κρατήσεις." },
+  { icon: "sprout", title: "Νέες επιχειρήσεις", text: "Ξεκίνα από εκεί που βρίσκεσαι σήμερα και μεγάλωσε τη βιτρίνα σου μαζί με την επιχείρηση." },
+] as const
+
+const lineIcons = {
+  leaf: "M5 19c0-8 5-14 14-14 0 9-6 14-14 14Zm0 0 7-7",
+  hand: "M7 11V6a1.5 1.5 0 0 1 3 0v4m0-5a1.5 1.5 0 0 1 3 0v5m0-4a1.5 1.5 0 0 1 3 0v6c0 4-2.5 7-6 7-2.5 0-4-1.5-5.5-4L4 13a1.5 1.5 0 0 1 2.6-1.5L7 12",
+  store: "M4 9l1.5-5h13L20 9M4 9h16M4 9v11h16V9M9 20v-6h6v6",
+  laptop: "M5 6h14v9H5zM3 18h18",
+  sprout: "M12 20v-8m0 0c0-4-3-6-7-6 0 4 3 6 7 6Zm0 0c0-3 2.5-5 6-5 0 3-2.5 5-6 5Z",
+  palette: "M12 3a9 9 0 1 0 0 18c1 0 1.5-.7 1.5-1.5 0-1.2-1-1.5-1-2.5s.8-1.5 2-1.5H17a4 4 0 0 0 4-4c0-4.7-4-8.5-9-8.5ZM7.5 11h.01M10 7.5h.01M15 7.5h.01",
+  globe: "M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Zm-9 9h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3Z",
+  bag: "M5 8h14l-1 12H6L5 8Zm4 0V6a3 3 0 0 1 6 0v2",
+  book: "M5 4h9a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3V4Zm0 13a3 3 0 0 1 3-3h9",
+  chart: "M4 20V4m0 16h16M8 16v-4m4 4V8m4 8v-6",
+  people: "M9 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm-6 9c0-3.3 2.7-6 6-6s6 2.7 6 6m1-9a3 3 0 1 0 0-6m2 15c0-2.6-1.4-4.8-3.5-5.6",
+}
+
+function LineIcon({ name, tone = "cypress" }: { name: keyof typeof lineIcons; tone?: "cypress" | "blue" }) {
+  const toneClass = tone === "blue" ? "bg-[#265E8E]/[0.08] text-[#265E8E]" : "bg-[#2E4A37]/[0.06] text-[#2E4A37]"
+  return (
+    <span className={`grid h-10 w-10 shrink-0 place-items-center rounded-xl ${toneClass}`}>
+      <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <path d={lineIcons[name]} />
+      </svg>
+    </span>
+  )
+}
+
+const included = [
+  { icon: "palette", title: "Η δική σου ταυτότητα", text: "Το όνομα, το λογότυπο και τα χρώματά σου, σε ύφος που ταιριάζει στη δουλειά σου. Κανένα κατάστημα δεν μοιάζει με αντίγραφο." },
+  { icon: "globe", title: "Η δική σου διεύθυνση", text: "Το e-shop σου ανοίγει στο vitrinaki.gr και μπορεί να συνδεθεί με το δικό σου domain." },
+  { icon: "bag", title: "Καλάθι και παραγγελίες", text: "Ο πελάτης διαλέγει, βάζει στο καλάθι και παραγγέλνει. Εσύ βλέπεις κάθε παραγγελία σε ένα σημείο." },
+  { icon: "book", title: "Η ιστορία σου", text: "Χώρος για το ποιος είσαι, πώς δουλεύεις και τι σε κάνει διαφορετικό, μαζί με τα στοιχεία επικοινωνίας σου." },
+  { icon: "chart", title: "Διαχείριση από σένα", text: "Προϊόντα, τιμές και παραγγελίες από τον δικό σου πίνακα, χωρίς να περιμένεις κανέναν για μια απλή αλλαγή." },
+  { icon: "people", title: "Άνθρωποι δίπλα σου", text: "Αν κολλήσεις ή θες βοήθεια στο στήσιμο, δεν το κάνεις μόνος σου. Μας ρωτάς και σε καθοδηγούμε." },
+] as const
+
+const steps = [
+  { number: "01", title: "Μας λες ποιος είσαι", text: "Όνομα, λογότυπο, χρώματα, τι πουλάς ή τι προσφέρεις. Αυτό που ήδη ξέρεις για τη δουλειά σου, χωρίς τεχνικούς όρους." },
+  { number: "02", title: "Στήνεται η βιτρίνα σου", text: "Ένα ολοκληρωμένο e-shop με τα δικά σου χαρακτηριστικά. Το φτιάχνεις μόνος σου βήμα βήμα, ή το στήνουμε μαζί." },
+  { number: "03", title: "Ανοίγεις στο ψηφιακό εμπόριο", text: "Συνδέεις τη διεύθυνσή σου, μοιράζεσαι το link και δέχεσαι παραγγελίες. Από εκεί και πέρα, μεγαλώνεις με τον δικό σου ρυθμό." },
 ]
 
-const benefits = [
-  { title: "Δικό σου e-shop", text: "Με το όνομα, τα χρώματα και το ύφος της επιχείρησής σου, ακόμα και με δικό σου domain." },
-  { title: "Πληρωμές & παραγγελίες", text: "Ο πελάτης σου αγοράζει online και εσύ βλέπεις κάθε παραγγελία σε ένα σημείο." },
-  { title: "Χωρίς προγραμματιστή", text: "Όλα γίνονται από τον πίνακα της επιχείρησής σου, στα ελληνικά, με απλά βήματα." },
-  { title: "Σταθερή μηνιαία τιμή", text: "Μία συνδρομή, χωρίς κρυφές χρεώσεις. Ξεκινάς μικρά και μεγαλώνεις όταν θέλεις." },
+const faqs = [
+  { q: "Χρειάζομαι τεχνικές γνώσεις;", a: "Όχι. Αν ξέρεις να στέλνεις email και να ανεβάζεις φωτογραφίες, ξέρεις αρκετά. Ό,τι άλλο χρειαστεί, σου το εξηγούμε." },
+  { q: "Είναι marketplace όπου ανταγωνίζομαι άλλους πωλητές;", a: "Όχι. Παίρνεις το δικό σου, ανεξάρτητο e-shop με τη δική σου ταυτότητα. Η κοινή βιτρίνα του Vitrinaki απλώς βοηθά περισσότερους να σε ανακαλύψουν." },
+  { q: "Μπορώ να έχω το δικό μου domain;", a: "Ναι. Το κατάστημά σου ανοίγει στο vitrinaki.gr και μπορείς να συνδέσεις το δικό σου domain, π.χ. to-magazi-mou.gr." },
+  { q: "Πόσο κοστίζει;", a: "Οι τιμές οριστικοποιούνται. Η δέσμευσή μας είναι απλή: πριν ξεκινήσεις θα ξέρεις ακριβώς τι πληρώνεις, τι περιλαμβάνεται και τι όχι." },
+  { q: "Κι αν δεν θέλω να το στήσω μόνος μου;", a: "Δεν χρειάζεται. Μπορείς να ξεκινήσεις μόνος σου, με καθοδήγηση, ή να μας ζητήσεις βοήθεια στο αρχικό στήσιμο." },
 ]
 
 export async function generateMetadata({
@@ -61,7 +97,7 @@ export async function generateMetadata({
 
   const title = "Η βιτρίνα σου στο ψηφιακό εμπόριο"
   const description =
-    "Φτιάξε το δικό σου ηλεκτρονικό κατάστημα σε λίγα λεπτά, χωρίς τεχνικές γνώσεις. Για παραγωγούς, δημιουργούς και φυσικά καταστήματα."
+    "Ένα ολοκληρωμένο e-shop με το όνομα, το λογότυπο και τα χρώματα της επιχείρησής σου. Για παραγωγούς, δημιουργούς, καταστήματα και freelancers."
   const ogImage = "/B2C_Storefront_Open_Graph.png"
 
   return {
@@ -107,6 +143,10 @@ const fallbackSites: DirectoryStorefront[] = [
 const siteAddress = (site: DirectoryStorefront) =>
   site.customDomain || `vitrinaki.gr/${site.handle || site.storeName.toLowerCase().replace(/\s+/g, "-")}`
 
+function Eyebrow({ children, light = false }: { children: React.ReactNode; light?: boolean }) {
+  return <p className={`text-xs font-extrabold uppercase tracking-[0.18em] ${light ? "text-[#f2a28f]" : "text-[#C0503C]"}`}>{children}</p>
+}
+
 export default async function Home({
   params,
 }: {
@@ -134,7 +174,7 @@ export default async function Home({
             "@type": "Organization",
             name: "Vitrinaki",
             url: `${baseUrl}/${locale}`,
-            logo: `${baseUrl}/Logo.svg`,
+            logo: `${baseUrl}/brand/vitrinaki-logo.png`,
           }),
         }}
       />
@@ -152,29 +192,29 @@ export default async function Home({
         }}
       />
 
+      {/* Hero */}
       <section className="relative border-b border-[#eee4d6] bg-[radial-gradient(circle_at_0%_0%,#f4e6d5_0,transparent_40%),#F7F2E8]">
-        <div className="mx-auto grid max-w-[1600px] items-center gap-10 px-5 py-12 sm:px-8 md:py-16 lg:grid-cols-[0.95fr_1.05fr] lg:gap-14 lg:px-10 lg:py-20">
+        <div className="mx-auto grid max-w-[1400px] items-center gap-10 px-5 py-12 sm:px-8 md:py-16 lg:grid-cols-[0.95fr_1.05fr] lg:gap-14 lg:px-10 lg:py-20">
           <div className="relative z-10">
-            <h1 className="font-serif max-w-2xl text-4xl font-extrabold leading-[1.06] tracking-tight text-[#2E4A37] sm:text-5xl lg:text-6xl">
+            <p className="inline-flex items-center gap-2 rounded-full border border-[#e3d8c6] bg-white/70 px-3 py-1 text-xs font-bold text-[#2E4A37]">
+              <span className="h-1.5 w-1.5 rounded-full bg-[#C0503C]" />
+              ΤΟ <span className="text-[#265E8E]">vitrinaki</span> σου, στο ψηφιακό εμπόριο
+            </p>
+            <h1 className="font-serif mt-6 max-w-2xl text-4xl font-extrabold leading-[1.06] tracking-tight sm:text-5xl lg:text-6xl">
               Η βιτρίνα σου <span className="text-[#C0503C]">στο ψηφιακό εμπόριο.</span>
             </h1>
             <p className="mt-6 max-w-xl text-base leading-7 text-[#456257] sm:text-lg">
-              Φτιάξε το δικό σου ηλεκτρονικό κατάστημα απαντώντας σε λίγες απλές ερωτήσεις. Είτε παράγεις τρόφιμα, είτε φτιάχνεις χειροποίητα, είτε έχεις ήδη φυσικό κατάστημα, το Vitrinaki είναι το επόμενο βήμα της επιχείρησής σου.
+              Ένα ολοκληρωμένο, επαγγελματικό e-shop με το όνομα, το λογότυπο και τα χρώματα της επιχείρησής σου, στη δική σου διεύθυνση. Εσύ μας λες τι κάνεις. Εμείς σε βάζουμε στη μεγάλη βιτρίνα.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <a href={businessUrl} className="inline-flex min-h-12 items-center justify-center rounded-full bg-[#C0503C] px-6 py-3 font-bold text-white shadow-lg shadow-[#C0503C]/20 transition hover:-translate-y-0.5 hover:bg-[#a5412f]">
-                Φτιάξε το e-shop σου <span className="ml-2" aria-hidden="true">→</span>
+                Ξεκίνα το e-shop σου <span className="ml-2" aria-hidden="true">→</span>
               </a>
-              <a href="#vitrina" className="inline-flex min-h-12 items-center justify-center rounded-full border border-[#aabdb1] bg-white/80 px-6 py-3 font-bold text-[#2E4A37] transition hover:bg-white">
-                Δες παραδείγματα
+              <a href="#vitrina" className="inline-flex min-h-12 items-center justify-center rounded-full border border-[#aabdb1] bg-white/80 px-6 py-3 font-bold transition hover:bg-white">
+                Δες καταστήματα
               </a>
             </div>
-            <div className="mt-7 flex flex-wrap gap-x-5 gap-y-2 text-sm font-medium text-[#426456]">
-              <span>✓ Χωρίς τεχνικές γνώσεις</span>
-              <span>✓ Έτοιμο σε λίγα λεπτά</span>
-              <span>✓ Δικό σου domain</span>
-              <span>✓ Πληρωμές και παραγγελίες</span>
-            </div>
+            <p className="mt-6 text-sm text-[#5c7268]">Χωρίς τεχνικές γνώσεις. Και χωρίς να το κάνεις μόνος σου.</p>
           </div>
 
           <div className="relative mx-auto min-h-[420px] w-full max-w-[720px] sm:min-h-[480px]" aria-hidden="true">
@@ -186,29 +226,32 @@ export default async function Home({
         </div>
       </section>
 
-      <section id="for-whom" className="mx-auto max-w-[1600px] px-5 pt-12 sm:px-8 lg:px-10 lg:pt-16">
+      {/* Who it is for */}
+      <section id="for-whom" className="mx-auto max-w-[1400px] scroll-mt-20 px-5 pt-14 sm:px-8 lg:px-10 lg:pt-20">
         <div className="max-w-2xl">
-          <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-[#C0503C]">Για ποιον είναι</p>
-          <h2 className="font-serif mt-2 text-3xl font-extrabold tracking-tight text-[#2E4A37] sm:text-4xl">Για κάθε επαγγελματία που θέλει να πουλάει online.</h2>
+          <Eyebrow>Για ποιον είναι</Eyebrow>
+          <h2 className="font-serif mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">Όλοι αξίζουν μια θέση στη μεγάλη βιτρίνα.</h2>
+          <p className="mt-3 leading-7 text-[#5c7268]">Δεν χρειάζεται να ξέρεις από design, προγραμματισμό ή διαφημίσεις για να μεγαλώσεις την επιχείρησή σου. Και ποτέ δεν είναι αργά για το επόμενο βήμα.</p>
         </div>
-        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
           {audiences.map((item) => (
             <article key={item.title} className="rounded-2xl border border-[#eae3d8] bg-white/80 p-6">
-              <span className="text-2xl" aria-hidden="true">{item.icon}</span>
-              <h3 className="mt-3 text-base font-extrabold text-[#2E4A37]">{item.title}</h3>
+              <LineIcon name={item.icon} />
+              <h3 className="mt-4 text-base font-extrabold">{item.title}</h3>
               <p className="mt-2 text-sm leading-6 text-[#63766c]">{item.text}</p>
             </article>
           ))}
         </div>
       </section>
 
-      <section id="vitrina" className="mx-auto max-w-[1600px] px-5 py-12 sm:px-8 lg:px-10 lg:py-16">
+      {/* Live shops */}
+      <section id="vitrina" className="mx-auto max-w-[1400px] scroll-mt-20 px-5 py-14 sm:px-8 lg:px-10 lg:py-20">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-[#C0503C]">Παραδείγματα</p>
-            <h2 className="font-serif mt-2 text-3xl font-extrabold tracking-tight text-[#2E4A37] sm:text-4xl">Επιχειρήσεις που άνοιξαν το e-shop τους.</h2>
+            <Eyebrow>Η βιτρίνα</Eyebrow>
+            <h2 className="font-serif mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">Επιχειρήσεις που άνοιξαν το e-shop τους.</h2>
           </div>
-          <p className="max-w-md text-sm leading-6 text-[#61756a]">Κάθε e-shop έχει το δικό του όνομα, ύφος και διεύθυνση. Πάτα σε ένα για να δεις πώς μοιάζει.</p>
+          <p className="max-w-md text-sm leading-6 text-[#61756a]">Κάθε κατάστημα έχει το δικό του όνομα, ύφος και χρώματα. Άνοιξε ένα και δες το όπως θα το έβλεπε ένας πελάτης.</p>
         </div>
 
         {published.length ? (
@@ -217,43 +260,85 @@ export default async function Home({
               <Link key={site.handle} href={`/${locale}/store/${site.handle}`} className="group rounded-3xl border border-[#e6dfd3] bg-white p-3 transition hover:-translate-y-1 hover:shadow-xl hover:shadow-[#23483a]/10">
                 <SitePreview site={site} address={siteAddress(site)} className="shadow-none" />
                 <div className="px-2 pb-2 pt-4">
-                  <h3 className="text-lg font-extrabold text-[#2E4A37]">{site.storeName}</h3>
+                  <div className="flex items-center justify-between gap-3">
+                    <h3 className="text-lg font-extrabold">{site.storeName}</h3>
+                    <span className="rounded-full bg-[#F7F2E8] px-2.5 py-1 text-[11px] font-bold text-[#5c7268]">{templateLabels[site.template]?.name}</span>
+                  </div>
                   <p className="mt-1 line-clamp-2 text-sm leading-6 text-[#61756a]">{site.description || site.tagline}</p>
-                  <span className="mt-3 inline-flex text-sm font-bold text-[#C0503C]">Δες το e-shop <span className="ml-1 transition group-hover:translate-x-1" aria-hidden="true">→</span></span>
+                  <span className="mt-3 inline-flex text-sm font-bold text-[#C0503C]">Άνοιξε το κατάστημα <span className="ml-1 transition group-hover:translate-x-1" aria-hidden="true">→</span></span>
                 </div>
               </Link>
             ))}
           </div>
         ) : (
           <div className="mt-8 rounded-3xl border border-dashed border-[#d8cfbf] bg-white/60 p-10 text-center">
-            <h3 className="text-xl font-extrabold text-[#2E4A37]">Το πρώτο e-shop μπορεί να είναι το δικό σου.</h3>
-            <p className="mt-2 text-sm text-[#61756a]">Ξεκίνα σήμερα και βγες στο ψηφιακό εμπόριο.</p>
+            <h3 className="text-xl font-extrabold">Το πρώτο κατάστημα μπορεί να είναι το δικό σου.</h3>
+            <p className="mt-2 text-sm text-[#61756a]">Ξεκίνα σήμερα και άνοιξε τη βιτρίνα σου στο ψηφιακό εμπόριο.</p>
           </div>
         )}
       </section>
 
-      <section id="how-it-works" className="border-y border-[#e8e1d6] bg-[#f1eee4]">
-        <div className="mx-auto max-w-[1600px] px-5 py-12 sm:px-8 lg:px-10 lg:py-16">
+      {/* What you get */}
+      <section id="included" className="border-y border-[#e8e1d6] bg-white/60">
+        <div className="mx-auto max-w-[1400px] scroll-mt-20 px-5 py-14 sm:px-8 lg:px-10 lg:py-20">
           <div className="max-w-2xl">
-            <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-[#C0503C]">Πώς λειτουργεί</p>
-            <h2 className="font-serif mt-2 text-3xl font-extrabold leading-tight tracking-tight text-[#2E4A37] sm:text-4xl">Από την ιδέα στο e-shop, σε τρία βήματα.</h2>
+            <Eyebrow>Τι παίρνεις</Eyebrow>
+            <h2 className="font-serif mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">Ένα ολοκληρωμένο e-shop. Δικό σου.</h2>
           </div>
-          <div className="mt-8 grid gap-4 md:grid-cols-3">
-            {steps.map((step) => (
-              <article key={step.number} className="rounded-2xl border border-[#e1d9cb] bg-[#F7F2E8] p-6 sm:p-7">
-                <span className="text-sm font-extrabold tracking-[0.16em] text-[#C0503C]">{step.number}</span>
-                <h3 className="mt-4 text-xl font-extrabold text-[#2E4A37]">{step.title}</h3>
-                <p className="mt-3 text-sm leading-6 text-[#61756a]">{step.text}</p>
-              </article>
+          <div className="mt-10 grid gap-x-10 gap-y-9 sm:grid-cols-2 lg:grid-cols-3">
+            {included.map((item) => (
+              <div key={item.title} className="flex gap-4">
+                <LineIcon name={item.icon} tone="blue" />
+                <div>
+                  <h3 className="font-extrabold">{item.title}</h3>
+                  <p className="mt-1.5 text-sm leading-6 text-[#61756a]">{item.text}</p>
+                </div>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
-      <section id="examples" className="mx-auto max-w-[1600px] px-5 py-12 sm:px-8 lg:px-10 lg:py-16">
+      {/* How it works */}
+      <section id="how-it-works" className="mx-auto max-w-[1400px] scroll-mt-20 px-5 py-14 sm:px-8 lg:px-10 lg:py-20">
         <div className="max-w-2xl">
-          <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-[#C0503C]">Δείγματα</p>
-          <h2 className="font-serif mt-2 text-3xl font-extrabold tracking-tight text-[#2E4A37] sm:text-4xl">Διάλεξε το ύφος που σου ταιριάζει.</h2>
+          <Eyebrow>Πώς ξεκινάς</Eyebrow>
+          <h2 className="font-serif mt-2 text-3xl font-extrabold leading-tight tracking-tight sm:text-4xl">Τρία βήματα. Και κάποιος δίπλα σου σε κάθε ένα.</h2>
+        </div>
+        <ol className="mt-10 grid gap-8 md:grid-cols-3 md:gap-6">
+          {steps.map((step) => (
+            <li key={step.number} className="relative border-t-2 border-[#2E4A37] pt-6">
+              <span className="font-serif text-4xl font-extrabold text-[#C0503C]">{step.number}</span>
+              <h3 className="mt-3 text-xl font-extrabold">{step.title}</h3>
+              <p className="mt-2 text-sm leading-6 text-[#61756a]">{step.text}</p>
+            </li>
+          ))}
+        </ol>
+      </section>
+
+      {/* Philosophy */}
+      <section id="philosophy" className="px-5 sm:px-8 lg:px-10">
+        <div className="relative mx-auto max-w-[1320px] overflow-hidden rounded-[2rem] bg-[#2E4A37] px-6 py-14 text-[#F7F2E8] sm:px-12 sm:py-20">
+          <div className="pointer-events-none absolute -right-16 -top-24 h-80 w-80 rounded-full border-[48px] border-white/[0.04]" />
+          <div className="relative grid gap-10 lg:grid-cols-[1fr_1fr] lg:items-center">
+            <div>
+              <Eyebrow light>Η φιλοσοφία μας</Eyebrow>
+              <blockquote className="font-serif mt-4 text-4xl font-extrabold leading-tight sm:text-5xl">«Το επιχειρείν<br />εστίν φιλοσοφείν.»</blockquote>
+            </div>
+            <div className="space-y-4 text-base leading-7 text-[#d6e3db] sm:text-lg">
+              <p>Το επιχειρείν δεν είναι μόνο η πώληση ενός προϊόντος. Είναι η σκέψη, η δημιουργία, η επιμονή και η αναζήτηση ενός καλύτερου τρόπου να προσφέρεις κάτι στον κόσμο.</p>
+              <p>Η ιστορία κάθε επιχείρησης έχει αξία. Η τεχνολογία πρέπει να την αναδεικνύει, όχι να μπαίνει εμπόδιο. Γι' αυτό φτιάξαμε το Vitrinaki.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Styles */}
+      <section id="examples" className="mx-auto max-w-[1400px] scroll-mt-20 px-5 py-14 sm:px-8 lg:px-10 lg:py-20">
+        <div className="max-w-2xl">
+          <Eyebrow>Ύφος</Eyebrow>
+          <h2 className="font-serif mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">Διάλεξε το ύφος που σου μοιάζει.</h2>
+          <p className="mt-3 leading-7 text-[#5c7268]">Ξεκινάς από ένα ύφος και το κάνεις δικό σου με το λογότυπο, τα χρώματα και τις φωτογραφίες σου.</p>
         </div>
         <div className="mt-8 grid gap-5 md:grid-cols-3">
           {(Object.keys(templateLabels) as DirectoryStorefront["template"][]).map((template) => {
@@ -263,11 +348,11 @@ export default async function Home({
               <article key={template} className="rounded-3xl border border-[#e6dfd3] bg-white p-3">
                 <SitePreview site={example} address={siteAddress(example)} className="shadow-none" />
                 <div className="px-2 pb-2 pt-4">
-                  <h3 className="text-lg font-extrabold text-[#2E4A37]">{label.name}</h3>
+                  <h3 className="text-lg font-extrabold">{label.name}</h3>
                   <p className="mt-1 text-sm leading-6 text-[#61756a]">{label.text}</p>
                   {example.handle ? (
                     <Link href={`/${locale}/store/${example.handle}`} className="mt-3 inline-flex text-sm font-bold text-[#C0503C]">
-                      Δες το δείγμα ζωντανά →
+                      Δες το ζωντανά: {example.storeName} →
                     </Link>
                   ) : null}
                 </div>
@@ -277,27 +362,37 @@ export default async function Home({
         </div>
       </section>
 
-      <section id="solutions" className="mx-auto max-w-[1600px] px-5 pb-12 sm:px-8 lg:px-10 lg:pb-16">
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {benefits.map((item) => (
-            <article key={item.title} className="rounded-2xl border border-[#eae3d8] bg-white/80 p-6">
-              <h3 className="text-base font-extrabold text-[#2E4A37]">{item.title}</h3>
-              <p className="mt-2 text-sm leading-6 text-[#63766c]">{item.text}</p>
-            </article>
-          ))}
+      {/* FAQ */}
+      <section id="faq" className="border-t border-[#e8e1d6] bg-white/60">
+        <div className="mx-auto grid max-w-[1400px] scroll-mt-20 gap-10 px-5 py-14 sm:px-8 lg:grid-cols-[0.8fr_1.2fr] lg:px-10 lg:py-20">
+          <div>
+            <Eyebrow>Ερωτήσεις</Eyebrow>
+            <h2 className="font-serif mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">Όσα ρωτούν συνήθως πριν ξεκινήσουν.</h2>
+          </div>
+          <div className="divide-y divide-[#e6dfd3] border-y border-[#e6dfd3]">
+            {faqs.map((item) => (
+              <details key={item.q} className="group py-5">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-extrabold">
+                  {item.q}
+                  <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full border border-[#d8cfbf] text-[#C0503C] transition group-open:rotate-45" aria-hidden="true">+</span>
+                </summary>
+                <p className="mt-3 max-w-2xl text-sm leading-6 text-[#61756a]">{item.a}</p>
+              </details>
+            ))}
+          </div>
         </div>
       </section>
 
-      <section className="px-5 pb-14 sm:px-8 lg:px-10 lg:pb-20">
-        <div className="relative mx-auto flex max-w-[1520px] flex-col gap-7 overflow-hidden rounded-[2rem] bg-[#2E4A37] px-6 py-9 text-white sm:px-10 sm:py-12 lg:flex-row lg:items-center lg:justify-between lg:px-14">
-          <div className="pointer-events-none absolute -right-10 -top-20 h-72 w-72 rounded-full border-[40px] border-white/5" />
-          <div className="relative z-10 max-w-2xl">
-            <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-[#f2a28f]">Το επόμενο βήμα</p>
-            <h2 className="font-serif mt-3 text-3xl font-extrabold leading-tight tracking-tight sm:text-4xl">Η βιτρίνα σου στο ψηφιακό εμπόριο σε περιμένει.</h2>
-            <p className="mt-3 max-w-xl text-sm leading-6 text-[#d6e3db] sm:text-base">Λίγες ερωτήσεις, ένα έτοιμο e-shop, και η επιχείρησή σου πουλάει online.</p>
+      {/* CTA */}
+      <section className="px-5 py-14 sm:px-8 lg:px-10 lg:py-20">
+        <div className="mx-auto flex max-w-[1320px] flex-col items-start gap-7 rounded-[2rem] border border-[#e3d8c6] bg-[#fbf8f2] px-6 py-10 sm:px-12 sm:py-14 lg:flex-row lg:items-center lg:justify-between">
+          <div className="max-w-2xl">
+            <Eyebrow>Το επόμενο βήμα</Eyebrow>
+            <h2 className="font-serif mt-3 text-3xl font-extrabold leading-tight tracking-tight sm:text-4xl">Ποτέ δεν είναι αργά για να ανοίξεις τη βιτρίνα σου.</h2>
+            <p className="mt-3 max-w-xl text-[#5c7268]">Πες μας για την επιχείρησή σου και κάνε το πρώτο βήμα στο ψηφιακό εμπόριο. Δεν θα το κάνεις μόνος σου.</p>
           </div>
-          <a href={businessUrl} className="relative z-10 inline-flex min-h-12 shrink-0 items-center justify-center rounded-full bg-[#C0503C] px-6 py-3 font-bold text-white transition hover:bg-[#a5412f]">
-            Ξεκίνα τώρα <span className="ml-2" aria-hidden="true">→</span>
+          <a href={businessUrl} className="inline-flex min-h-12 shrink-0 items-center justify-center rounded-full bg-[#C0503C] px-7 py-3 font-bold text-white shadow-lg shadow-[#C0503C]/20 transition hover:bg-[#a5412f]">
+            Ξεκίνα το e-shop σου <span className="ml-2" aria-hidden="true">→</span>
           </a>
         </div>
       </section>

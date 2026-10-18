@@ -2,17 +2,20 @@ import LocalizedClientLink from "@/components/molecules/LocalizedLink/LocalizedL
 
 const footerGroups = [
   {
-    title: "Η πλατφόρμα",
+    title: "Vitrinaki",
     links: [
-      { label: "Πώς λειτουργεί", href: "/#how-it-works" },
-      { label: "Δείγματα", href: "/#examples" },
-      { label: "Για επιχειρήσεις", href: "/#solutions" },
+      { label: "Για ποιον είναι", href: "/#for-whom" },
+      { label: "Τι παίρνεις", href: "/#included" },
+      { label: "Πώς ξεκινάς", href: "/#how-it-works" },
+      { label: "Η φιλοσοφία μας", href: "/#philosophy" },
     ],
   },
   {
     title: "Η βιτρίνα",
     links: [
-      { label: "Επιχειρήσεις", href: "/#vitrina" },
+      { label: "Καταστήματα", href: "/#vitrina" },
+      { label: "Ύφος", href: "/#examples" },
+      { label: "Ερωτήσεις", href: "/#faq" },
     ],
   },
 ]
@@ -26,7 +29,7 @@ export function Footer() {
             vitrinaki<span className="text-[#f2a28f]">.gr</span>
           </LocalizedClientLink>
           <p className="mt-4 max-w-sm text-sm leading-6 text-[#d3e0d8]">
-            Η ψηφιακή βάση για τις μικρές ελληνικές επιχειρήσεις. Δημιούργησε τη δική σου παρουσία online και μεγάλωσε με τον δικό σου ρυθμό.
+            Η βιτρίνα σου στο ψηφιακό εμπόριο. Γιατί όλοι αξίζουν μια θέση στη μεγάλη βιτρίνα, και ποτέ δεν είναι αργά για το επόμενο βήμα.
           </p>
         </div>
         {footerGroups.map((group) => (
@@ -45,7 +48,7 @@ export function Footer() {
       <div className="border-t border-white/15">
         <div className="mx-auto flex max-w-[1600px] flex-col gap-2 px-5 py-5 text-xs text-[#d3e0d8] sm:flex-row sm:items-center sm:justify-between sm:px-8 lg:px-10">
           <span>© {new Date().getFullYear()} Vitrinaki. Όλα τα δικαιώματα διατηρούνται.</span>
-          <span>Φτιαγμένο για τις μικρές επιχειρήσεις της Ελλάδας.</span>
+          <span>Το επιχειρείν εστίν φιλοσοφείν.</span>
         </div>
       </div>
     </footer>
