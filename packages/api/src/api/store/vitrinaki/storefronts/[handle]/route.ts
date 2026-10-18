@@ -28,13 +28,17 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
 
   const seller = data?.[0] as any
   const storefront = seller?.metadata?.vitrinaki_storefront as PublicStorefront | undefined
-  const subscription = seller?.metadata?.vitrinaki_subscription as { status?: string } | undefined
+  const subscription = seller?.metadata?.vitrinaki_subscription as { status?: string; source?: string; currentPeriodEnd?: string | null } | undefined
 
   if (!seller || !storefront?.isPublished) {
     return res.status(404).json({ message: "Το κατάστημα δεν είναι δημοσιευμένο." })
   }
 
-  if (!subscription || !["active", "trialing"].includes(String(subscription.status))) {
+  const promoExpired =
+    subscription?.source === "promo" &&
+    Boolean(subscription.currentPeriodEnd) &&
+    new Date(String(subscription.currentPeriodEnd)).getTime() < Date.now()
+  if (!subscription || !["active", "trialing"].includes(String(subscription.status)) || promoExpired) {
     return res.status(404).json({ message: "Το κατάστημα δεν είναι διαθέσιμο αυτή τη στιγμή." })
   }
 

@@ -59,6 +59,7 @@ export default function VitrinakiStorefrontSettingsPage() {
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState("")
   const [error, setError] = useState("")
+  const [promoCode, setPromoCode] = useState("")
 
   const callAPI = async (url: string, init?: RequestInit) => {
     const response = await fetch(`${backend()}${url}`, {
@@ -170,6 +171,18 @@ export default function VitrinakiStorefrontSettingsPage() {
     } finally { setSaving(false) }
   }
 
+  const redeemPromo = async () => {
+    setSaving(true); setError(""); setMessage("")
+    try {
+      await callAPI("/vendor/vitrinaki/billing/promo", { method: "POST", body: JSON.stringify({ code: promoCode }) })
+      setPromoCode("")
+      setMessage("Ο κωδικός ενεργοποιήθηκε. Η συνδρομή σου είναι ενεργή.")
+      await refresh()
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : "Δεν ήταν δυνατή η ενεργοποίηση του κωδικού.")
+    } finally { setSaving(false) }
+  }
+
   const openBillingPortal = async () => {
     setSaving(true); setError("")
     try {
@@ -263,6 +276,7 @@ export default function VitrinakiStorefrontSettingsPage() {
             <div className="rounded-xl bg-ui-bg-subtle p-4"><p className="text-xs uppercase tracking-wide text-ui-fg-subtle">Κατάσταση</p><p className="mt-1 font-semibold">{subscription?.status || "Δεν έχει ενεργοποιηθεί"}</p>{subscription?.planId ? <p className="mt-1 text-sm text-ui-fg-subtle">Πλάνο: {subscription.planId} · {subscription.interval || "—"}</p> : null}</div>
             {!billingConfigured ? <p className="text-sm leading-6 text-ui-fg-subtle">Χρειάζεται να ρυθμιστούν τα στοιχεία Stripe στο backend πριν ενεργοποιηθούν πραγματικές πληρωμές.</p> : null}
             <div className="space-y-2">{[{id:"starter",label:"Starter"},{id:"growth",label:"Growth"},{id:"pro",label:"Pro"}].map(plan => <div key={plan.id} className="rounded-xl border border-ui-border-base p-3"><div className="font-semibold">{plan.label}</div><div className="mt-2 grid grid-cols-2 gap-2"><button type="button" disabled={saving || !billingConfigured || !(availablePlans[plan.id] || []).includes("month")} onClick={() => void startBilling(plan.id,"month")} className="rounded-lg border border-ui-border-base px-2 py-2 text-xs font-semibold disabled:opacity-50">Μηνιαία</button><button type="button" disabled={saving || !billingConfigured || !(availablePlans[plan.id] || []).includes("year")} onClick={() => void startBilling(plan.id,"year")} className="rounded-lg border border-ui-border-base px-2 py-2 text-xs font-semibold disabled:opacity-50">Ετήσια</button></div></div>)}</div>
+            <div className="flex gap-2"><input value={promoCode} onChange={e => setPromoCode(e.target.value)} placeholder="Κωδικός προσφοράς" className="min-w-0 flex-1 rounded-lg border border-ui-border-base bg-ui-bg-field px-3 py-2.5 text-sm" /><button type="button" disabled={saving || !promoCode.trim()} onClick={() => void redeemPromo()} className="rounded-lg border border-ui-border-base px-3 py-2.5 text-sm font-semibold disabled:opacity-50">Ενεργοποίηση</button></div>
             {subscription ? <button type="button" disabled={saving || !billingConfigured} onClick={() => void openBillingPortal()} className="w-full rounded-lg border border-ui-border-base px-3 py-2.5 text-sm font-semibold disabled:opacity-50">Διαχείριση συνδρομής</button> : null}
           </section>
 
