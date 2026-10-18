@@ -24,6 +24,7 @@ const audiences = [
   { icon: "🫒", title: "Παραγωγοί τροφίμων", text: "Λάδι, μέλι, κρασί, τυριά: πούλα τα προϊόντα σου απευθείας σε πελάτες σε όλη την Ελλάδα." },
   { icon: "🧵", title: "Χειροποίητα & δημιουργοί", text: "Κοσμήματα, κεραμικά, ρούχα: δείξε τη δουλειά σου με τον τρόπο που της αξίζει." },
   { icon: "🏪", title: "Φυσικά καταστήματα", text: "Το μαγαζί σου ανοιχτό και online, 24 ώρες το 24ωρο, για τους πελάτες της γειτονιάς και όχι μόνο." },
+  { icon: "💻", title: "Freelancers & υπηρεσίες", text: "Graphic designer, online δάσκαλος, φωτογράφος, σύμβουλος: προβάλλεις τη δουλειά σου και δέχεσαι κρατήσεις ή παραγγελίες." },
   { icon: "🌱", title: "Νέες επιχειρήσεις", text: "Ξεκίνα μικρά, με χαμηλό κόστος, και μεγάλωσε το e-shop σου μαζί με την επιχείρηση." },
 ]
 
@@ -159,7 +160,7 @@ export default async function Home({
               Η βιτρίνα σου <span className="text-[#C0503C]">στο ψηφιακό εμπόριο.</span>
             </h1>
             <p className="mt-6 max-w-xl text-base leading-7 text-[#456257] sm:text-lg">
-              Φτιάξε το δικό σου ηλεκτρονικό κατάστημα απαντώντας σε λίγες απλές ερωτήσεις. Είτε παράγεις τρόφιμα, είτε φτιάχνεις χειροποίητα, είτε έχεις ήδη φυσικό κατάστημα, το Vitrinaki είναι το επόμενο βήμα της επιχείρησής σου.
+              Φτιάξε το δικό σου ηλεκτρονικό κατάστημα απαντώντας σε λίγες απλές ερωτήσεις. Είτε παράγεις τρόφιμα, φτιάχνεις χειροποίητα, έχεις φυσικό κατάστημα ή προσφέρεις υπηρεσίες ως freelancer, το Vitrinaki είναι το επόμενο βήμα της επιχείρησής σου.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <a href={businessUrl} className="inline-flex min-h-12 items-center justify-center rounded-full bg-[#C0503C] px-6 py-3 font-bold text-white shadow-lg shadow-[#C0503C]/20 transition hover:-translate-y-0.5 hover:bg-[#a5412f]">
@@ -189,9 +190,9 @@ export default async function Home({
       <section id="for-whom" className="mx-auto max-w-[1600px] px-5 pt-12 sm:px-8 lg:px-10 lg:pt-16">
         <div className="max-w-2xl">
           <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-[#C0503C]">Για ποιον είναι</p>
-          <h2 className="font-serif mt-2 text-3xl font-extrabold tracking-tight text-[#2E4A37] sm:text-4xl">Για κάθε επαγγελματία που θέλει να πουλάει online.</h2>
+          <h2 className="font-serif mt-2 text-3xl font-extrabold tracking-tight text-[#2E4A37] sm:text-4xl">Για κάθε επαγγελματία που θέλει να βγει online.</h2>
         </div>
-        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
           {audiences.map((item) => (
             <article key={item.title} className="rounded-2xl border border-[#eae3d8] bg-white/80 p-6">
               <span className="text-2xl" aria-hidden="true">{item.icon}</span>
