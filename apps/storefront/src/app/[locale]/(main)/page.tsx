@@ -5,6 +5,7 @@ import Script from "next/script"
 import { SitePreview } from "@/components/sections/SitePreview/SitePreview"
 import { listPublishedStorefronts, templateLabels, type DirectoryStorefront } from "@/lib/data/vitrinaki-storefronts"
 import { listRegions } from "@/lib/data/regions"
+import { getTranslator } from "@/lib/i18n/server"
 import {
   buildHreflangAlternates,
   getStorefrontLocales,
@@ -108,9 +109,10 @@ export async function generateMetadata({
     locales,
   })
 
-  const title = "Η βιτρίνα σου στο ψηφιακό εμπόριο"
-  const description =
-    "Ένα ολοκληρωμένο e-shop με το όνομα, το λογότυπο και τα χρώματα της επιχείρησής σου. Για παραγωγούς, δημιουργούς, καταστήματα και freelancers."
+  const { tr } = await getTranslator()
+  const title = tr("Η βιτρίνα σου στο ψηφιακό εμπόριο")
+  const description = tr(
+    "Ένα ολοκληρωμένο e-shop με το όνομα, το λογότυπο και τα χρώματα της επιχείρησής σου. Για παραγωγούς, δημιουργούς, καταστήματα και freelancers.")
   const ogImage = "/B2C_Storefront_Open_Graph.png"
 
   return {
@@ -134,7 +136,7 @@ export async function generateMetadata({
       url: canonical,
       siteName: "Vitrinaki",
       type: "website",
-      images: [{ url: ogImage.startsWith("http") ? ogImage : `${baseUrl}${ogImage}`, width: 1200, height: 630, alt: "Vitrinaki — ψηφιακές λύσεις για μικρές επιχειρήσεις" }],
+      images: [{ url: ogImage.startsWith("http") ? ogImage : `${baseUrl}${ogImage}`, width: 1200, height: 630, alt: tr("Vitrinaki — ψηφιακές λύσεις για μικρές επιχειρήσεις") }],
     },
     twitter: {
       card: "summary_large_image",
@@ -166,6 +168,7 @@ export default async function Home({
   params: Promise<{ locale: string }>
 }) {
   const { locale } = await params
+  const { lang, tr } = await getTranslator()
   const headersList = await headers()
   const host = headersList.get("host")
   const protocol = headersList.get("x-forwarded-proto") || "https"
@@ -211,24 +214,24 @@ export default async function Home({
           <div className="relative z-10">
             <p className="inline-flex items-center gap-2 rounded-full border border-[#e3d8c6] bg-white/70 px-3 py-1 text-xs font-bold">
               <span className="h-1.5 w-1.5 rounded-full bg-[#C0503C]" />
-              ΤΟ <span className="text-[#265E8E]">vitrinaki</span> σου, στο ψηφιακό εμπόριο
+              {tr("ΤΟ")} <span className="text-[#265E8E]">vitrinaki</span> {tr("σου, στο ψηφιακό εμπόριο")}
             </p>
             <h1 className="font-serif mt-6 text-[2.6rem] font-extrabold leading-[1.02] tracking-tight sm:text-6xl lg:text-[4.6rem]">
-              Σταμάτα να νοικιάζεις ράφι σε ξένο μαγαζί.
-              <span className="mt-2 block text-[#C0503C]">Άνοιξε τη δική σου βιτρίνα.</span>
+              {tr("Σταμάτα να νοικιάζεις ράφι σε ξένο μαγαζί.")}
+              <span className="mt-2 block text-[#C0503C]">{tr("Άνοιξε τη δική σου βιτρίνα.")}</span>
             </h1>
             <p className="mt-7 max-w-xl text-base leading-7 text-[#456257] sm:text-lg">
-              Στα marketplaces είσαι ένα ακόμη προϊόν δίπλα στον ανταγωνιστή σου, με τους δικούς τους κανόνες. Στο Vitrinaki αποκτάς ολοκληρωμένο e-shop με το όνομα, το λογότυπο και τα χρώματά σου, στη δική σου διεύθυνση. Οι πελάτες σου μένουν δικοί σου.
+              {tr("Στα marketplaces είσαι ένα ακόμη προϊόν δίπλα στον ανταγωνιστή σου, με τους δικούς τους κανόνες. Στο Vitrinaki αποκτάς ολοκληρωμένο e-shop με το όνομα, το λογότυπο και τα χρώματά σου, στη δική σου διεύθυνση. Οι πελάτες σου μένουν δικοί σου.")}
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <a href={businessUrl} className="inline-flex min-h-12 items-center justify-center rounded-full bg-[#C0503C] px-6 py-3 font-bold text-white shadow-lg shadow-[#C0503C]/20 transition hover:-translate-y-0.5 hover:bg-[#a5412f]">
-                Άνοιξε τη βιτρίνα σου <span className="ml-2" aria-hidden="true">→</span>
+                {tr("Άνοιξε τη βιτρίνα σου")} <span className="ml-2" aria-hidden="true">→</span>
               </a>
               <a href="#vitrina" className="inline-flex min-h-12 items-center justify-center rounded-full border border-[#aabdb1] bg-white/80 px-6 py-3 font-bold transition hover:bg-white">
-                Δες καταστήματα
+                {tr("Δες καταστήματα")}
               </a>
             </div>
-            <p className="mt-6 text-sm text-[#5c7268]">Χωρίς τεχνικές γνώσεις. Και χωρίς να το κάνεις μόνος σου.</p>
+            <p className="mt-6 text-sm text-[#5c7268]">{tr("Χωρίς τεχνικές γνώσεις. Και χωρίς να το κάνεις μόνος σου.")}</p>
           </div>
 
           {/* A shop window: the awning from the logo over live shops. */}
@@ -241,9 +244,9 @@ export default async function Home({
             </svg>
             <div className="-mt-6 rounded-b-[2rem] border-x-[10px] border-b-[10px] border-[#2E4A37] bg-[#efe8da] px-4 pb-6 pt-10 sm:px-6">
               <div className="relative min-h-[380px] sm:min-h-[420px]">
-                <SitePreview site={heroSites[0]} address={siteAddress(heroSites[0])} className="absolute left-0 top-0 w-[66%] -rotate-2" />
-                <SitePreview site={heroSites[1]} address={siteAddress(heroSites[1])} className="absolute right-0 top-12 w-[58%] rotate-2" />
-                <SitePreview site={heroSites[2]} address={siteAddress(heroSites[2])} className="absolute bottom-0 left-[16%] w-[60%]" />
+                <SitePreview lang={lang} site={heroSites[0]} address={siteAddress(heroSites[0])} className="absolute left-0 top-0 w-[66%] -rotate-2" />
+                <SitePreview lang={lang} site={heroSites[1]} address={siteAddress(heroSites[1])} className="absolute right-0 top-12 w-[58%] rotate-2" />
+                <SitePreview lang={lang} site={heroSites[2]} address={siteAddress(heroSites[2])} className="absolute bottom-0 left-[16%] w-[60%]" />
               </div>
             </div>
           </div>
@@ -254,23 +257,23 @@ export default async function Home({
       <section className="bg-[#2E4A37] text-[#F7F2E8]">
         <div className="mx-auto max-w-[1400px] px-5 py-14 sm:px-8 lg:px-10 lg:py-20">
           <div className="max-w-3xl">
-            <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-[#f2a28f]">Η διαφορά</p>
-            <h2 className="font-serif mt-3 text-3xl font-extrabold leading-tight sm:text-5xl">Στο marketplace είσαι ένα αποτέλεσμα. Στη βιτρίνα σου είσαι ο προορισμός.</h2>
+            <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-[#f2a28f]">{tr("Η διαφορά")}</p>
+            <h2 className="font-serif mt-3 text-3xl font-extrabold leading-tight sm:text-5xl">{tr("Στο marketplace είσαι ένα αποτέλεσμα. Στη βιτρίνα σου είσαι ο προορισμός.")}</h2>
           </div>
           <div className="mt-10 grid overflow-hidden rounded-3xl border border-white/10 md:grid-cols-2">
             <div className="bg-white/[0.03] p-6 sm:p-8">
-              <p className="text-sm font-extrabold uppercase tracking-[0.14em] text-[#9fb5a8]">Σε ξένη πλατφόρμα</p>
+              <p className="text-sm font-extrabold uppercase tracking-[0.14em] text-[#9fb5a8]">{tr("Σε ξένη πλατφόρμα")}</p>
               <ul className="mt-5 space-y-4 text-[#c9d6ce]">
                 {marketplaceSide.map((line) => (
-                  <li key={line} className="flex gap-3"><span className="mt-1 text-[#9fb5a8]">✕</span>{line}</li>
+                  <li key={line} className="flex gap-3"><span className="mt-1 text-[#9fb5a8]">✕</span>{tr(line)}</li>
                 ))}
               </ul>
             </div>
             <div className="bg-[#F7F2E8] p-6 text-[#2E4A37] sm:p-8">
-              <p className="text-sm font-extrabold uppercase tracking-[0.14em] text-[#C0503C]">Στο δικό σου vitrinaki</p>
+              <p className="text-sm font-extrabold uppercase tracking-[0.14em] text-[#C0503C]">{tr("Στο δικό σου vitrinaki")}</p>
               <ul className="mt-5 space-y-4 font-semibold">
                 {vitrinakiSide.map((line) => (
-                  <li key={line} className="flex gap-3"><span className="mt-1 text-[#C0503C]">✓</span>{line}</li>
+                  <li key={line} className="flex gap-3"><span className="mt-1 text-[#C0503C]">✓</span>{tr(line)}</li>
                 ))}
               </ul>
             </div>
@@ -280,16 +283,16 @@ export default async function Home({
       {/* Who it is for */}
       <section id="for-whom" className="mx-auto max-w-[1400px] scroll-mt-20 px-5 pt-14 sm:px-8 lg:px-10 lg:pt-20">
         <div className="max-w-2xl">
-          <Eyebrow>Για ποιον είναι</Eyebrow>
-          <h2 className="font-serif mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">Όλοι αξίζουν μια θέση στη μεγάλη βιτρίνα.</h2>
-          <p className="mt-3 leading-7 text-[#5c7268]">Δεν χρειάζεται να ξέρεις από design, προγραμματισμό ή διαφημίσεις για να μεγαλώσεις την επιχείρησή σου. Και ποτέ δεν είναι αργά για το επόμενο βήμα.</p>
+          <Eyebrow>{tr("Για ποιον είναι")}</Eyebrow>
+          <h2 className="font-serif mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">{tr("Όλοι αξίζουν μια θέση στη μεγάλη βιτρίνα.")}</h2>
+          <p className="mt-3 leading-7 text-[#5c7268]">{tr("Δεν χρειάζεται να ξέρεις από design, προγραμματισμό ή διαφημίσεις για να μεγαλώσεις την επιχείρησή σου. Και ποτέ δεν είναι αργά για το επόμενο βήμα.")}</p>
         </div>
         <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
           {audiences.map((item) => (
             <article key={item.title} className="rounded-2xl border border-[#eae3d8] bg-white/80 p-6">
               <LineIcon name={item.icon} />
-              <h3 className="mt-4 text-base font-extrabold">{item.title}</h3>
-              <p className="mt-2 text-sm leading-6 text-[#63766c]">{item.text}</p>
+              <h3 className="mt-4 text-base font-extrabold">{tr(item.title)}</h3>
+              <p className="mt-2 text-sm leading-6 text-[#63766c]">{tr(item.text)}</p>
             </article>
           ))}
         </div>
@@ -299,32 +302,32 @@ export default async function Home({
       <section id="vitrina" className="mx-auto max-w-[1400px] scroll-mt-20 px-5 py-14 sm:px-8 lg:px-10 lg:py-20">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <Eyebrow>Η βιτρίνα</Eyebrow>
-            <h2 className="font-serif mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">Επιχειρήσεις που άνοιξαν το e-shop τους.</h2>
+            <Eyebrow>{tr("Η βιτρίνα")}</Eyebrow>
+            <h2 className="font-serif mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">{tr("Επιχειρήσεις που άνοιξαν το e-shop τους.")}</h2>
           </div>
-          <p className="max-w-md text-sm leading-6 text-[#61756a]">Κάθε κατάστημα έχει το δικό του όνομα, ύφος και χρώματα. Άνοιξε ένα και δες το όπως θα το έβλεπε ένας πελάτης.</p>
+          <p className="max-w-md text-sm leading-6 text-[#61756a]">{tr("Κάθε κατάστημα έχει το δικό του όνομα, ύφος και χρώματα. Άνοιξε ένα και δες το όπως θα το έβλεπε ένας πελάτης.")}</p>
         </div>
 
         {published.length ? (
           <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {published.map((site) => (
               <Link key={site.handle} href={`/${locale}/store/${site.handle}`} className="group rounded-3xl border border-[#e6dfd3] bg-white p-3 transition hover:-translate-y-1 hover:shadow-xl hover:shadow-[#23483a]/10">
-                <SitePreview site={site} address={siteAddress(site)} className="shadow-none" />
+                <SitePreview lang={lang} site={site} address={siteAddress(site)} className="shadow-none" />
                 <div className="px-2 pb-2 pt-4">
                   <div className="flex items-center justify-between gap-3">
                     <h3 className="text-lg font-extrabold">{site.storeName}</h3>
-                    <span className="rounded-full bg-[#F7F2E8] px-2.5 py-1 text-[11px] font-bold text-[#5c7268]">{templateLabels[site.template]?.name}</span>
+                    <span className="rounded-full bg-[#F7F2E8] px-2.5 py-1 text-[11px] font-bold text-[#5c7268]">{tr(templateLabels[site.template]?.name || "")}</span>
                   </div>
                   <p className="mt-1 line-clamp-2 text-sm leading-6 text-[#61756a]">{site.description || site.tagline}</p>
-                  <span className="mt-3 inline-flex text-sm font-bold text-[#C0503C]">Άνοιξε το κατάστημα <span className="ml-1 transition group-hover:translate-x-1" aria-hidden="true">→</span></span>
+                  <span className="mt-3 inline-flex text-sm font-bold text-[#C0503C]">{tr("Άνοιξε το κατάστημα")} <span className="ml-1 transition group-hover:translate-x-1" aria-hidden="true">→</span></span>
                 </div>
               </Link>
             ))}
           </div>
         ) : (
           <div className="mt-8 rounded-3xl border border-dashed border-[#d8cfbf] bg-white/60 p-10 text-center">
-            <h3 className="text-xl font-extrabold">Το πρώτο κατάστημα μπορεί να είναι το δικό σου.</h3>
-            <p className="mt-2 text-sm text-[#61756a]">Ξεκίνα σήμερα και άνοιξε τη βιτρίνα σου στο ψηφιακό εμπόριο.</p>
+            <h3 className="text-xl font-extrabold">{tr("Το πρώτο κατάστημα μπορεί να είναι το δικό σου.")}</h3>
+            <p className="mt-2 text-sm text-[#61756a]">{tr("Ξεκίνα σήμερα και άνοιξε τη βιτρίνα σου στο ψηφιακό εμπόριο.")}</p>
           </div>
         )}
       </section>
@@ -333,16 +336,16 @@ export default async function Home({
       <section id="included" className="border-y border-[#e8e1d6] bg-white/60">
         <div className="mx-auto max-w-[1400px] scroll-mt-20 px-5 py-14 sm:px-8 lg:px-10 lg:py-20">
           <div className="max-w-2xl">
-            <Eyebrow>Τι παίρνεις</Eyebrow>
-            <h2 className="font-serif mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">Ένα ολοκληρωμένο e-shop. Δικό σου.</h2>
+            <Eyebrow>{tr("Τι παίρνεις")}</Eyebrow>
+            <h2 className="font-serif mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">{tr("Ένα ολοκληρωμένο e-shop. Δικό σου.")}</h2>
           </div>
           <div className="mt-10 grid gap-x-10 gap-y-9 sm:grid-cols-2 lg:grid-cols-3">
             {included.map((item) => (
               <div key={item.title} className="flex gap-4">
                 <LineIcon name={item.icon} tone="blue" />
                 <div>
-                  <h3 className="font-extrabold">{item.title}</h3>
-                  <p className="mt-1.5 text-sm leading-6 text-[#61756a]">{item.text}</p>
+                  <h3 className="font-extrabold">{tr(item.title)}</h3>
+                  <p className="mt-1.5 text-sm leading-6 text-[#61756a]">{tr(item.text)}</p>
                 </div>
               </div>
             ))}
@@ -353,15 +356,15 @@ export default async function Home({
       {/* How it works */}
       <section id="how-it-works" className="mx-auto max-w-[1400px] scroll-mt-20 px-5 py-14 sm:px-8 lg:px-10 lg:py-20">
         <div className="max-w-2xl">
-          <Eyebrow>Πώς ξεκινάς</Eyebrow>
-          <h2 className="font-serif mt-2 text-3xl font-extrabold leading-tight tracking-tight sm:text-4xl">Τρία βήματα. Και κάποιος δίπλα σου σε κάθε ένα.</h2>
+          <Eyebrow>{tr("Πώς ξεκινάς")}</Eyebrow>
+          <h2 className="font-serif mt-2 text-3xl font-extrabold leading-tight tracking-tight sm:text-4xl">{tr("Τρία βήματα. Και κάποιος δίπλα σου σε κάθε ένα.")}</h2>
         </div>
         <ol className="mt-10 grid gap-8 md:grid-cols-3 md:gap-6">
           {steps.map((step) => (
             <li key={step.number} className="relative border-t-2 border-[#2E4A37] pt-6">
               <span className="font-serif text-4xl font-extrabold text-[#C0503C]">{step.number}</span>
-              <h3 className="mt-3 text-xl font-extrabold">{step.title}</h3>
-              <p className="mt-2 text-sm leading-6 text-[#61756a]">{step.text}</p>
+              <h3 className="mt-3 text-xl font-extrabold">{tr(step.title)}</h3>
+              <p className="mt-2 text-sm leading-6 text-[#61756a]">{tr(step.text)}</p>
             </li>
           ))}
         </ol>
@@ -373,12 +376,12 @@ export default async function Home({
           <div className="pointer-events-none absolute -right-16 -top-24 h-80 w-80 rounded-full border-[48px] border-white/[0.04]" />
           <div className="relative grid gap-10 lg:grid-cols-[1fr_1fr] lg:items-center">
             <div>
-              <Eyebrow light>Η φιλοσοφία μας</Eyebrow>
-              <blockquote className="font-serif mt-4 text-4xl font-extrabold leading-tight sm:text-5xl">«Το επιχειρείν<br />εστίν φιλοσοφείν.»</blockquote>
+              <Eyebrow light>{tr("Η φιλοσοφία μας")}</Eyebrow>
+              <blockquote className="font-serif mt-4 text-4xl font-extrabold leading-tight sm:text-5xl">{tr("«Το επιχειρείν")}<br />{tr("εστίν φιλοσοφείν.»")}</blockquote>
             </div>
             <div className="space-y-4 text-base leading-7 text-[#d6e3db] sm:text-lg">
-              <p>Το επιχειρείν δεν είναι μόνο η πώληση ενός προϊόντος. Είναι η σκέψη, η δημιουργία, η επιμονή και η αναζήτηση ενός καλύτερου τρόπου να προσφέρεις κάτι στον κόσμο.</p>
-              <p>Η ιστορία κάθε επιχείρησης έχει αξία. Η τεχνολογία πρέπει να την αναδεικνύει, όχι να μπαίνει εμπόδιο. Γι' αυτό φτιάξαμε το Vitrinaki.</p>
+              <p>{tr("Το επιχειρείν δεν είναι μόνο η πώληση ενός προϊόντος. Είναι η σκέψη, η δημιουργία, η επιμονή και η αναζήτηση ενός καλύτερου τρόπου να προσφέρεις κάτι στον κόσμο.")}</p>
+              <p>{tr("Η ιστορία κάθε επιχείρησης έχει αξία. Η τεχνολογία πρέπει να την αναδεικνύει, όχι να μπαίνει εμπόδιο. Γι' αυτό φτιάξαμε το Vitrinaki.")}</p>
             </div>
           </div>
         </div>
@@ -387,9 +390,9 @@ export default async function Home({
       {/* Styles */}
       <section id="examples" className="mx-auto max-w-[1400px] scroll-mt-20 px-5 py-14 sm:px-8 lg:px-10 lg:py-20">
         <div className="max-w-2xl">
-          <Eyebrow>Ύφος</Eyebrow>
-          <h2 className="font-serif mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">Διάλεξε το ύφος που σου μοιάζει.</h2>
-          <p className="mt-3 leading-7 text-[#5c7268]">Ξεκινάς από ένα ύφος και το κάνεις δικό σου με το λογότυπο, τα χρώματα και τις φωτογραφίες σου.</p>
+          <Eyebrow>{tr("Ύφος")}</Eyebrow>
+          <h2 className="font-serif mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">{tr("Διάλεξε το ύφος που σου μοιάζει.")}</h2>
+          <p className="mt-3 leading-7 text-[#5c7268]">{tr("Ξεκινάς από ένα ύφος και το κάνεις δικό σου με το λογότυπο, τα χρώματα και τις φωτογραφίες σου.")}</p>
         </div>
         <div className="mt-8 grid gap-5 md:grid-cols-3">
           {(Object.keys(templateLabels) as DirectoryStorefront["template"][]).map((template) => {
@@ -397,13 +400,13 @@ export default async function Home({
             const label = templateLabels[template]
             return (
               <article key={template} className="rounded-3xl border border-[#e6dfd3] bg-white p-3">
-                <SitePreview site={example} address={siteAddress(example)} className="shadow-none" />
+                <SitePreview lang={lang} site={example} address={siteAddress(example)} className="shadow-none" />
                 <div className="px-2 pb-2 pt-4">
-                  <h3 className="text-lg font-extrabold">{label.name}</h3>
-                  <p className="mt-1 text-sm leading-6 text-[#61756a]">{label.text}</p>
+                  <h3 className="text-lg font-extrabold">{tr(label.name)}</h3>
+                  <p className="mt-1 text-sm leading-6 text-[#61756a]">{tr(label.text)}</p>
                   {example.handle ? (
                     <Link href={`/${locale}/store/${example.handle}`} className="mt-3 inline-flex text-sm font-bold text-[#C0503C]">
-                      Δες το ζωντανά: {example.storeName} →
+                      {tr("Δες το ζωντανά:")} {example.storeName} →
                     </Link>
                   ) : null}
                 </div>
@@ -417,17 +420,17 @@ export default async function Home({
       <section id="faq" className="border-t border-[#e8e1d6] bg-white/60">
         <div className="mx-auto grid max-w-[1400px] scroll-mt-20 gap-10 px-5 py-14 sm:px-8 lg:grid-cols-[0.8fr_1.2fr] lg:px-10 lg:py-20">
           <div>
-            <Eyebrow>Ερωτήσεις</Eyebrow>
-            <h2 className="font-serif mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">Όσα ρωτούν συνήθως πριν ξεκινήσουν.</h2>
+            <Eyebrow>{tr("Ερωτήσεις")}</Eyebrow>
+            <h2 className="font-serif mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">{tr("Όσα ρωτούν συνήθως πριν ξεκινήσουν.")}</h2>
           </div>
           <div className="divide-y divide-[#e6dfd3] border-y border-[#e6dfd3]">
             {faqs.map((item) => (
-              <details key={item.q} className="group py-5">
+              <details key={tr(item.q)} className="group py-5">
                 <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-extrabold">
-                  {item.q}
+                  {tr(item.q)}
                   <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full border border-[#d8cfbf] text-[#C0503C] transition group-open:rotate-45" aria-hidden="true">+</span>
                 </summary>
-                <p className="mt-3 max-w-2xl text-sm leading-6 text-[#61756a]">{item.a}</p>
+                <p className="mt-3 max-w-2xl text-sm leading-6 text-[#61756a]">{tr(item.a)}</p>
               </details>
             ))}
           </div>
@@ -438,12 +441,12 @@ export default async function Home({
       <section className="px-5 py-14 sm:px-8 lg:px-10 lg:py-20">
         <div className="mx-auto flex max-w-[1320px] flex-col items-start gap-7 rounded-[2rem] border border-[#e3d8c6] bg-[#fbf8f2] px-6 py-10 sm:px-12 sm:py-14 lg:flex-row lg:items-center lg:justify-between">
           <div className="max-w-2xl">
-            <Eyebrow>Το επόμενο βήμα</Eyebrow>
-            <h2 className="font-serif mt-3 text-3xl font-extrabold leading-tight tracking-tight sm:text-4xl">Ποτέ δεν είναι αργά για να ανοίξεις τη βιτρίνα σου.</h2>
-            <p className="mt-3 max-w-xl text-[#5c7268]">Πες μας για την επιχείρησή σου και κάνε το πρώτο βήμα στο ψηφιακό εμπόριο. Δεν θα το κάνεις μόνος σου.</p>
+            <Eyebrow>{tr("Το επόμενο βήμα")}</Eyebrow>
+            <h2 className="font-serif mt-3 text-3xl font-extrabold leading-tight tracking-tight sm:text-4xl">{tr("Ποτέ δεν είναι αργά για να ανοίξεις τη βιτρίνα σου.")}</h2>
+            <p className="mt-3 max-w-xl text-[#5c7268]">{tr("Πες μας για την επιχείρησή σου και κάνε το πρώτο βήμα στο ψηφιακό εμπόριο. Δεν θα το κάνεις μόνος σου.")}</p>
           </div>
           <a href={businessUrl} className="inline-flex min-h-12 shrink-0 items-center justify-center rounded-full bg-[#C0503C] px-7 py-3 font-bold text-white shadow-lg shadow-[#C0503C]/20 transition hover:bg-[#a5412f]">
-            Άνοιξε τη βιτρίνα σου <span className="ml-2" aria-hidden="true">→</span>
+            {tr("Άνοιξε τη βιτρίνα σου")} <span className="ml-2" aria-hidden="true">→</span>
           </a>
         </div>
       </section>

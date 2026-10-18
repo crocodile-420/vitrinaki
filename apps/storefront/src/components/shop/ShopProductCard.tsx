@@ -6,6 +6,8 @@ import { useCartContext } from "@/components/providers"
 import { toast } from "@/lib/helpers/toast"
 import { getOfferAmount, getOfferStock, type StoreOffer } from "@/lib/helpers/buybox"
 import { convertToLocale } from "@/lib/helpers/money"
+import { translator, type Lang } from "@/lib/i18n/vitrinaki"
+
 import { ShopImage } from "./ShopImage"
 
 export type ShopColors = { page: string; ink: string; accent: string; soft: string }
@@ -18,22 +20,25 @@ export function ShopProductCard({
   colors,
   locale,
   large = false,
+  lang = "el",
 }: {
   offer: StoreOffer
   href: string
   colors: ShopColors
   locale: string
   large?: boolean
+  lang?: Lang
 }) {
+  const tr = translator(lang)
   const { addToCart, onAddToCart, cart, isAddingItem } = useCartContext()
   const product = offer.product
-  const title = String(product?.title || "Προϊόν")
+  const title = String(product?.title || tr("Προϊόν"))
   const amount = getOfferAmount(offer)
   const currency = offer.calculated_price?.currency_code || cart?.currency_code || "eur"
   const stock = getOfferStock(offer)
   const inCart = cart?.items?.find((item) => item.metadata?.offer_id === offer.id)?.quantity ?? 0
   const disabled = amount === null || !stock || inCart >= stock
-  const price = amount !== null ? convertToLocale({ amount, currency_code: currency, locale: "el-GR" }) : null
+  const price = amount !== null ? convertToLocale({ amount, currency_code: currency, locale: lang === "en" ? "en-GB" : "el-GR" }) : null
 
   const add = async () => {
     if (disabled) return
@@ -55,9 +60,9 @@ export function ShopProductCard({
     )
     try {
       await addToCart({ offerId: offer.id, quantity: 1, countryCode: locale })
-      toast.success({ title: "Προστέθηκε στο καλάθι" })
+      toast.success({ title: tr("Προστέθηκε στο καλάθι") })
     } catch {
-      toast.error({ title: "Δεν προστέθηκε", description: "Το προϊόν δεν είναι διαθέσιμο αυτή τη στιγμή." })
+      toast.error({ title: tr("Δεν προστέθηκε"), description: tr("Το προϊόν δεν είναι διαθέσιμο αυτή τη στιγμή.") })
     }
   }
 
@@ -75,7 +80,7 @@ export function ShopProductCard({
       <div className="mt-3 flex items-start justify-between gap-3">
         <Link href={href} className="min-w-0">
           <h3 className="truncate text-[15px] font-semibold">{title}</h3>
-          <p className="mt-0.5 text-sm opacity-70">{price ?? "Ρώτησε για τιμή"}</p>
+          <p className="mt-0.5 text-sm opacity-70">{price ?? tr("Ρώτησε για τιμή")}</p>
         </Link>
         <button
           type="button"
@@ -84,7 +89,7 @@ export function ShopProductCard({
           style={{ background: disabled ? "transparent" : colors.accent, color: disabled ? colors.ink : "#fff", borderColor: colors.accent }}
           className="shrink-0 rounded-full border px-3.5 py-1.5 text-xs font-bold transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
         >
-          {amount === null ? "Μη διαθέσιμο" : stock ? "Στο καλάθι" : "Εξαντλήθηκε"}
+          {tr(amount === null ? "Μη διαθέσιμο" : stock ? "Στο καλάθι" : "Εξαντλήθηκε")}
         </button>
       </div>
     </article>
