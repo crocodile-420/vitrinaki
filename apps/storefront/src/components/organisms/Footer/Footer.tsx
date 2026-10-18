@@ -4,27 +4,26 @@ const footerGroups = [
   {
     title: "Η πλατφόρμα",
     links: [
-      { label: "Οι λύσεις μας", href: "/#solutions" },
       { label: "Πώς λειτουργεί", href: "/#how-it-works" },
-      { label: "Παραδείγματα", href: "/#examples" },
+      { label: "Δείγματα", href: "/#examples" },
+      { label: "Για επιχειρήσεις", href: "/#solutions" },
     ],
   },
   {
-    title: "Ανακάλυψη",
+    title: "Η βιτρίνα",
     links: [
-      { label: "Προϊόντα", href: "/categories" },
-      { label: "Κατηγορίες", href: "/categories" },
+      { label: "Επιχειρήσεις", href: "/#vitrina" },
     ],
   },
 ]
 
 export function Footer() {
   return (
-    <footer className="bg-[#103d32] text-[#f8f2e8]" data-testid="footer">
+    <footer className="bg-[#2E4A37] text-[#f8f2e8]" data-testid="footer">
       <div className="mx-auto grid max-w-[1600px] gap-10 px-5 py-12 sm:px-8 md:grid-cols-[1.4fr_1fr_1fr] lg:px-10">
         <div>
           <LocalizedClientLink href="/" className="inline-flex items-center text-2xl font-extrabold tracking-tight text-white">
-            Vitrinaki<span className="ml-1 text-[#ff6a37]">.</span>
+            vitrinaki<span className="text-[#f2a28f]">.gr</span>
           </LocalizedClientLink>
           <p className="mt-4 max-w-sm text-sm leading-6 text-[#d3e0d8]">
             Η ψηφιακή βάση για τις μικρές ελληνικές επιχειρήσεις. Δημιούργησε τη δική σου παρουσία online και μεγάλωσε με τον δικό σου ρυθμό.

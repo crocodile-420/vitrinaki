@@ -13,12 +13,13 @@ import { Providers } from './providers';
 export const metadata: Metadata = {
   title: {
     template: `%s | ${
-      process.env.NEXT_PUBLIC_SITE_NAME || 'Vitrinaki — η ψηφιακή βιτρίνα της επιχείρησής σου'
+      process.env.NEXT_PUBLIC_SITE_NAME || 'Vitrinaki.gr — Η βιτρίνα σου στο ψηφιακό εμπόριο'
     }`,
-    default: process.env.NEXT_PUBLIC_SITE_NAME || 'Vitrinaki — η ψηφιακή βιτρίνα της επιχείρησής σου'
+    default: process.env.NEXT_PUBLIC_SITE_NAME || 'Vitrinaki.gr — Η βιτρίνα σου στο ψηφιακό εμπόριο'
   },
   description:
-    process.env.NEXT_PUBLIC_SITE_DESCRIPTION || 'Vitrinaki — η ψηφιακή βιτρίνα της επιχείρησής σου',
+    process.env.NEXT_PUBLIC_SITE_DESCRIPTION || 'Vitrinaki.gr — Η βιτρίνα σου στο ψηφιακό εμπόριο',
+  icons: { icon: '/brand/vitrinaki-icon.png', apple: '/brand/vitrinaki-icon.png' },
   metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3100')
 };
 
