@@ -14,6 +14,7 @@ import {
   approveSellerWorkflow,
   createOffersWorkflow,
   createProductAttributesWorkflow,
+  createProductAttributeValuesWorkflow,
   createProductsWorkflow,
   createSellerAccountWorkflow,
   createSellerShippingOptionsWorkflow,
@@ -595,6 +596,25 @@ export default async function seedDemoData({ container }: ExecArgs) {
     attrByHandle = await loadAttributes();
   }
 
+  // Older databases (seeded before the High Society catalog) lack some values,
+  // e.g. apparel sizes on Size. Add only what is missing.
+  let addedValues = false;
+  for (const def of ATTRIBUTE_DEFS) {
+    const attr = attrByHandle.get(def.handle);
+    if (!attr) continue;
+    const have = new Set(attr.values.map((v) => v.name));
+    const missing = def.values.filter((name) => !have.has(name));
+    if (!missing.length) continue;
+    await createProductAttributeValuesWorkflow(container).run({
+      input: {
+        attribute_id: attr.id,
+        values: missing.map((name) => ({ name, rank: def.values.indexOf(name) })),
+      },
+    });
+    addedValues = true;
+  }
+  if (addedValues) attrByHandle = await loadAttributes();
+
   const sizeAttr = attrByHandle.get("size")!;
   const colorAttr = attrByHandle.get("color")!;
   const conditionAttr = attrByHandle.get("condition")!;
@@ -660,9 +680,9 @@ export default async function seedDemoData({ container }: ExecArgs) {
 
   const SELLER_PASSWORD = "supersecret";
   const SELLER_CONFIGS = [
-    { name: "High Society", email: "seller@mercur.dev", first_name: "Demo", last_name: "Seller", city: "Αθήνα", country_code: "GR", address_1: "Ερμού 10" },
-    { name: "Aegean Atelier", email: "kickz@mercur.dev", first_name: "Kai", last_name: "Corner", city: "Θεσσαλονίκη", country_code: "GR", address_1: "Τσιμισκή 25" },
-    { name: "Urban Thread", email: "trailhead@mercur.dev", first_name: "Tara", last_name: "Head", city: "Πάτρα", country_code: "GR", address_1: "Μαιζώνος 40" },
+    { name: "High Society", email: "highsociety@vitrinaki.gr", first_name: "Demo", last_name: "Seller", city: "Αθήνα", country_code: "GR", address_1: "Ερμού 10" },
+    { name: "Aegean Atelier", email: "aegean@vitrinaki.gr", first_name: "Kai", last_name: "Corner", city: "Θεσσαλονίκη", country_code: "GR", address_1: "Τσιμισκή 25" },
+    { name: "Urban Thread", email: "urban@vitrinaki.gr", first_name: "Tara", last_name: "Head", city: "Πάτρα", country_code: "GR", address_1: "Μαιζώνος 40" },
   ];
   const PRIMARY_SELLER_EMAIL = SELLER_CONFIGS[0].email;
 
@@ -939,7 +959,7 @@ export default async function seedDemoData({ container }: ExecArgs) {
               "Polo, πουκάμισα, ζακέτες και αξεσουάρ με καθαρές γραμμές και ποιοτικά υφάσματα. Σχεδιασμένα για να φοριούνται κάθε μέρα, για χρόνια.",
             template: "atelier",
             palette: "ocean",
-            contactEmail: "seller@mercur.dev",
+            contactEmail: "highsociety@vitrinaki.gr",
             contactPhone: "",
             logoUrl: "",
             bannerUrl: "",
