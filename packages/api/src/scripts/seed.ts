@@ -693,6 +693,103 @@ export default async function seedDemoData({ container }: ExecArgs) {
   const sellerBanner = (name: string) =>
     `https://picsum.photos/seed/${toHandle(name)}/1200/320`;
 
+  // Every demo seller gets a published sample website with a promo
+  // subscription, each in a different template, so the shop pages work right
+  // after seeding without Stripe. Safe to re-run: existing metadata is kept.
+  const SAMPLE_SHOPS: Record<string, { tagline: string; description: string; template: string; palette: string }> = {
+    "High Society": {
+      tagline: "Κομψό ανδρικό ντύσιμο, διαχρονικές γραμμές",
+      description: "Polo, πουκάμισα, ζακέτες και αξεσουάρ με καθαρές γραμμές και ποιοτικά υφάσματα. Σχεδιασμένα για να φοριούνται κάθε μέρα, για χρόνια.",
+      template: "atelier",
+      palette: "ocean",
+    },
+    "Aegean Atelier": {
+      tagline: "Ρούχα με το φως του Αιγαίου",
+      description: "Λινά, βαμβακερά και ανάλαφρα κομμάτια για την πόλη και το νησί, από ένα μικρό ατελιέ στη Θεσσαλονίκη.",
+      template: "local",
+      palette: "terracotta",
+    },
+    "Urban Thread": {
+      tagline: "Καθημερινό στυλ για την πόλη",
+      description: "Βασικά κομμάτια, παντελόνια και παπούτσια για κάθε μέρα. Παραγγελία online, παραλαβή ή αποστολή σε όλη την Ελλάδα.",
+      template: "services",
+      palette: "plum",
+    },
+    // Sellers from the original Mercur demo, kept on older databases.
+    "Sole Society": {
+      tagline: "Sneakers και streetwear με προσωπικότητα",
+      description: "Επιλεγμένα sneakers και casual κομμάτια για κάθε μέρα.",
+      template: "atelier",
+      palette: "forest",
+    },
+    "Kickz Corner": {
+      tagline: "Η γειτονιά των sneakers",
+      description: "Το μαγαζί της γειτονιάς για παπούτσια και αξεσουάρ, τώρα και online.",
+      template: "local",
+      palette: "ocean",
+    },
+    "Trailhead Outfitters": {
+      tagline: "Εξοπλισμός για την πόλη και το βουνό",
+      description: "Παπούτσια και ρούχα για περπάτημα, πεζοπορία και εξερεύνηση.",
+      template: "services",
+      palette: "terracotta",
+    },
+  };
+  const publishSampleShops = async () => {
+    const storefrontBaseUrl = (process.env.VITRINAKI_STOREFRONT_URL || "http://localhost:3100").replace(/\/+$/, "");
+    const locale = process.env.VITRINAKI_DEFAULT_LOCALE || "gr";
+    const { data: demoSellers } = await query.graph({
+      entity: "seller",
+      fields: ["id", "name", "handle", "email", "metadata"],
+      filters: { name: Object.keys(SAMPLE_SHOPS) },
+    });
+    for (const seller of demoSellers as any[]) {
+      const sample = SAMPLE_SHOPS[seller.name];
+      if (!sample) continue;
+      const now = new Date().toISOString();
+      await updateSellersWorkflow(container).run({
+        input: {
+          selector: { id: seller.id },
+          update: {
+            metadata: {
+              ...(seller.metadata || {}),
+              storefront_url: `${storefrontBaseUrl}/${locale}/store/${seller.handle}`,
+              vitrinaki_subscription: seller.metadata?.vitrinaki_subscription || {
+                status: "active",
+                source: "promo",
+                promoCode: "SEED",
+                planId: "growth",
+                interval: null,
+                currentPeriodEnd: null,
+                cancelAtPeriodEnd: false,
+                updatedAt: now,
+              },
+              vitrinaki_storefront: seller.metadata?.vitrinaki_storefront || {
+                storeName: seller.name,
+                tagline: sample.tagline,
+                description: sample.description,
+                template: sample.template,
+                palette: sample.palette,
+                contactEmail: seller.email,
+                contactPhone: "",
+                logoUrl: "",
+                bannerUrl: "",
+                sections: [],
+                customDomain: "",
+                domainStatus: "not_configured",
+                domainVerificationToken: "",
+                domainVerifiedAt: null,
+                isPublished: true,
+                publishedAt: now,
+                updatedAt: now,
+              },
+            },
+          },
+        },
+      });
+    }
+  };
+
   const { data: existingSellers } = await query.graph({
     entity: "seller",
     fields: ["id"],
@@ -703,6 +800,7 @@ export default async function seedDemoData({ container }: ExecArgs) {
     logger.info(
       "Demo sellers already exist, skipping seller, product and offer seeding."
     );
+    await publishSampleShops();
     logger.info("Finished seeding.");
     return;
   }
@@ -933,49 +1031,7 @@ export default async function seedDemoData({ container }: ExecArgs) {
 
   const primarySeller = sellers[0];
 
-  // Publish the High Society demo website with a promo subscription so its
-  // shop page works right after seeding, without Stripe.
-  const storefrontBaseUrl = (process.env.VITRINAKI_STOREFRONT_URL || "http://localhost:3100").replace(/\/+$/, "");
-  await updateSellersWorkflow(container).run({
-    input: {
-      selector: { id: primarySeller.id },
-      update: {
-        metadata: {
-          storefront_url: `${storefrontBaseUrl}/${process.env.VITRINAKI_DEFAULT_LOCALE || "gr"}/store/high-society`,
-          vitrinaki_subscription: {
-            status: "active",
-            source: "promo",
-            promoCode: "SEED",
-            planId: "growth",
-            interval: null,
-            currentPeriodEnd: null,
-            cancelAtPeriodEnd: false,
-            updatedAt: new Date().toISOString(),
-          },
-          vitrinaki_storefront: {
-            storeName: "High Society",
-            tagline: "Κομψό ανδρικό ντύσιμο, διαχρονικές γραμμές",
-            description:
-              "Polo, πουκάμισα, ζακέτες και αξεσουάρ με καθαρές γραμμές και ποιοτικά υφάσματα. Σχεδιασμένα για να φοριούνται κάθε μέρα, για χρόνια.",
-            template: "atelier",
-            palette: "ocean",
-            contactEmail: "highsociety@vitrinaki.gr",
-            contactPhone: "",
-            logoUrl: "",
-            bannerUrl: "",
-            sections: [],
-            customDomain: "",
-            domainStatus: "not_configured",
-            domainVerificationToken: "",
-            domainVerifiedAt: null,
-            isPublished: true,
-            publishedAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-          },
-        },
-      },
-    },
-  });
+  await publishSampleShops();
   logger.info(`Finished seeding ${sellers.length} sellers.`);
 
   logger.info("Seeding product data...");
