@@ -29,6 +29,11 @@ cd ../.. && bun dev
 - Admin: http://localhost:9100/dashboard
 - Πάνελ πωλητή: http://localhost:9100/seller
 
-## Product architecture
+## Vitrinaki websites and billing
 
-Vitrinaki is designed as both a public discovery platform for Greek businesses and a SaaS platform for independent business websites. See [the product architecture and rollout plan](docs/VITRINAKI_PRODUCT_ARCHITECTURE.md) for the distinction between current infrastructure and planned features.
+- Business Studio: Website & domain
+- Public business website: `http://localhost:3100/gr/store/{handle}`
+- Stripe webhook endpoint: `POST /webhooks/stripe`
+- Product architecture, limitations and environment setup: [docs/VITRINAKI_PRODUCT_ARCHITECTURE.md](docs/VITRINAKI_PRODUCT_ARCHITECTURE.md)
+
+Custom websites, Stripe checkout and custom domains require server configuration. See `packages/api/.env.template`; never commit live Stripe credentials. The first website editor covers identity, theme, template and contact details. It is not yet a full drag-and-drop page builder.

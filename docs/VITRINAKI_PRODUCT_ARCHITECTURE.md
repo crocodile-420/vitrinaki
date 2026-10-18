@@ -17,7 +17,7 @@ It is not intended to be only an inventory dashboard or a conventional marketpla
 | Business Studio (currently vendor frontend) | Business owners and staff | Manage business details and, as developed, products, storefront configuration and publishing | `http://localhost:7001` |
 | Platform Admin | Vitrinaki operations | Manage the platform, seller accounts, access and future subscription state | `http://localhost:7000` |
 | Backend API | All frontends | Business data, catalog/offers, authentication and commerce operations | `http://localhost:9100` |
-| Business-owned websites | Each business's customers | Independent branded storefront, eventually with business-specific domain/subdomain | Not yet implemented as a first-class Vitrinaki feature |
+| Business-owned websites | Each business's customers | Independent branded storefront at `/{locale}/store/{handle}`, with custom-domain routing when DNS/hosting are configured | `http://localhost:3100/gr/store/{handle}` locally |
 
 The local ports are for development. Production can use domains/subdomains or other routing, once host routing and domain management exist.
 
@@ -30,21 +30,25 @@ The local ports are for development. Production can use domains/subdomains or ot
 - The current data model has a shared master product catalog plus seller offers. Seller-specific price/inventory and ownership context are represented through offers.
 - The storefront has product/category routes and seller profile pages.
 
-### Foundation added by this change
+### Implemented in the current development branch
 
-- The Vitrinaki homepage can show current published offers from the backend rather than relying only on visual examples.
-- A promoted offer links to a seller's own shop if the seller metadata includes an absolute `storefront_url` using `https://` or `http://`.
-- If no published external shop URL exists, the promoted offer falls back to the existing internal seller profile page. This is a compatibility fallback, not a claim that the seller already has an independent website.
-- The homepage presents both product discovery and the path for a business to create its own web presence.
+- Public Vitrinaki discovery still uses real offer data from the existing API.
+- Each business can configure its store name, tagline, description, template choice, palette, and contact details from the custom Vitrinaki Studio page.
+- The settings are currently stored in the seller's `metadata.vitrinaki_storefront` object and protected by the seller-authenticated backend route.
+- Public shop pages render at `/{locale}/store/{handle}`. Product cards in a shop route to its own product-detail path and reuse the existing offer/cart integration.
+- Publication is blocked unless seller metadata records an `active` or `trialing` Stripe subscription. The Stripe webhook updates that subscription status and withdraws publication when a subscription is no longer active.
+- Monthly/yearly Stripe Checkout, Stripe Billing Portal, optional one-time Assisted Setup and Done-for-you checkout routes are implemented, but they remain disabled until server secrets and Stripe price IDs are configured.
+- Custom-domain verification checks a TXT challenge and a CNAME against `VITRINAKI_CUSTOM_DOMAIN_TARGET`; middleware resolves verified domains to their business storefront. Hosting must also accept the hostname and provide HTTPS/TLS.
+- An internal read-only Vitrinaki overview is added to the platform admin.
 
-### Still missing / not claimed as complete
+### Known implementation boundaries — not ready to claim production-complete
 
-- A first-class Business/Storefront domain model, business onboarding workflow and dedicated website builder.
-- Independent rendering/routing for each business's storefront and automated custom-domain/subdomain setup.
-- A business-facing control for editing and verifying `storefront_url`.
-- Subscription billing, recurring payment events, plans/entitlements, grace periods, cancellation and publishing-state enforcement.
-- Formal access-control/integration tests proving tenant isolation for every business operation.
-- Production-readiness validation and automated CI.
+- Website editing is a first version of settings/template/palette selection, not a drag-and-drop page builder or a custom content-block editor.
+- Products still use the existing shared Medusa product records and seller-scoped Mercur offers. Product inventory/prices remain offer-based.
+- Shop metadata, Stripe subscription state, and setup orders are stored under seller metadata for this MVP; move these to dedicated versioned modules/tables before high-volume production and add reconciliation jobs.
+- A custom domain needs DNS changes, hosting-provider domain registration, and automatic certificate provisioning outside this code. DNS verification alone is not enough.
+- Configure and verify real Stripe products/prices, webhook endpoint `/webhooks/stripe`, and webhook event delivery before accepting any live charges.
+- Add API/UI integration tests for authentication, tenant isolation, checkout/webhook ordering, domain verification, and subscription transitions; run the full build on the target Windows setup before merging.
 
 ## Public shop URL convention
 
@@ -84,3 +88,17 @@ Prices discussed during product planning are proposals only. Do not hard-code pr
 - Do not assume a mockup represents implemented functionality.
 - Do not reset a database or silently delete business data during setup.
 - Verify real API/build/test results before claiming a workflow is working.
+
+
+## Environment needed for payments and custom domains
+
+Set these in `packages/api/.env` (never commit secret values):
+
+- `STRIPE_SECRET_KEY` and `STRIPE_WEBHOOK_SECRET`.
+- `STRIPE_PRICE_STARTER_MONTHLY`, `STRIPE_PRICE_STARTER_YEARLY`, `STRIPE_PRICE_GROWTH_MONTHLY`, `STRIPE_PRICE_GROWTH_YEARLY`, `STRIPE_PRICE_PRO_MONTHLY`, and `STRIPE_PRICE_PRO_YEARLY`.
+- `STRIPE_PRICE_SETUP_ASSISTED` and `STRIPE_PRICE_SETUP_DONE_FOR_YOU` for optional one-time services.
+- `VITRINAKI_STOREFRONT_URL`, `VITRINAKI_STUDIO_URL`, and `VITRINAKI_DEFAULT_LOCALE`.
+- `VITRINAKI_CUSTOM_DOMAIN_TARGET` with the actual CNAME target supplied by the hosting provider.
+- `VITRINAKI_PLATFORM_HOSTS` as a comma-separated list of platform hostnames, including both root and `www` where applicable.
+
+Stripe Checkout stays disabled when secrets/price IDs are absent. Use Stripe test mode until checkout, webhook signature verification, successful renewal, failed payment and cancellation have been tested end to end.
