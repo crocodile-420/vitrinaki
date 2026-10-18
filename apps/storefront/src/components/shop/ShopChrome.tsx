@@ -1,5 +1,8 @@
 import Link from "next/link"
 
+import { LanguageSwitcher } from "@/components/molecules/LanguageSwitcher/LanguageSwitcher"
+import { translator, type Lang } from "@/lib/i18n/vitrinaki"
+
 import type { ShopColors } from "./ShopProductCard"
 import { ShopImage } from "./ShopImage"
 import { shopInitials, type ShopResponse } from "./shop-data"
@@ -11,12 +14,15 @@ export function ShopHeader({
   colors,
   home,
   locale,
+  lang,
 }: {
   shop: ShopResponse
   colors: ShopColors
   home: string
   locale: string
+  lang: Lang
 }) {
+  const tr = translator(lang)
   const { storefront, seller } = shop
   const isServices = storefront.template === "services"
   return (
@@ -33,11 +39,12 @@ export function ShopHeader({
           <span className="truncate text-lg font-extrabold tracking-tight">{storefront.storeName}</span>
         </Link>
         <nav className="flex items-center gap-5 text-sm font-semibold">
-          <a href={`${home}#catalog`} className="hidden opacity-75 hover:opacity-100 sm:inline">{isServices ? "Υπηρεσίες" : "Συλλογή"}</a>
-          <a href={`${home}#about`} className="hidden opacity-75 hover:opacity-100 sm:inline">Σχετικά</a>
-          <a href={`${home}#contact`} className="hidden opacity-75 hover:opacity-100 sm:inline">Επικοινωνία</a>
+          <a href={`${home}#catalog`} className="hidden opacity-75 hover:opacity-100 sm:inline">{tr(isServices ? "Υπηρεσίες" : "Συλλογή")}</a>
+          <a href={`${home}#about`} className="hidden opacity-75 hover:opacity-100 sm:inline">{tr("Σχετικά")}</a>
+          <a href={`${home}#contact`} className="hidden opacity-75 hover:opacity-100 sm:inline">{tr("Επικοινωνία")}</a>
+          <LanguageSwitcher lang={lang} label={tr("Γλώσσα")} />
           <Link href={`/${locale}/cart`} style={{ borderColor: colors.ink }} className="rounded-full border px-4 py-1.5 hover:opacity-80">
-            Καλάθι
+            {tr("Καλάθι")}
           </Link>
         </nav>
       </div>
@@ -45,14 +52,15 @@ export function ShopHeader({
   )
 }
 
-export function ShopFooter({ shop, colors }: { shop: ShopResponse; colors: ShopColors }) {
+export function ShopFooter({ shop, colors, lang }: { shop: ShopResponse; colors: ShopColors; lang: Lang }) {
+  const tr = translator(lang)
   const { storefront } = shop
   return (
     <footer style={{ background: colors.ink, color: colors.page }}>
       <div className="mx-auto flex max-w-6xl flex-col gap-3 px-5 py-8 text-sm sm:flex-row sm:items-center sm:justify-between sm:px-8">
         <p className="font-semibold">© {new Date().getFullYear()} {storefront.storeName}</p>
         <a href={platformUrl} className="opacity-70 transition hover:opacity-100">
-          Η βιτρίνα μας φτιάχτηκε με το <span className="font-bold">vitrinaki.gr</span>
+          {tr("Η βιτρίνα μας φτιάχτηκε με το")} <span className="font-bold">vitrinaki.gr</span>
         </a>
       </div>
     </footer>

@@ -1,0 +1,183 @@
+// Vitrinaki interface copy. Greek is the source language: the Greek text is
+// the key, and each other language maps it to a translation. A missing
+// translation falls back to the Greek text.
+
+export const LANGS = ["el", "en"] as const
+export type Lang = (typeof LANGS)[number]
+export const LANG_COOKIE = "vk_lang"
+
+export const isLang = (value: unknown): value is Lang => LANGS.includes(value as Lang)
+
+const en: Record<string, string> = {
+  // Audiences
+  "Παραγωγοί": "Producers",
+  "Λάδι, μέλι, κρασί, τυριά. Το προϊόν σου, απευθείας στον πελάτη, σε όλη την Ελλάδα.": "Olive oil, honey, wine, cheese. Your product, straight to customers all over Greece.",
+  "Δημιουργοί & χειροποίητα": "Makers & handmade",
+  "Κοσμήματα, κεραμικά, ρούχα. Η δουλειά σου, παρουσιασμένη όπως της αξίζει.": "Jewellery, ceramics, clothing. Your work, presented the way it deserves.",
+  "Καταστήματα": "Shops",
+  "Το μαγαζί που ξέρει η γειτονιά, ανοιχτό και online, όλο το εικοσιτετράωρο.": "The shop the neighbourhood knows, now open online around the clock.",
+  "Freelancers & υπηρεσίες": "Freelancers & services",
+  "Graphic designer, online δάσκαλος, φωτογράφος. Δείξε τη δουλειά σου και δέξου κρατήσεις.": "Graphic designer, online teacher, photographer. Show your work and take bookings.",
+  "Νέες επιχειρήσεις": "New businesses",
+  "Ξεκίνα από εκεί που βρίσκεσαι σήμερα και μεγάλωσε τη βιτρίνα σου μαζί με την επιχείρηση.": "Start from where you are today and grow your shop window with your business.",
+
+  // What you get
+  "Η δική σου ταυτότητα": "Your own identity",
+  "Το όνομα, το λογότυπο και τα χρώματά σου, σε ύφος που ταιριάζει στη δουλειά σου. Κανένα κατάστημα δεν μοιάζει με αντίγραφο.": "Your name, logo and colours, in a style that fits your work. No shop looks like a copy.",
+  "Η δική σου διεύθυνση": "Your own address",
+  "Το e-shop σου ανοίγει στο vitrinaki.gr και μπορεί να συνδεθεί με το δικό σου domain.": "Your e-shop opens on vitrinaki.gr and can be connected to your own domain.",
+  "Καλάθι και παραγγελίες": "Cart and orders",
+  "Ο πελάτης διαλέγει, βάζει στο καλάθι και παραγγέλνει. Εσύ βλέπεις κάθε παραγγελία σε ένα σημείο.": "Customers choose, add to cart and order. You see every order in one place.",
+  "Η ιστορία σου": "Your story",
+  "Χώρος για το ποιος είσαι, πώς δουλεύεις και τι σε κάνει διαφορετικό, μαζί με τα στοιχεία επικοινωνίας σου.": "Room for who you are, how you work and what makes you different, together with your contact details.",
+  "Διαχείριση από σένα": "Managed by you",
+  "Προϊόντα, τιμές και παραγγελίες από τον δικό σου πίνακα, χωρίς να περιμένεις κανέναν για μια απλή αλλαγή.": "Products, prices and orders from your own dashboard, without waiting on anyone for a simple change.",
+  "Άνθρωποι δίπλα σου": "People by your side",
+  "Αν κολλήσεις ή θες βοήθεια στο στήσιμο, δεν το κάνεις μόνος σου. Μας ρωτάς και σε καθοδηγούμε.": "If you get stuck or want help setting up, you are not on your own. Ask us and we will guide you.",
+
+  // Steps
+  "Μας λες ποιος είσαι": "Tell us who you are",
+  "Όνομα, λογότυπο, χρώματα, τι πουλάς ή τι προσφέρεις. Αυτό που ήδη ξέρεις για τη δουλειά σου, χωρίς τεχνικούς όρους.": "Name, logo, colours, what you sell or offer. What you already know about your work, with no technical jargon.",
+  "Στήνεται η βιτρίνα σου": "Your shop window is built",
+  "Ένα ολοκληρωμένο e-shop με τα δικά σου χαρακτηριστικά. Το φτιάχνεις μόνος σου βήμα βήμα, ή το στήνουμε μαζί.": "A complete e-shop with your own features. Build it yourself step by step, or we set it up together.",
+  "Ανοίγεις στο ψηφιακό εμπόριο": "You open for online business",
+  "Συνδέεις τη διεύθυνσή σου, μοιράζεσαι το link και δέχεσαι παραγγελίες. Από εκεί και πέρα, μεγαλώνεις με τον δικό σου ρυθμό.": "Connect your address, share the link and take orders. From there, you grow at your own pace.",
+
+  // Manifesto
+  "Είσαι ένα αποτέλεσμα αναζήτησης, δίπλα στον ανταγωνιστή σου.": "You are a search result, right next to your competitor.",
+  "Ο πελάτης θυμάται την πλατφόρμα, όχι εσένα.": "Customers remember the platform, not you.",
+  "Ανταγωνίζεσαι μόνο στην τιμή.": "You compete on price alone.",
+  "Οι κανόνες αλλάζουν χωρίς να σε ρωτήσουν.": "The rules change without asking you.",
+  "Είσαι ο προορισμός. Ο πελάτης έρχεται για σένα.": "You are the destination. Customers come for you.",
+  "Το όνομα, το λογότυπο και οι πελάτες είναι δικά σου.": "The name, the logo and the customers are yours.",
+  "Ξεχωρίζεις με την ιστορία και την ποιότητά σου.": "You stand out with your story and your quality.",
+  "Αποφασίζεις εσύ πώς δείχνεις και τι πουλάς.": "You decide how you look and what you sell.",
+
+  // FAQ
+  "Χρειάζομαι τεχνικές γνώσεις;": "Do I need technical skills?",
+  "Όχι. Αν ξέρεις να στέλνεις email και να ανεβάζεις φωτογραφίες, ξέρεις αρκετά. Ό,τι άλλο χρειαστεί, σου το εξηγούμε.": "No. If you can send an email and upload photos, you know enough. Anything else, we explain.",
+  "Είναι marketplace όπου ανταγωνίζομαι άλλους πωλητές;": "Is it a marketplace where I compete with other sellers?",
+  "Όχι. Παίρνεις το δικό σου, ανεξάρτητο e-shop με τη δική σου ταυτότητα. Η κοινή βιτρίνα του Vitrinaki απλώς βοηθά περισσότερους να σε ανακαλύψουν.": "No. You get your own independent e-shop with your own identity. Vitrinaki's shared showcase simply helps more people discover you.",
+  "Μπορώ να έχω το δικό μου domain;": "Can I have my own domain?",
+  "Ναι. Το κατάστημά σου ανοίγει στο vitrinaki.gr και μπορείς να συνδέσεις το δικό σου domain, π.χ. to-magazi-mou.gr.": "Yes. Your shop opens on vitrinaki.gr and you can connect your own domain, e.g. my-shop.gr.",
+  "Πόσο κοστίζει;": "How much does it cost?",
+  "Οι τιμές οριστικοποιούνται. Η δέσμευσή μας είναι απλή: πριν ξεκινήσεις θα ξέρεις ακριβώς τι πληρώνεις, τι περιλαμβάνεται και τι όχι.": "Pricing is being finalised. Our promise is simple: before you start, you will know exactly what you pay, what is included and what is not.",
+  "Κι αν δεν θέλω να το στήσω μόνος μου;": "What if I don't want to set it up myself?",
+  "Δεν χρειάζεται. Μπορείς να ξεκινήσεις μόνος σου, με καθοδήγηση, ή να μας ζητήσεις βοήθεια στο αρχικό στήσιμο.": "You don't have to. Start on your own, with guidance, or ask us to help with the initial setup.",
+
+  // Metadata and samples
+  "Η βιτρίνα σου στο ψηφιακό εμπόριο": "Your shop window on online commerce",
+  "Ένα ολοκληρωμένο e-shop με το όνομα, το λογότυπο και τα χρώματα της επιχείρησής σου. Για παραγωγούς, δημιουργούς, καταστήματα και freelancers.": "A complete e-shop with your business's name, logo and colours. For producers, makers, shops and freelancers.",
+  "Vitrinaki — ψηφιακές λύσεις για μικρές επιχειρήσεις": "Vitrinaki — online shops for small businesses",
+  "Φούρνος Ελένη": "Eleni's Bakery",
+  "Ζεστό ψωμί κάθε πρωί από το 1987": "Fresh bread every morning since 1987",
+  "Studio Αλκυόνη": "Studio Alkyoni",
+  "Pilates και yoga στο κέντρο της πόλης": "Pilates and yoga in the city centre",
+  "Atelier Μύρτω": "Atelier Myrto",
+  "Χειροποίητα κοσμήματα από ασήμι": "Handmade silver jewellery",
+
+  // Hero
+  "ΤΟ": "YOUR",
+  "σου, στο ψηφιακό εμπόριο": "on online commerce",
+  "Σταμάτα να νοικιάζεις ράφι σε ξένο μαγαζί.": "Stop renting a shelf in someone else's shop.",
+  "Άνοιξε τη δική σου βιτρίνα.": "Open your own shop window.",
+  "Στα marketplaces είσαι ένα ακόμη προϊόν δίπλα στον ανταγωνιστή σου, με τους δικούς τους κανόνες. Στο Vitrinaki αποκτάς ολοκληρωμένο e-shop με το όνομα, το λογότυπο και τα χρώματά σου, στη δική σου διεύθυνση. Οι πελάτες σου μένουν δικοί σου.": "On marketplaces you are one more product next to your competitor, under their rules. With Vitrinaki you get a complete e-shop with your name, logo and colours, at your own address. Your customers stay yours.",
+  "Άνοιξε τη βιτρίνα σου": "Open your shop window",
+  "Δες καταστήματα": "See shops",
+  "Χωρίς τεχνικές γνώσεις. Και χωρίς να το κάνεις μόνος σου.": "No technical skills needed. And you don't have to do it alone.",
+
+  // Sections
+  "Η διαφορά": "The difference",
+  "Στο marketplace είσαι ένα αποτέλεσμα. Στη βιτρίνα σου είσαι ο προορισμός.": "On a marketplace you are a result. In your own shop window you are the destination.",
+  "Σε ξένη πλατφόρμα": "On someone else's platform",
+  "Στο δικό σου vitrinaki": "In your own vitrinaki",
+  "Για ποιον είναι": "Who it's for",
+  "Όλοι αξίζουν μια θέση στη μεγάλη βιτρίνα.": "Everyone deserves a place in the big shop window.",
+  "Δεν χρειάζεται να ξέρεις από design, προγραμματισμό ή διαφημίσεις για να μεγαλώσεις την επιχείρησή σου. Και ποτέ δεν είναι αργά για το επόμενο βήμα.": "You don't need to know design, coding or advertising to grow your business. And it's never too late for the next step.",
+  "Η βιτρίνα": "The showcase",
+  "Επιχειρήσεις που άνοιξαν το e-shop τους.": "Businesses that opened their e-shop.",
+  "Κάθε κατάστημα έχει το δικό του όνομα, ύφος και χρώματα. Άνοιξε ένα και δες το όπως θα το έβλεπε ένας πελάτης.": "Every shop has its own name, style and colours. Open one and see it the way a customer would.",
+  "Άνοιξε το κατάστημα": "Open the shop",
+  "Το πρώτο κατάστημα μπορεί να είναι το δικό σου.": "The first shop could be yours.",
+  "Ξεκίνα σήμερα και άνοιξε τη βιτρίνα σου στο ψηφιακό εμπόριο.": "Start today and open your shop window on online commerce.",
+  "Τι παίρνεις": "What you get",
+  "Ένα ολοκληρωμένο e-shop. Δικό σου.": "A complete e-shop. Yours.",
+  "Πώς ξεκινάς": "How to start",
+  "Τρία βήματα. Και κάποιος δίπλα σου σε κάθε ένα.": "Three steps. And someone by your side at each one.",
+  "Η φιλοσοφία μας": "Our philosophy",
+  "«Το επιχειρείν": "“To do business",
+  "εστίν φιλοσοφείν.»": "is to philosophise.”",
+  "Το επιχειρείν δεν είναι μόνο η πώληση ενός προϊόντος. Είναι η σκέψη, η δημιουργία, η επιμονή και η αναζήτηση ενός καλύτερου τρόπου να προσφέρεις κάτι στον κόσμο.": "Doing business is not just selling a product. It is thinking, creating, persisting and looking for a better way to offer something to the world.",
+  "Η ιστορία κάθε επιχείρησης έχει αξία. Η τεχνολογία πρέπει να την αναδεικνύει, όχι να μπαίνει εμπόδιο. Γι' αυτό φτιάξαμε το Vitrinaki.": "Every business's story has value. Technology should bring it out, not get in the way. That is why we built Vitrinaki.",
+  "Ύφος": "Style",
+  "Διάλεξε το ύφος που σου μοιάζει.": "Choose the style that feels like you.",
+  "Ξεκινάς από ένα ύφος και το κάνεις δικό σου με το λογότυπο, τα χρώματα και τις φωτογραφίες σου.": "Start from a style and make it yours with your logo, colours and photos.",
+  "Δες το ζωντανά:": "See it live:",
+  "Ερωτήσεις": "Questions",
+  "Όσα ρωτούν συνήθως πριν ξεκινήσουν.": "What people usually ask before they start.",
+  "Το επόμενο βήμα": "The next step",
+  "Ποτέ δεν είναι αργά για να ανοίξεις τη βιτρίνα σου.": "It's never too late to open your shop window.",
+  "Πες μας για την επιχείρησή σου και κάνε το πρώτο βήμα στο ψηφιακό εμπόριο. Δεν θα το κάνεις μόνος σου.": "Tell us about your business and take your first step into online commerce. You won't do it alone.",
+
+  // Header and footer
+  "Για ποιον": "Who it's for",
+  "Vitrinaki αρχική σελίδα": "Vitrinaki home page",
+  "Κεντρική πλοήγηση": "Main navigation",
+  "Σύνδεση": "Log in",
+  "Γλώσσα": "Language",
+  "Το επιχειρείν εστίν φιλοσοφείν.": "To do business is to philosophise.",
+  "Η βιτρίνα σου στο ψηφιακό εμπόριο. Γιατί όλοι αξίζουν μια θέση στη μεγάλη βιτρίνα, και ποτέ δεν είναι αργά για το επόμενο βήμα.": "Your shop window on online commerce. Because everyone deserves a place in the big shop window, and it's never too late for the next step.",
+  "Όλα τα δικαιώματα διατηρούνται.": "All rights reserved.",
+
+  // Shops
+  "Υπηρεσίες": "Services",
+  "Συλλογή": "Collection",
+  "Σχετικά": "About",
+  "Επικοινωνία": "Contact",
+  "Καλάθι": "Cart",
+  "Προϊόν": "Product",
+  "Προστέθηκε στο καλάθι": "Added to cart",
+  "Δεν προστέθηκε": "Not added",
+  "Το προϊόν δεν είναι διαθέσιμο αυτή τη στιγμή.": "This product is not available right now.",
+  "Ρώτησε για τιμή": "Ask for price",
+  "Μη διαθέσιμο": "Unavailable",
+  "Στο καλάθι": "Add to cart",
+  "Εξαντλήθηκε": "Sold out",
+  "Κατάστημα": "Shop",
+  "Κλείσε ραντεβού": "Book an appointment",
+  "Δες τις υπηρεσίες": "See services",
+  "Δες τη συλλογή": "See the collection",
+  "Βρες μας": "Find us",
+  "Νέα συλλογή": "New collection",
+  "Τι προσφέρουμε": "What we offer",
+  "Όλη η συλλογή": "The full collection",
+  "Η συλλογή μας": "Our collection",
+  "επιλογή": "item",
+  "επιλογές": "items",
+  "Ετοιμάζουμε τη συλλογή μας.": "We're preparing our collection.",
+  "Επικοινώνησε μαζί μας για να μάθεις περισσότερα ή πέρασε ξανά σύντομα.": "Get in touch to learn more, or come back soon.",
+  "Ποιοι είμαστε": "Who we are",
+  "Κλείσε ραντεβού ή ρώτησέ μας ό,τι θέλεις.": "Book an appointment or ask us anything.",
+  "Έχεις ερώτηση; Μίλα μαζί μας.": "Have a question? Talk to us.",
+  "Τα στοιχεία επικοινωνίας θα προστεθούν σύντομα.": "Contact details will be added soon.",
+  "Κάλεσε στο": "Call",
+  "Ερωτήσεις για το προϊόν;": "Questions about this product?",
+  "Επικοινώνησε με την επιχείρηση": "Contact the business",
+  "Μπορεί να σου αρέσουν": "You may also like",
+  "Η βιτρίνα μας φτιάχτηκε με το": "Our shop window is built with",
+
+  // Site previews and styles
+  "Αρχική": "Home",
+  "Στη γειτονιά σου": "In your neighbourhood",
+  "Δευ–Παρ 9:00–18:00": "Mon–Fri 9:00–18:00",
+  "Σάβ 10:00–14:00": "Sat 10:00–14:00",
+  "Ανακάλυψε": "Discover",
+  "Για brands και καταστήματα που θέλουν κομψή, καθαρή παρουσίαση.": "For brands and shops that want an elegant, clean presentation.",
+  "Γειτονιά": "Neighbourhood",
+  "Για τοπικές επιχειρήσεις: ζεστό ύφος, ωράριο, επικοινωνία.": "For local businesses: a warm style, opening hours, contact.",
+  "Για επαγγελματίες και υπηρεσίες, με έμφαση στο ραντεβού.": "For professionals and services, built around bookings.",
+}
+
+const dictionaries: Record<Lang, Record<string, string>> = { el: {}, en }
+
+export const translator = (lang: Lang) => (greek: string) => dictionaries[lang][greek] ?? greek

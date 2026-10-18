@@ -6,11 +6,12 @@ import { ShopFooter, ShopHeader } from "@/components/shop/ShopChrome"
 import { ShopImage } from "@/components/shop/ShopImage"
 import { ShopProductCard } from "@/components/shop/ShopProductCard"
 import { loadShop, shopColors, shopPaths } from "@/components/shop/shop-data"
+import { getTranslator } from "@/lib/i18n/server"
 
 export async function generateMetadata({ params }: { params: Promise<{ handle: string }> }) {
   const { handle } = await params
   const shop = await loadShop(handle)
-  if (!shop) return { title: "Κατάστημα" }
+  if (!shop) return { title: (await getTranslator()).tr("Κατάστημα") }
   return {
     title: { absolute: shop.storefront.storeName },
     description: shop.storefront.description || shop.storefront.tagline,
@@ -22,6 +23,7 @@ export default async function ShopPage({ params }: { params: Promise<{ locale: s
   const { locale, handle } = await params
   const shop = await loadShop(handle)
   if (!shop) notFound()
+  const { lang, tr } = await getTranslator()
 
   const { seller, storefront } = shop
   const colors = shopColors(shop)
@@ -45,12 +47,12 @@ export default async function ShopPage({ params }: { params: Promise<{ locale: s
   const rest = template === "atelier" ? offers.slice(3) : offers
   const hasContact = Boolean(storefront.contactEmail || storefront.contactPhone)
   const primaryCta = isServices && hasContact
-    ? { href: "#contact", label: "Κλείσε ραντεβού" }
-    : { href: "#catalog", label: isServices ? "Δες τις υπηρεσίες" : "Δες τη συλλογή" }
+    ? { href: "#contact", label: tr("Κλείσε ραντεβού") }
+    : { href: "#catalog", label: tr(isServices ? "Δες τις υπηρεσίες" : "Δες τη συλλογή") }
 
   return (
     <main style={{ background: colors.page, color: colors.ink }} className="min-h-screen">
-      <ShopHeader shop={shop} colors={colors} home={paths.home} locale={locale} />
+      <ShopHeader shop={shop} colors={colors} home={paths.home} locale={locale} lang={lang} />
 
       {template === "local" ? (
         <section className="mx-auto max-w-6xl px-5 pt-10 sm:px-8 sm:pt-14">
@@ -60,7 +62,7 @@ export default async function ShopPage({ params }: { params: Promise<{ locale: s
             {storefront.description ? <p className="mx-auto mt-5 max-w-2xl leading-7 opacity-75 sm:text-lg">{storefront.description}</p> : null}
             <div className="mt-8 flex flex-wrap justify-center gap-3">
               <a href={primaryCta.href} style={{ background: colors.accent }} className="rounded-full px-6 py-3 font-bold text-white hover:opacity-90">{primaryCta.label}</a>
-              {hasContact ? <a href="#contact" style={{ borderColor: colors.ink }} className="rounded-full border px-6 py-3 font-bold hover:opacity-80">Βρες μας</a> : null}
+              {hasContact ? <a href="#contact" style={{ borderColor: colors.ink }} className="rounded-full border px-6 py-3 font-bold hover:opacity-80">{tr("Βρες μας")}</a> : null}
             </div>
           </div>
         </section>
@@ -68,13 +70,13 @@ export default async function ShopPage({ params }: { params: Promise<{ locale: s
         <section className="mx-auto grid max-w-6xl items-center gap-10 px-5 py-12 sm:px-8 sm:py-16 lg:grid-cols-[1.1fr_0.9fr]">
           <div>
             <p style={{ color: colors.accent }} className="text-xs font-bold uppercase tracking-[0.22em]">
-              {isServices ? "Υπηρεσίες" : "Νέα συλλογή"}
+              {tr(isServices ? "Υπηρεσίες" : "Νέα συλλογή")}
             </p>
             <h1 className="font-serif mt-4 text-4xl font-bold leading-[1.08] sm:text-6xl">{storefront.tagline}</h1>
             {storefront.description ? <p className="mt-5 max-w-xl leading-7 opacity-75 sm:text-lg">{storefront.description}</p> : null}
             <div className="mt-8 flex flex-wrap gap-3">
               <a href={primaryCta.href} style={{ background: colors.accent }} className="rounded-full px-6 py-3 font-bold text-white hover:opacity-90">{primaryCta.label}</a>
-              {isServices ? <a href="#catalog" style={{ borderColor: colors.ink }} className="rounded-full border px-6 py-3 font-bold hover:opacity-80">Τι προσφέρουμε</a> : null}
+              {isServices ? <a href="#catalog" style={{ borderColor: colors.ink }} className="rounded-full border px-6 py-3 font-bold hover:opacity-80">{tr("Τι προσφέρουμε")}</a> : null}
             </div>
           </div>
           <ShopImage
@@ -92,7 +94,7 @@ export default async function ShopPage({ params }: { params: Promise<{ locale: s
         <section className="mx-auto max-w-6xl px-5 pt-6 sm:px-8">
           <div className="grid gap-6 sm:grid-cols-3">
             {featured.map((offer) => (
-              <ShopProductCard key={offer.id} offer={offer} href={paths.product(String(offer.product?.handle || ""))} colors={colors} locale={locale} large />
+              <ShopProductCard key={offer.id} offer={offer} href={paths.product(String(offer.product?.handle || ""))} colors={colors} locale={locale} large lang={lang} />
             ))}
           </div>
         </section>
@@ -100,19 +102,19 @@ export default async function ShopPage({ params }: { params: Promise<{ locale: s
 
       <section id="catalog" className="mx-auto max-w-6xl scroll-mt-20 px-5 py-14 sm:px-8 sm:py-20">
         <div className="flex items-end justify-between gap-4 border-b pb-4" style={{ borderColor: `${colors.ink}1f` }}>
-          <h2 className="font-serif text-3xl font-bold sm:text-4xl">{isServices ? "Τι προσφέρουμε" : featured.length ? "Όλη η συλλογή" : "Η συλλογή μας"}</h2>
-          <span className="text-sm opacity-60">{offers.length} {offers.length === 1 ? "επιλογή" : "επιλογές"}</span>
+          <h2 className="font-serif text-3xl font-bold sm:text-4xl">{tr(isServices ? "Τι προσφέρουμε" : featured.length ? "Όλη η συλλογή" : "Η συλλογή μας")}</h2>
+          <span className="text-sm opacity-60">{offers.length} {tr(offers.length === 1 ? "επιλογή" : "επιλογές")}</span>
         </div>
         {rest.length ? (
           <div className="mt-8 grid grid-cols-2 gap-x-5 gap-y-9 md:grid-cols-3 lg:grid-cols-4">
             {rest.map((offer) => (
-              <ShopProductCard key={offer.id} offer={offer} href={paths.product(String(offer.product?.handle || ""))} colors={colors} locale={locale} />
+              <ShopProductCard key={offer.id} offer={offer} href={paths.product(String(offer.product?.handle || ""))} colors={colors} locale={locale} lang={lang} />
             ))}
           </div>
         ) : offers.length ? null : (
           <div style={{ background: colors.soft }} className="mt-8 rounded-3xl p-8 sm:p-12">
-            <h3 className="text-xl font-bold">Ετοιμάζουμε τη συλλογή μας.</h3>
-            <p className="mt-2 max-w-2xl leading-7 opacity-70">Επικοινώνησε μαζί μας για να μάθεις περισσότερα ή πέρασε ξανά σύντομα.</p>
+            <h3 className="text-xl font-bold">{tr("Ετοιμάζουμε τη συλλογή μας.")}</h3>
+            <p className="mt-2 max-w-2xl leading-7 opacity-70">{tr("Επικοινώνησε μαζί μας για να μάθεις περισσότερα ή πέρασε ξανά σύντομα.")}</p>
           </div>
         )}
       </section>
@@ -120,7 +122,7 @@ export default async function ShopPage({ params }: { params: Promise<{ locale: s
       <section id="about" style={{ background: colors.soft }} className="scroll-mt-20">
         <div className="mx-auto grid max-w-6xl gap-10 px-5 py-14 sm:px-8 sm:py-20 lg:grid-cols-[0.8fr_1.2fr]">
           <div>
-            <p style={{ color: colors.accent }} className="text-xs font-bold uppercase tracking-[0.22em]">Ποιοι είμαστε</p>
+            <p style={{ color: colors.accent }} className="text-xs font-bold uppercase tracking-[0.22em]">{tr("Ποιοι είμαστε")}</p>
             <h2 className="font-serif mt-3 text-3xl font-bold sm:text-4xl">{storefront.storeName}</h2>
           </div>
           <div className="space-y-8">
@@ -143,26 +145,26 @@ export default async function ShopPage({ params }: { params: Promise<{ locale: s
       <section id="contact" className="mx-auto max-w-6xl scroll-mt-20 px-5 py-14 sm:px-8 sm:py-20">
         <div className="grid gap-8 sm:grid-cols-2 sm:items-end">
           <div>
-            <p style={{ color: colors.accent }} className="text-xs font-bold uppercase tracking-[0.22em]">Επικοινωνία</p>
+            <p style={{ color: colors.accent }} className="text-xs font-bold uppercase tracking-[0.22em]">{tr("Επικοινωνία")}</p>
             <h2 className="font-serif mt-3 text-3xl font-bold sm:text-4xl">
-              {isServices ? "Κλείσε ραντεβού ή ρώτησέ μας ό,τι θέλεις." : "Έχεις ερώτηση; Μίλα μαζί μας."}
+              {tr(isServices ? "Κλείσε ραντεβού ή ρώτησέ μας ό,τι θέλεις." : "Έχεις ερώτηση; Μίλα μαζί μας.")}
             </h2>
           </div>
           <div className="flex flex-col gap-3 sm:items-end">
             {storefront.contactPhone ? (
-              <a href={`tel:${storefront.contactPhone}`} style={{ background: colors.accent }} className="rounded-full px-6 py-3 font-bold text-white hover:opacity-90">Κάλεσε στο {storefront.contactPhone}</a>
+              <a href={`tel:${storefront.contactPhone}`} style={{ background: colors.accent }} className="rounded-full px-6 py-3 font-bold text-white hover:opacity-90">{tr("Κάλεσε στο")} {storefront.contactPhone}</a>
             ) : null}
             {storefront.contactEmail ? (
               <a href={`mailto:${storefront.contactEmail}`} style={storefront.contactPhone ? { borderColor: colors.ink } : { background: colors.accent, color: "#fff" }} className="rounded-full border px-6 py-3 font-bold hover:opacity-80">
                 {storefront.contactEmail}
               </a>
             ) : null}
-            {!hasContact ? <p className="opacity-70">Τα στοιχεία επικοινωνίας θα προστεθούν σύντομα.</p> : null}
+            {!hasContact ? <p className="opacity-70">{tr("Τα στοιχεία επικοινωνίας θα προστεθούν σύντομα.")}</p> : null}
           </div>
         </div>
       </section>
 
-      <ShopFooter shop={shop} colors={colors} />
+      <ShopFooter shop={shop} colors={colors} lang={lang} />
     </main>
   )
 }
