@@ -1,7 +1,6 @@
 import LocalizedClientLink from "@/components/molecules/LocalizedLink/LocalizedLink"
 
-const businessUrl =
-  process.env.NEXT_PUBLIC_VENDOR_URL || "http://localhost:7001"
+import { studioLoginUrl, studioRegisterUrl } from "@/lib/vitrinaki-links"
 
 const navigation = [
   { label: "Για ποιον", href: "/#for-whom" },
@@ -37,14 +36,14 @@ export const Header = ({ locale }: { locale: string }) => {
         </nav>
 
         <div className="flex shrink-0 items-center gap-2 sm:gap-3">
-          <a href={businessUrl} className="hidden text-sm font-semibold text-[#2E4A37] transition-colors hover:text-[#C0503C] sm:inline-flex">
+          <a href={studioLoginUrl} className="hidden text-sm font-semibold text-[#2E4A37] transition-colors hover:text-[#C0503C] sm:inline-flex">
             Σύνδεση
           </a>
           <a
-            href={businessUrl}
+            href={studioRegisterUrl}
             className="inline-flex min-h-10 items-center justify-center rounded-full bg-[#C0503C] px-4 py-2 text-sm font-bold text-white shadow-sm transition hover:bg-[#a5412f] sm:px-5"
           >
-            Ξεκίνα το e-shop σου
+            Άνοιξε τη βιτρίνα σου
           </a>
         </div>
       </div>

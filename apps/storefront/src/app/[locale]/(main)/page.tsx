@@ -11,8 +11,7 @@ import {
   toHreflang,
 } from "@/lib/helpers/hreflang"
 
-const businessUrl =
-  process.env.NEXT_PUBLIC_VENDOR_URL || "http://localhost:7001"
+import { studioRegisterUrl as businessUrl } from "@/lib/vitrinaki-links"
 
 const audiences = [
   { icon: "leaf", title: "Παραγωγοί", text: "Λάδι, μέλι, κρασί, τυριά. Το προϊόν σου, απευθείας στον πελάτη, σε όλη την Ελλάδα." },
@@ -60,6 +59,20 @@ const steps = [
   { number: "01", title: "Μας λες ποιος είσαι", text: "Όνομα, λογότυπο, χρώματα, τι πουλάς ή τι προσφέρεις. Αυτό που ήδη ξέρεις για τη δουλειά σου, χωρίς τεχνικούς όρους." },
   { number: "02", title: "Στήνεται η βιτρίνα σου", text: "Ένα ολοκληρωμένο e-shop με τα δικά σου χαρακτηριστικά. Το φτιάχνεις μόνος σου βήμα βήμα, ή το στήνουμε μαζί." },
   { number: "03", title: "Ανοίγεις στο ψηφιακό εμπόριο", text: "Συνδέεις τη διεύθυνσή σου, μοιράζεσαι το link και δέχεσαι παραγγελίες. Από εκεί και πέρα, μεγαλώνεις με τον δικό σου ρυθμό." },
+]
+
+const marketplaceSide = [
+  "Είσαι ένα αποτέλεσμα αναζήτησης, δίπλα στον ανταγωνιστή σου.",
+  "Ο πελάτης θυμάται την πλατφόρμα, όχι εσένα.",
+  "Ανταγωνίζεσαι μόνο στην τιμή.",
+  "Οι κανόνες αλλάζουν χωρίς να σε ρωτήσουν.",
+]
+
+const vitrinakiSide = [
+  "Είσαι ο προορισμός. Ο πελάτης έρχεται για σένα.",
+  "Το όνομα, το λογότυπο και οι πελάτες είναι δικά σου.",
+  "Ξεχωρίζεις με την ιστορία και την ποιότητά σου.",
+  "Αποφασίζεις εσύ πώς δείχνεις και τι πουλάς.",
 ]
 
 const faqs = [
@@ -193,22 +206,23 @@ export default async function Home({
       />
 
       {/* Hero */}
-      <section className="relative border-b border-[#eee4d6] bg-[radial-gradient(circle_at_0%_0%,#f4e6d5_0,transparent_40%),#F7F2E8]">
-        <div className="mx-auto grid max-w-[1400px] items-center gap-10 px-5 py-12 sm:px-8 md:py-16 lg:grid-cols-[0.95fr_1.05fr] lg:gap-14 lg:px-10 lg:py-20">
+      <section className="relative border-b border-[#eee4d6] bg-[#F7F2E8]">
+        <div className="mx-auto grid max-w-[1400px] items-center gap-12 px-5 pb-14 pt-10 sm:px-8 md:pt-14 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16 lg:px-10 lg:pb-20 lg:pt-16">
           <div className="relative z-10">
-            <p className="inline-flex items-center gap-2 rounded-full border border-[#e3d8c6] bg-white/70 px-3 py-1 text-xs font-bold text-[#2E4A37]">
+            <p className="inline-flex items-center gap-2 rounded-full border border-[#e3d8c6] bg-white/70 px-3 py-1 text-xs font-bold">
               <span className="h-1.5 w-1.5 rounded-full bg-[#C0503C]" />
               ΤΟ <span className="text-[#265E8E]">vitrinaki</span> σου, στο ψηφιακό εμπόριο
             </p>
-            <h1 className="font-serif mt-6 max-w-2xl text-4xl font-extrabold leading-[1.06] tracking-tight sm:text-5xl lg:text-6xl">
-              Η βιτρίνα σου <span className="text-[#C0503C]">στο ψηφιακό εμπόριο.</span>
+            <h1 className="font-serif mt-6 text-[2.6rem] font-extrabold leading-[1.02] tracking-tight sm:text-6xl lg:text-[4.6rem]">
+              Σταμάτα να νοικιάζεις ράφι σε ξένο μαγαζί.
+              <span className="mt-2 block text-[#C0503C]">Άνοιξε τη δική σου βιτρίνα.</span>
             </h1>
-            <p className="mt-6 max-w-xl text-base leading-7 text-[#456257] sm:text-lg">
-              Ένα ολοκληρωμένο, επαγγελματικό e-shop με το όνομα, το λογότυπο και τα χρώματα της επιχείρησής σου, στη δική σου διεύθυνση. Εσύ μας λες τι κάνεις. Εμείς σε βάζουμε στη μεγάλη βιτρίνα.
+            <p className="mt-7 max-w-xl text-base leading-7 text-[#456257] sm:text-lg">
+              Στα marketplaces είσαι ένα ακόμη προϊόν δίπλα στον ανταγωνιστή σου, με τους δικούς τους κανόνες. Στο Vitrinaki αποκτάς ολοκληρωμένο e-shop με το όνομα, το λογότυπο και τα χρώματά σου, στη δική σου διεύθυνση. Οι πελάτες σου μένουν δικοί σου.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <a href={businessUrl} className="inline-flex min-h-12 items-center justify-center rounded-full bg-[#C0503C] px-6 py-3 font-bold text-white shadow-lg shadow-[#C0503C]/20 transition hover:-translate-y-0.5 hover:bg-[#a5412f]">
-                Ξεκίνα το e-shop σου <span className="ml-2" aria-hidden="true">→</span>
+                Άνοιξε τη βιτρίνα σου <span className="ml-2" aria-hidden="true">→</span>
               </a>
               <a href="#vitrina" className="inline-flex min-h-12 items-center justify-center rounded-full border border-[#aabdb1] bg-white/80 px-6 py-3 font-bold transition hover:bg-white">
                 Δες καταστήματα
@@ -217,15 +231,52 @@ export default async function Home({
             <p className="mt-6 text-sm text-[#5c7268]">Χωρίς τεχνικές γνώσεις. Και χωρίς να το κάνεις μόνος σου.</p>
           </div>
 
-          <div className="relative mx-auto min-h-[420px] w-full max-w-[720px] sm:min-h-[480px]" aria-hidden="true">
-            <div className="absolute inset-x-6 top-6 bottom-2 rounded-[2rem] bg-[#e7e2d6]" />
-            <SitePreview site={heroSites[0]} address={siteAddress(heroSites[0])} className="absolute left-0 top-0 w-[64%] -rotate-2" />
-            <SitePreview site={heroSites[1]} address={siteAddress(heroSites[1])} className="absolute right-0 top-14 w-[56%] rotate-2" />
-            <SitePreview site={heroSites[2]} address={siteAddress(heroSites[2])} className="absolute bottom-0 left-[18%] w-[58%]" />
+          {/* A shop window: the awning from the logo over live shops. */}
+          <div className="relative mx-auto w-full max-w-[640px]" aria-hidden="true">
+            <svg viewBox="0 0 640 70" className="relative z-10 block w-full drop-shadow-sm" preserveAspectRatio="none">
+              <rect x="0" y="0" width="640" height="14" rx="7" fill="#2E4A37" />
+              {Array.from({ length: 10 }).map((_, i) => (
+                <path key={i} d={`M${i * 64} 12 h64 v34 a32 22 0 0 1 -64 0 Z`} fill={i % 2 ? "#F7F2E8" : "#C0503C"} stroke="#2E4A37" strokeWidth="2" />
+              ))}
+            </svg>
+            <div className="-mt-6 rounded-b-[2rem] border-x-[10px] border-b-[10px] border-[#2E4A37] bg-[#efe8da] px-4 pb-6 pt-10 sm:px-6">
+              <div className="relative min-h-[380px] sm:min-h-[420px]">
+                <SitePreview site={heroSites[0]} address={siteAddress(heroSites[0])} className="absolute left-0 top-0 w-[66%] -rotate-2" />
+                <SitePreview site={heroSites[1]} address={siteAddress(heroSites[1])} className="absolute right-0 top-12 w-[58%] rotate-2" />
+                <SitePreview site={heroSites[2]} address={siteAddress(heroSites[2])} className="absolute bottom-0 left-[16%] w-[60%]" />
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
+      {/* Manifesto: marketplace vs your own shop window */}
+      <section className="bg-[#2E4A37] text-[#F7F2E8]">
+        <div className="mx-auto max-w-[1400px] px-5 py-14 sm:px-8 lg:px-10 lg:py-20">
+          <div className="max-w-3xl">
+            <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-[#f2a28f]">Η διαφορά</p>
+            <h2 className="font-serif mt-3 text-3xl font-extrabold leading-tight sm:text-5xl">Στο marketplace είσαι ένα αποτέλεσμα. Στη βιτρίνα σου είσαι ο προορισμός.</h2>
+          </div>
+          <div className="mt-10 grid overflow-hidden rounded-3xl border border-white/10 md:grid-cols-2">
+            <div className="bg-white/[0.03] p-6 sm:p-8">
+              <p className="text-sm font-extrabold uppercase tracking-[0.14em] text-[#9fb5a8]">Σε ξένη πλατφόρμα</p>
+              <ul className="mt-5 space-y-4 text-[#c9d6ce]">
+                {marketplaceSide.map((line) => (
+                  <li key={line} className="flex gap-3"><span className="mt-1 text-[#9fb5a8]">✕</span>{line}</li>
+                ))}
+              </ul>
+            </div>
+            <div className="bg-[#F7F2E8] p-6 text-[#2E4A37] sm:p-8">
+              <p className="text-sm font-extrabold uppercase tracking-[0.14em] text-[#C0503C]">Στο δικό σου vitrinaki</p>
+              <ul className="mt-5 space-y-4 font-semibold">
+                {vitrinakiSide.map((line) => (
+                  <li key={line} className="flex gap-3"><span className="mt-1 text-[#C0503C]">✓</span>{line}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
       {/* Who it is for */}
       <section id="for-whom" className="mx-auto max-w-[1400px] scroll-mt-20 px-5 pt-14 sm:px-8 lg:px-10 lg:pt-20">
         <div className="max-w-2xl">
@@ -392,7 +443,7 @@ export default async function Home({
             <p className="mt-3 max-w-xl text-[#5c7268]">Πες μας για την επιχείρησή σου και κάνε το πρώτο βήμα στο ψηφιακό εμπόριο. Δεν θα το κάνεις μόνος σου.</p>
           </div>
           <a href={businessUrl} className="inline-flex min-h-12 shrink-0 items-center justify-center rounded-full bg-[#C0503C] px-7 py-3 font-bold text-white shadow-lg shadow-[#C0503C]/20 transition hover:bg-[#a5412f]">
-            Ξεκίνα το e-shop σου <span className="ml-2" aria-hidden="true">→</span>
+            Άνοιξε τη βιτρίνα σου <span className="ml-2" aria-hidden="true">→</span>
           </a>
         </div>
       </section>
