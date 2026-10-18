@@ -715,6 +715,25 @@ export default async function seedDemoData({ container }: ExecArgs) {
       template: "services",
       palette: "plum",
     },
+    // Sellers from the original Mercur demo, kept on older databases.
+    "Sole Society": {
+      tagline: "Sneakers και streetwear με προσωπικότητα",
+      description: "Επιλεγμένα sneakers και casual κομμάτια για κάθε μέρα.",
+      template: "atelier",
+      palette: "forest",
+    },
+    "Kickz Corner": {
+      tagline: "Η γειτονιά των sneakers",
+      description: "Το μαγαζί της γειτονιάς για παπούτσια και αξεσουάρ, τώρα και online.",
+      template: "local",
+      palette: "ocean",
+    },
+    "Trailhead Outfitters": {
+      tagline: "Εξοπλισμός για την πόλη και το βουνό",
+      description: "Παπούτσια και ρούχα για περπάτημα, πεζοπορία και εξερεύνηση.",
+      template: "services",
+      palette: "terracotta",
+    },
   };
   const publishSampleShops = async () => {
     const storefrontBaseUrl = (process.env.VITRINAKI_STOREFRONT_URL || "http://localhost:3100").replace(/\/+$/, "");
@@ -722,7 +741,7 @@ export default async function seedDemoData({ container }: ExecArgs) {
     const { data: demoSellers } = await query.graph({
       entity: "seller",
       fields: ["id", "name", "handle", "email", "metadata"],
-      filters: { email: SELLER_CONFIGS.map((c) => c.email) },
+      filters: { name: Object.keys(SAMPLE_SHOPS) },
     });
     for (const seller of demoSellers as any[]) {
       const sample = SAMPLE_SHOPS[seller.name];
