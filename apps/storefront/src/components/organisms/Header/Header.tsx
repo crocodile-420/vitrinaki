@@ -3,7 +3,7 @@ import LocalizedClientLink from "@/components/molecules/LocalizedLink/LocalizedL
 import { LanguageSwitcher } from "@/components/molecules/LanguageSwitcher/LanguageSwitcher"
 import { HeaderShell } from "./HeaderShell"
 import { getTranslator } from "@/lib/i18n/server"
-import { studioLoginUrl, studioRegisterUrl } from "@/lib/vitrinaki-links"
+import { startHref, studioLoginUrl } from "@/lib/vitrinaki-links"
 
 const navigation = [
   { label: "Για ποιον", href: "/#for-whom" },
@@ -45,7 +45,7 @@ export const Header = async ({ locale }: { locale: string }) => {
             {tr("Σύνδεση")}
           </a>
           <a
-            href={studioRegisterUrl}
+            href={startHref(locale)}
             className="inline-flex min-h-10 items-center justify-center whitespace-nowrap rounded-full bg-[#2E4A37] px-3 py-2 text-[13px] sm:text-sm font-semibold text-[#F7F2E8] transition hover:bg-[#1f3527] sm:px-5"
           >
             {tr("Άνοιξε τη βιτρίνα σου")}
