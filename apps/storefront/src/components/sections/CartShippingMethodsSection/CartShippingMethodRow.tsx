@@ -1,5 +1,6 @@
 "use client"
 
+import { useTranslator } from "@/lib/i18n/client"
 import { Button } from "@/components/atoms"
 import { BinIcon } from "@/icons"
 
@@ -18,11 +19,12 @@ export const CartShippingMethodRow = ({
   currency_code: string
   onRemoveShippingMethod: (methodId: string) => void
 }) => {
+  const { tr } = useTranslator()
   return (
     <div className="mb-4 border rounded-md p-4 flex items-center justify-between">
       <div>
         <Text className="txt-medium-plus text-ui-fg-base mb-1">
-          {sellerName ?? "Method"}
+          {sellerName ?? tr("Τρόπος αποστολής")}
         </Text>
         <Text className="txt-medium text-ui-fg-subtle">
           {method?.name}{" "}

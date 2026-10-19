@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslator } from "@/lib/i18n/client"
 import { useCallback, useEffect, useState } from 'react';
 
 import { RadioGroup } from '@headlessui/react';
@@ -31,6 +32,7 @@ const CartPaymentSection = ({
   cart: any;
   availablePaymentMethods: StoreCardPaymentMethod[] | null;
 }) => {
+  const { tr } = useTranslator();
   const activeSession = cart.payment_collection?.payment_sessions?.find(
     (paymentSession: any) => paymentSession.status === 'pending'
   );
@@ -120,7 +122,7 @@ const CartPaymentSection = ({
           className="text-3xl-regular flex flex-row items-center items-baseline gap-x-2"
         >
           {!isOpen && paymentReady && <CheckCircleSolid />}
-          Payment
+          {tr("Πληρωμή")}
         </Heading>
         {isEditEnabled && (
           <Text>
@@ -129,7 +131,7 @@ const CartPaymentSection = ({
               onClick={handleEdit}
               variant="tonal"
             >
-              Edit
+              {tr("Επεξεργασία")}
             </Button>
           </Text>
         )}
@@ -168,12 +170,12 @@ const CartPaymentSection = ({
 
           {paidByGiftcard && (
             <div className="flex w-1/3 flex-col">
-              <Text className="txt-medium-plus text-ui-fg-base mb-1">Payment method</Text>
+              <Text className="txt-medium-plus text-ui-fg-base mb-1">{tr("Τρόπος πληρωμής")}</Text>
               <Text
                 className="txt-medium text-ui-fg-subtle"
                 data-testid="payment-method-summary"
               >
-                Gift card
+                {tr("Δωροκάρτα")}
               </Text>
             </div>
           )}
@@ -190,8 +192,8 @@ const CartPaymentSection = ({
             disabled={(isStripe && !cardComplete) || (!selectedPaymentMethod && !paidByGiftcard)}
           >
             {!activeSession && isStripeFunc(selectedPaymentMethod)
-              ? ' Enter card details'
-              : 'Continue to review'}
+              ? tr('Συμπλήρωσε τα στοιχεία της κάρτας')
+              : tr('Συνέχεια στον έλεγχο')}
           </Button>
         </div>
 
@@ -199,16 +201,16 @@ const CartPaymentSection = ({
           {cart && paymentReady && activeSession ? (
             <div className="flex w-full items-start gap-x-1">
               <div className="flex w-1/3 flex-col">
-                <Text className="txt-medium-plus text-ui-fg-base mb-1">Payment method</Text>
+                <Text className="txt-medium-plus text-ui-fg-base mb-1">{tr("Τρόπος πληρωμής")}</Text>
                 <Text
                   className="txt-medium text-ui-fg-subtle"
                   data-testid="payment-method-summary"
                 >
-                  {paymentInfoMap[activeSession?.provider_id]?.title || activeSession?.provider_id}
+                  {tr(paymentInfoMap[activeSession?.provider_id]?.title || activeSession?.provider_id)}
                 </Text>
               </div>
               <div className="flex w-1/3 flex-col">
-                <Text className="txt-medium-plus text-ui-fg-base mb-1">Payment details</Text>
+                <Text className="txt-medium-plus text-ui-fg-base mb-1">{tr("Στοιχεία πληρωμής")}</Text>
                 <div
                   className="txt-medium text-ui-fg-subtle flex items-center gap-2"
                   data-testid="payment-details-summary"
@@ -219,19 +221,19 @@ const CartPaymentSection = ({
                   <Text>
                     {isStripeFunc(selectedPaymentMethod) && cardBrand
                       ? cardBrand
-                      : 'Another step will appear'}
+                      : tr('Θα εμφανιστεί ακόμη ένα βήμα')}
                   </Text>
                 </div>
               </div>
             </div>
           ) : paidByGiftcard ? (
             <div className="flex w-1/3 flex-col">
-              <Text className="txt-medium-plus text-ui-fg-base mb-1">Payment method</Text>
+              <Text className="txt-medium-plus text-ui-fg-base mb-1">{tr("Τρόπος πληρωμής")}</Text>
               <Text
                 className="txt-medium text-ui-fg-subtle"
                 data-testid="payment-method-summary"
               >
-                Gift card
+                {tr("Δωροκάρτα")}
               </Text>
             </div>
           ) : null}

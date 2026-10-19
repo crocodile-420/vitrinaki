@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslator } from "@/lib/i18n/client"
 import { useEffect, useRef, useState, useTransition } from 'react';
 
 import { Button, Card, Input } from '@/components/atoms';
@@ -9,6 +10,7 @@ import { toast } from '@/lib/helpers/toast';
 import { cn } from '@/lib/utils';
 
 export const PromoCode = ({ cart, defaultOpen = false }: { cart: any; defaultOpen?: boolean }) => {
+  const { tr } = useTranslator();
   const [isOpen, setIsOpen] = useState(defaultOpen);
   const [height, setHeight] = useState(0);
   const contentRef = useRef<HTMLDivElement>(null);
@@ -42,12 +44,12 @@ export const PromoCode = ({ cart, defaultOpen = false }: { cart: any; defaultOpe
       }
 
       if (!result.applied) {
-        toast.info({ title: 'Promotion code not found' });
+        toast.info({ title: tr('Ο κωδικός προσφοράς δεν βρέθηκε') });
         setHasError(true);
         return;
       }
 
-      toast.success({ title: 'Promotion code applied' });
+      toast.success({ title: tr('Ο κωδικός προσφοράς εφαρμόστηκε') });
       setPromoCode('');
       setHasError(false);
     });
@@ -59,9 +61,9 @@ export const PromoCode = ({ cart, defaultOpen = false }: { cart: any; defaultOpe
     startTransition(async () => {
       try {
         await deletePromotionCode(code);
-        toast.success({ title: 'Promotion code removed' });
+        toast.success({ title: tr('Ο κωδικός προσφοράς αφαιρέθηκε') });
       } catch {
-        toast.info({ title: 'Failed to remove promotion code' });
+        toast.info({ title: tr('Δεν ήταν δυνατή η αφαίρεση του κωδικού') });
       }
     });
   };
@@ -81,7 +83,7 @@ export const PromoCode = ({ cart, defaultOpen = false }: { cart: any; defaultOpe
       >
         <div className="flex items-center gap-2">
           <DiscountIcon size={20} />
-          <h4 className="label-md">Have promo code?</h4>
+          <h4 className="label-md">{tr("Έχεις κωδικό προσφοράς;")}</h4>
         </div>
         <CollapseIcon
           size={20}
@@ -110,7 +112,7 @@ export const PromoCode = ({ cart, defaultOpen = false }: { cart: any; defaultOpe
                   setHasError(false);
                 }}
                 onKeyDown={handleKeyDown}
-                placeholder="Enter code"
+                placeholder={tr("Γράψε τον κωδικό")}
                 error={hasError}
                 className="h-12 flex-grow"
               />
@@ -122,7 +124,7 @@ export const PromoCode = ({ cart, defaultOpen = false }: { cart: any; defaultOpe
                 className="mt-2 h-12"
                 variant="filled"
               >
-                ACTIVATE
+                {tr("Εφαρμογή")}
               </Button>
             </div>
           ) : (

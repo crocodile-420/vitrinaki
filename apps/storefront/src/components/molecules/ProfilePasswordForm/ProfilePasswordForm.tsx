@@ -1,5 +1,6 @@
 "use client"
 
+import { useTranslator } from "@/lib/i18n/client"
 import { Button, Card } from "@/components/atoms"
 import { LabeledInput } from "@/components/cells"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -41,6 +42,7 @@ const Form = ({
   form: UseFormReturn<ProfilePasswordFormData>
   token?: string
 }) => {
+  const { tr } = useTranslator()
   const [success, setSuccess] = useState(false)
   const [confirmPasswordError, setConfirmPasswordError] = useState<
     FieldError | undefined
@@ -62,7 +64,7 @@ const Form = ({
   const updatePassword = async (data: FieldValues) => {
     if (form.getValues("confirmPassword") !== form.getValues("newPassword")) {
       setConfirmPasswordError({
-        message: "Passwords don't match. Please enter correct password.",
+        message: "Οι κωδικοί δεν ταιριάζουν. Έλεγξέ τους ξανά.",
         type: "custom",
       } as FieldError)
       return
@@ -76,7 +78,7 @@ const Form = ({
         if (res.success) {
           setSuccess(true)
         } else {
-          toast.error(res.error || "Something went wrong")
+          toast.error(tr(res.error || "Κάτι πήγε στραβά"))
         }
       } catch (err) {
         console.log(err)
@@ -91,17 +93,17 @@ const Form = ({
         level="h1"
         className="uppercase heading-md text-primary text-center"
       >
-        Password changed
+        {tr("Ο κωδικός άλλαξε")}
       </Heading>
       <p className="text-center my-8">
-        Your are ready to log in with your new password
+        {tr("Μπορείς πλέον να συνδεθείς με τον νέο σου κωδικό")}
       </p>
       <LocalizedClientLink href="/login">
         <Button
           className="uppercase py-3 px-6 !font-semibold w-full"
           size="large"
         >
-          Log in
+          {tr("Σύνδεση")}
         </Button>
       </LocalizedClientLink>
     </div>
@@ -114,13 +116,13 @@ const Form = ({
         level="h1"
         className="uppercase heading-md text-primary"
       >
-        Set new password
+        {tr("Όρισε νέο κωδικό")}
       </Heading>
       <p className="text-secondary label-md">
-        Almost done. Enter your new password, and you&apos;re good to go.
+        {tr("Σχεδόν έτοιμα. Γράψε τον νέο σου κωδικό και είσαι έτοιμος.")}
       </p>
       <LabeledInput
-        label="Password"
+        label={tr("Κωδικός")}
         type="password"
         error={errors.newPassword as FieldError}
         {...register("newPassword")}
@@ -130,12 +132,12 @@ const Form = ({
         setError={setNewPasswordError}
       />
       <LabeledInput
-        label="Confirm password"
+        label={tr("Επιβεβαίωση κωδικού")}
         type="password"
         error={(confirmPasswordError || errors.confirmPassword) as FieldError}
         {...register("confirmPassword")}
       />
-      <Button className="w-full my-4 uppercase">Set new password</Button>
+      <Button className="w-full my-4 uppercase">{tr("Όρισε νέο κωδικό")}</Button>
     </form>
   )
 }

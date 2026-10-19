@@ -1,3 +1,4 @@
+import { getTranslator } from "@/lib/i18n/server"
 import { Suspense } from 'react';
 
 import { Metadata } from 'next';
@@ -13,16 +14,19 @@ import { retrieveCustomer } from '@/lib/data/customer';
 import { listCartShippingMethods } from '@/lib/data/fulfillment';
 import { listCartPaymentMethods } from '@/lib/data/payment';
 
-export const metadata: Metadata = {
-  title: 'Checkout',
-  description: 'My cart page - Checkout',
-  robots: { index: false, follow: false }
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const { tr } = await getTranslator();
+  return {
+    title: tr('Ολοκλήρωση παραγγελίας'),
+    robots: { index: false, follow: false }
+  };
+}
 
 export default async function CheckoutPage({}) {
+  const { tr } = await getTranslator();
   return (
     <Suspense
-      fallback={<div className="container flex items-center justify-center" data-testid="checkout-page-loading">Loading...</div>}
+      fallback={<div className="container flex items-center justify-center" data-testid="checkout-page-loading">{tr("Φόρτωση...")}</div>}
     >
       <CheckoutPageContent />
     </Suspense>

@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslator } from "@/lib/i18n/client"
 import { useState } from 'react';
 
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -32,6 +33,7 @@ export const LoginForm = () => {
 };
 
 const Form = () => {
+  const { tr } = useTranslator();
   const [isAuthError, setIsAuthError] = useState(false);
   const {
     handleSubmit,
@@ -54,7 +56,7 @@ const Form = () => {
       router.push('/user');
       await transferCart();
     } else {
-      toast.error({ title: res.message || 'An error occurred. Please try again.' });
+      toast.error({ title: tr(res.message || 'Κάτι πήγε στραβά. Δοκίμασε ξανά.') });
     }
 
     setIsAuthError(false);
@@ -67,10 +69,10 @@ const Form = () => {
 
   const getAuthMessage = () => {
     if (isSessionExpired) {
-      return 'Your session has expired. Please log in to continue.';
+      return tr('Η σύνδεσή σου έληξε. Συνδέσου ξανά για να συνεχίσεις.');
     }
     if (isSessionRequired) {
-      return 'Please log in to continue.';
+      return tr('Συνδέσου για να συνεχίσεις.');
     }
     return null;
   };
@@ -95,15 +97,15 @@ const Form = () => {
           className="rounded-sm border p-4"
           data-testid="login-form-container"
         >
-          <h1 className="heading-md mb-8 uppercase text-primary">Log in</h1>
+          <h1 className="heading-md mb-8 uppercase text-primary">{tr("Σύνδεση")}</h1>
           <form
             onSubmit={handleSubmit(submit)}
             data-testid="login-form"
           >
             <div className="space-y-4">
               <LabeledInput
-                label="E-mail"
-                placeholder="Your e-mail address"
+                label={tr("Email")}
+                placeholder={tr("Η διεύθυνση email σου")}
                 error={
                   (errors.email as FieldError) ||
                   (isAuthError ? ({ message: '' } as FieldError) : undefined)
@@ -114,8 +116,8 @@ const Form = () => {
                 })}
               />
               <LabeledInput
-                label="Password"
-                placeholder="Your password"
+                label={tr("Κωδικός")}
+                placeholder={tr("Ο κωδικός σου")}
                 type="password"
                 error={
                   (errors.password as FieldError) ||
@@ -133,7 +135,7 @@ const Form = () => {
               className="label-md mt-4 block text-right uppercase text-action-on-secondary"
               data-testid="login-forgot-password-link"
             >
-              Forgot your password?
+              {tr("Ξέχασες τον κωδικό σου;")}
             </Link>
 
             <Button
@@ -141,14 +143,14 @@ const Form = () => {
               disabled={isSubmitting}
               data-testid="login-submit-button"
             >
-              Log in
+              {tr("Σύνδεση")}
             </Button>
           </form>
         </div>
 
         <div className="rounded-sm border p-4">
           <h2 className="heading-md mb-4 uppercase text-primary">
-            Don&apos;t have an account yet?
+            {tr("Δεν έχεις ακόμη λογαριασμό;")}
           </h2>
           <Link
             href="/register"
@@ -158,7 +160,7 @@ const Form = () => {
               variant="tonal"
               className="mt-8 flex w-full justify-center uppercase"
             >
-              Create account
+              {tr("Δημιουργία λογαριασμού")}
             </Button>
           </Link>
         </div>

@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslator } from "@/lib/i18n/client"
 import { useState } from 'react';
 
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -30,6 +31,7 @@ export const ForgotPasswordForm = () => {
 };
 
 const Form = () => {
+  const { tr } = useTranslator();
   const {
     handleSubmit,
     register,
@@ -43,14 +45,14 @@ const Form = () => {
     const result = await sendResetPasswordEmail(data.email);
 
     if (!result.success) {
-      toast.error({ title: result.error || 'An error occurred. Please try again.' });
+      toast.error({ title: tr(result.error || 'Κάτι πήγε στραβά. Δοκίμασε ξανά.') });
       return;
     }
 
     reset({ email: '' });
 
     toast.success({
-      title: `Password reset was requested. If an account exists for ${data.email}, you’ll receive an email with a reset link. Check your inbox and spam folder - the link is valid for one hour.`
+      title: `${tr('Το αίτημα επαναφοράς κωδικού στάλθηκε. Αν υπάρχει λογαριασμός για το')} ${data.email}, ${tr('θα λάβεις email με σύνδεσμο επαναφοράς. Έλεγξε τα εισερχόμενα και τα ανεπιθύμητα — ο σύνδεσμος ισχύει για μία ώρα.')}`
     });
   };
 
@@ -59,9 +61,9 @@ const Form = () => {
       className="mx-auto mt-6 w-full max-w-xl space-y-4 rounded-sm border p-4"
       data-testid="forgot-password-form-container"
     >
-      <h1 className="heading-md my-0 mb-2 uppercase text-primary">Forgot your password?</h1>
+      <h1 className="heading-md my-0 mb-2 uppercase text-primary">{tr("Ξέχασες τον κωδικό σου;")}</h1>
       <p className="text-md">
-        Enter the email you used to sign up and we&#39;ll send you a password reset email. email.
+        {tr("Γράψε το email με το οποίο εγγράφηκες και θα σου στείλουμε email για να ορίσεις νέο κωδικό.")}
       </p>
       <form
         onSubmit={handleSubmit(submit)}
@@ -69,8 +71,8 @@ const Form = () => {
       >
         <div className="space-y-4">
           <LabeledInput
-            label="E-mail"
-            placeholder="Your e-mail address"
+            label={tr("Email")}
+            placeholder={tr("Η διεύθυνση email σου")}
             error={errors.email as FieldError}
             data-testid="forgot-password-email-input"
             {...register('email')}
@@ -83,7 +85,7 @@ const Form = () => {
             disabled={isSubmitting}
             data-testid="forgot-password-submit-button"
           >
-            Reset Password
+            {tr("Επαναφορά κωδικού")}
           </Button>
 
           <Link
@@ -95,7 +97,7 @@ const Form = () => {
               variant="tonal"
               className="flex w-full justify-center uppercase"
             >
-              Back to log in
+              {tr("Πίσω στη σύνδεση")}
             </Button>
           </Link>
         </div>

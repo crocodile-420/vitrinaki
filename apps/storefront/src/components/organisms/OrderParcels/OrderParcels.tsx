@@ -1,3 +1,4 @@
+import { getTranslator } from "@/lib/i18n/server"
 import { Avatar } from "@/components/atoms"
 import { Chat } from "../Chat/Chat"
 import { retrieveCustomer } from "@/lib/data/customer"
@@ -7,13 +8,14 @@ import { OrderParcelActions } from "@/components/molecules/OrderParcelActions/Or
 
 export const OrderParcels = async ({ orders }: { orders: any[] }) => {
   const user = await retrieveCustomer()
+  const { tr } = await getTranslator()
 
   return (
     <>
       {orders.map((order) => (
         <div key={order.id} className="w-full mb-8">
           <div className="border rounded-sm p-4 bg-component-secondary font-semibold text-secondary uppercase">
-            Order #{order.display_id}
+            {tr("Παραγγελία")} #{order.display_id}
           </div>
           <div className="border rounded-sm">
             <div className="p-4 border-b">

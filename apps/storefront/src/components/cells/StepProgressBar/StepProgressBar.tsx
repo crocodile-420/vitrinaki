@@ -1,3 +1,6 @@
+"use client"
+
+import { useTranslator } from "@/lib/i18n/client"
 import { cn } from "@/lib/utils"
 
 export const StepProgressBar = ({
@@ -7,6 +10,7 @@ export const StepProgressBar = ({
   steps: string[]
   currentStep: number
 }) => {
+  const { tr } = useTranslator()
   const length = steps.length || 0
 
   return (
@@ -19,7 +23,7 @@ export const StepProgressBar = ({
               index <= currentStep ? "!font-bold" : "!font-normal"
             )}
           >
-            {step}
+            {tr(step)}
           </p>
           <div className="absolute bottom-2 left-0 w-full flex items-center justify-center">
             <div

@@ -1,5 +1,6 @@
 "use client"
 
+import { useTranslator } from "@/lib/i18n/client"
 import ErrorMessage from "@/components/molecules/ErrorMessage/ErrorMessage"
 import { isManual, isStripe } from "../../../lib/constants"
 import { placeOrder } from "@/lib/data/cart"
@@ -19,6 +20,7 @@ const PaymentButton: React.FC<PaymentButtonProps> = ({
   cart,
   "data-testid": dataTestId,
 }) => {
+  const { tr } = useTranslator()
   const notReady =
     !cart ||
     !cart.shipping_address ||
@@ -44,7 +46,7 @@ const PaymentButton: React.FC<PaymentButtonProps> = ({
     default:
       return (
         <Button disabled className="w-full">
-          Select a payment method
+          {tr("Επίλεξε τρόπο πληρωμής")}
         </Button>
       )
   }
@@ -59,6 +61,7 @@ const StripePaymentButton = ({
   notReady: boolean
   "data-testid"?: string
 }) => {
+  const { tr } = useTranslator()
   const [submitting, setSubmitting] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [disabled, setDisabled] = useState(true)
@@ -157,7 +160,7 @@ const StripePaymentButton = ({
         loading={submitting}
         className="w-full"
       >
-        Place order
+        {tr("Ολοκλήρωση αγοράς")}
       </Button>
       <ErrorMessage
         error={errorMessage}
@@ -168,6 +171,7 @@ const StripePaymentButton = ({
 }
 
 const ManualTestPaymentButton = ({ notReady }: { notReady: boolean }) => {
+  const { tr } = useTranslator()
   const [submitting, setSubmitting] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
@@ -200,7 +204,7 @@ const ManualTestPaymentButton = ({ notReady }: { notReady: boolean }) => {
         className="w-full"
         loading={submitting}
       >
-        Place order
+        {tr("Ολοκλήρωση αγοράς")}
       </Button>
       <ErrorMessage
         error={errorMessage}

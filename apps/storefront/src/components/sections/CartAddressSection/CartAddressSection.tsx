@@ -1,5 +1,6 @@
 "use client"
 
+import { useTranslator } from "@/lib/i18n/client"
 import { Heading, Text, useToggleState } from "@medusajs/ui"
 import { setAddresses } from "@/lib/data/cart"
 import compareAddresses from "@/lib/helpers/compare-addresses"
@@ -20,6 +21,7 @@ export const CartAddressSection = ({
   cart: HttpTypes.StoreCart | null
   customer: HttpTypes.StoreCustomer | null
 }) => {
+  const { tr } = useTranslator()
   const searchParams = useSearchParams()
   const router = useRouter()
   const pathname = usePathname()
@@ -60,12 +62,12 @@ export const CartAddressSection = ({
           level="h2"
           className="flex flex-row text-3xl-regular gap-x-2 items-baseline items-center"
         >
-          {!isOpen && <CheckCircleSolid />} Shipping Address
+          {!isOpen && <CheckCircleSolid />} {tr("Διεύθυνση αποστολής")}
         </Heading>
         {!isOpen && isAddress && (
           <Text>
             <Button onClick={handleEdit} variant="tonal" data-testid="checkout-address-edit-button">
-              Edit
+              {tr("Επεξεργασία")}
             </Button>
           </Text>
         )}
@@ -90,7 +92,7 @@ export const CartAddressSection = ({
               data-testid="submit-address-button"
               variant="tonal"
             >
-              Save
+              {tr("Αποθήκευση")}
             </Button>
             <ErrorMessage
               error={message !== "success" && message}
@@ -132,7 +134,7 @@ export const CartAddressSection = ({
         {isAddress && !searchParams.get("step") && (
           <LocalizedClientLink href="/checkout?step=delivery">
             <Button className="mt-6" variant="tonal">
-              Continue to Delivery
+              {tr("Συνέχεια στην αποστολή")}
             </Button>
           </LocalizedClientLink>
         )}

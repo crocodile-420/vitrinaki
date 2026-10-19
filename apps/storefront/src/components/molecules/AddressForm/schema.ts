@@ -2,19 +2,19 @@ import { z } from "zod"
 
 export const addressSchema = z.object({
   addressId: z.string().optional(),
-  addressName: z.string().nonempty("Address name is required"),
-  firstName: z.string().nonempty("First name is required"),
-  lastName: z.string().nonempty("Last name is required"),
-  address: z.string().nonempty("Address is required"),
-  city: z.string().nonempty("City is required"),
-  countryCode: z.string().nonempty("Country is required"),
-  postalCode: z.string().nonempty("Postal code is required"),
+  addressName: z.string().nonempty("Το όνομα διεύθυνσης είναι υποχρεωτικό"),
+  firstName: z.string().nonempty("Το όνομα είναι υποχρεωτικό"),
+  lastName: z.string().nonempty("Το επώνυμο είναι υποχρεωτικό"),
+  address: z.string().nonempty("Η διεύθυνση είναι υποχρεωτική"),
+  city: z.string().nonempty("Η πόλη είναι υποχρεωτική"),
+  countryCode: z.string().nonempty("Η χώρα είναι υποχρεωτική"),
+  postalCode: z.string().nonempty("Ο ταχυδρομικός κώδικας είναι υποχρεωτικός"),
   company: z.string().optional(),
   province: z.string().optional(),
   phone: z
     .string()
-    .nonempty("Phone number is required")
-    .regex(/^\+?[0-9\s\-()]+$/, "Invalid phone number format"),
+    .nonempty("Το τηλέφωνο είναι υποχρεωτικό")
+    .regex(/^\+?[0-9\s\-()]+$/, "Μη έγκυρος αριθμός τηλεφώνου"),
   metadata: z.record(z.string(), z.any()).optional(),
 })
 
