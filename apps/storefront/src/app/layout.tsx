@@ -21,7 +21,6 @@ export const metadata: Metadata = {
   },
   description:
     process.env.NEXT_PUBLIC_SITE_DESCRIPTION || 'Vitrinaki.gr — Η βιτρίνα σου στο ψηφιακό εμπόριο',
-  icons: { icon: '/brand/vitrinaki-icon.png', apple: '/brand/vitrinaki-icon.png' },
   metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3100')
 };
 
