@@ -14,7 +14,7 @@ import {
   toHreflang,
 } from "@/lib/helpers/hreflang"
 
-import { studioRegisterUrl as businessUrl } from "@/lib/vitrinaki-links"
+import { startHref } from "@/lib/vitrinaki-links"
 
 const audiences = [
   { icon: "leaf", title: "Παραγωγοί", text: "Λάδι, μέλι, κρασί, τυριά. Το προϊόν σου, απευθείας στον πελάτη, σε όλη την Ελλάδα." },
@@ -232,6 +232,7 @@ export default async function Home({
   const protocol = headersList.get("x-forwarded-proto") || "https"
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || `${protocol}://${host}`
 
+  const businessUrl = startHref(locale)
   const published = await listPublishedStorefronts()
 
   return (
