@@ -5,6 +5,7 @@ export type DirectoryStorefront = {
   description: string
   template: "atelier" | "local" | "services"
   palette: "forest" | "terracotta" | "ocean" | "plum"
+  businessType?: string | null
   logo: string | null
   banner: string | null
   customDomain: string
@@ -28,9 +29,10 @@ export async function listPublishedStorefronts(): Promise<DirectoryStorefront[]>
 }
 
 export const paletteColors = {
-  forest: { page: "#f7f6ef", ink: "#173f34", accent: "#173f34", soft: "#e7ede4" },
-  terracotta: { page: "#fbf4ef", ink: "#633729", accent: "#b95232", soft: "#f4e1d7" },
-  ocean: { page: "#f0f6f7", ink: "#174757", accent: "#1e7184", soft: "#dcecef" },
+  // The three Vitrinaki brand palettes: κυπαρισσί, κεραμιδί, μπλε on cream.
+  forest: { page: "#F7F2E8", ink: "#2E4A37", accent: "#2E4A37", soft: "#E6ECE3" },
+  terracotta: { page: "#FBF4EE", ink: "#5E2E24", accent: "#C0503C", soft: "#F4E1D9" },
+  ocean: { page: "#F3F6F9", ink: "#1B3F5E", accent: "#265E8E", soft: "#DDE8F2" },
   plum: { page: "#f8f3f8", ink: "#593756", accent: "#7e4b78", soft: "#efe2ee" },
 } as const
 

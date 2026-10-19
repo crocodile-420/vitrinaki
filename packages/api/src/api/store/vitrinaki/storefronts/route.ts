@@ -32,6 +32,7 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
         description: storefront.description || seller.description || "",
         template: storefront.template || "atelier",
         palette: storefront.palette || "forest",
+        businessType: seller.metadata?.vitrinaki_profile?.businessType || null,
         logo: seller.logo || null,
         banner: seller.banner || null,
         customDomain: storefront.domainStatus === "verified" ? storefront.customDomain || "" : "",

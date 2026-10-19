@@ -203,6 +203,7 @@ export default function VitrinakiStorefrontSettingsPage() {
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-ui-fg-subtle">Vitrinaki Studio</p>
             <h1 className="mt-2 text-2xl font-semibold text-ui-fg-base sm:text-3xl">Το website της επιχείρησής σου</h1>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-ui-fg-subtle">Ρύθμισε την εικόνα, το περιεχόμενο και τη διεύθυνση της online βιτρίνας σου. Οι αλλαγές αποθηκεύονται στον λογαριασμό της επιχείρησής σου.</p>
+            <a href="/seller/vitrinaki-profile" className="mt-3 inline-block text-sm font-semibold text-ui-fg-interactive">Συμπλήρωσε το προφίλ καταστήματος (είδος, ωράριο, υπηρεσίες, στοιχεία) →</a>
           </div>
           <span className={`rounded-full px-3 py-1.5 text-xs font-semibold ${form.isPublished ? "bg-ui-tag-green-bg text-ui-tag-green-text" : "bg-ui-bg-subtle text-ui-fg-subtle"}`}>
             {form.isPublished ? "Δημοσιευμένο" : "Πρόχειρο"}

@@ -10,6 +10,33 @@ export type ShopSection = {
   imageUrl?: string | null
 }
 
+export type BusinessType = "retail" | "crafts" | "food" | "beauty" | "services" | "portfolio" | "other"
+export type ShopDay = { closed: boolean; open: string; close: string; open2: string; close2: string }
+
+// Public part of the Studio store profile (see packages/api/src/lib/vitrinaki-profile.ts).
+export type ShopProfile = {
+  businessType: BusinessType | null
+  businessTypeOther: string
+  story: string
+  whatsapp: string
+  viber: string
+  address: { street: string; area: string; city: string; postalCode: string; showMap: boolean }
+  hours: Record<"mon" | "tue" | "wed" | "thu" | "fri" | "sat" | "sun", ShopDay> | null
+  byAppointment: boolean
+  hoursNote: string
+  socials: { instagram: string; facebook: string; tiktok: string; website: string }
+  languages: string[]
+  delivery: { shipping: boolean; shippingAreas: string; pickup: boolean; pickupNote: string; localDelivery: boolean; localDeliveryAreas: string; note: string }
+  returnPolicy: string
+  retail: { categories: string; brands: string }
+  food: { region: string; origin: string; certifications: string[]; certificationsOther: string; ingredientsNote: string; producerSince: string }
+  crafts: { materials: string; techniques: string; madeToOrder: boolean; leadTime: string; customOrders: boolean }
+  services: { items: { name: string; duration: string; price: string; description: string }[]; serviceArea: string; online: boolean; atClient: boolean }
+  beauty: { specialties: string; brands: string }
+  portfolio: { skills: string[]; projects: { title: string; description: string; imageUrl: string; link: string; year: string }[]; clients: string; availability: string }
+  credentials: string
+}
+
 export type ShopResponse = {
   seller: {
     id: string
@@ -32,6 +59,7 @@ export type ShopResponse = {
     domainStatus?: string
     sections?: ShopSection[]
   }
+  profile?: ShopProfile | null
 }
 
 export async function loadShop(handle: string): Promise<ShopResponse | null> {

@@ -1,6 +1,8 @@
 import type { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
 import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 
+import { publicProfileView } from "../../../../../lib/vitrinaki-profile"
+
 type PublicStorefront = {
   handle?: string
   storeName?: string
@@ -11,6 +13,9 @@ type PublicStorefront = {
   contactEmail?: string
   contactPhone?: string
   isPublished?: boolean
+  customDomain?: string
+  domainStatus?: string
+  sections?: unknown[]
 }
 
 export async function GET(req: MedusaRequest, res: MedusaResponse) {
@@ -72,5 +77,8 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
         imageUrl: typeof section.imageUrl === "string" ? section.imageUrl : null,
       })) : [],
     },
+    // Whitelisted public answers of the Studio store profile. Private legal and
+    // owner details live in a separate table and are never read here.
+    profile: seller.metadata?.vitrinaki_profile ? publicProfileView(seller.metadata.vitrinaki_profile) : null,
   })
 }
