@@ -506,6 +506,11 @@ const en: Record<string, string> = {
   "Έλαιο τριαντάφυλλου": "Rose oil",
   "Η διεύθυνσή σου:": "Your address:",
   "Επαγγελματίες & Portfolio": "Professionals & portfolio",
+  "Από την Ελλάδα": "From Greece",
+  "μέσω vitrinaki.gr": "via vitrinaki.gr",
+  "σε όλο τον κόσμο": "to the whole world",
+  "Από την Ελλάδα, μέσω vitrinaki.gr, σε πελάτες σε όλο τον κόσμο": "From Greece, via vitrinaki.gr, to customers all over the world",
+  "Το επιχειρείν εστί φιλοσοφείν": "To do business is to philosophise",
 }
 
 const dictionaries: Record<Lang, Record<string, string>> = { el: {}, en }
