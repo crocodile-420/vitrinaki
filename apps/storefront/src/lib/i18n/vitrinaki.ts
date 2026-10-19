@@ -491,6 +491,21 @@ const en: Record<string, string> = {
   "Φυσική ομορφιά για καθημερινές στιγμές": "Natural beauty for everyday moments",
   "Χαμηλό": "Low",
   "Χειροποίητο σαπούνι": "Handmade soap",
+  // Homepage (photo hero)
+  "Τι είναι το Vitrinaki": "What Vitrinaki is",
+  "Η ολοκληρωμένη λύση για": "The complete solution for",
+  "μικρές επιχειρήσεις.": "small businesses.",
+  "Επαγγελματικό e-shop, διαχείριση προϊόντων και αποθέματος, προβολή στο Vitrinaki. Όλα σε μία πλατφόρμα.": "A professional e-shop, product and stock management, visibility on Vitrinaki. All in one platform.",
+  "e-shop με διαχείριση αποθέματος": "E-shop with stock management",
+  "Προβολή στο Vitrinaki": "Visibility on Vitrinaki",
+  "Υποστήριξη από ανθρώπους": "Support from real people",
+  "Κρατήσεις online": "Online bookings",
+  "Δημιούργησε εύκολα το δικό σου e-shop, πούλα τα προϊόντα σου, διαχειρίσου το απόθεμα και βρες περισσότερους πελάτες μέσα από το Vitrinaki.": "Easily create your own e-shop, sell your products, manage your stock and reach more customers through Vitrinaki.",
+  "Παιώνιες σε βάζο": "Peonies in a vase",
+  "Κάκτος σε πήλινη γλάστρα": "Cactus in a clay pot",
+  "Έλαιο τριαντάφυλλου": "Rose oil",
+  "Η διεύθυνσή σου:": "Your address:",
+  "Επαγγελματίες & Portfolio": "Professionals & portfolio",
 }
 
 const dictionaries: Record<Lang, Record<string, string>> = { el: {}, en }
