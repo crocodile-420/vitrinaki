@@ -6,7 +6,7 @@ export const paymentInfoMap: Record<
   { title: string; icon: React.JSX.Element }
 > = {
   pp_stripe_stripe: {
-    title: "Credit card",
+    title: "Πιστωτική κάρτα",
     icon: <CreditCard />,
   },
   "pp_stripe-ideal_stripe": {
@@ -22,7 +22,7 @@ export const paymentInfoMap: Record<
     icon: <CreditCard />,
   },
   pp_system_default: {
-    title: "Manual Payment",
+    title: "Χειροκίνητη πληρωμή",
     icon: <Cash />,
   },
 }

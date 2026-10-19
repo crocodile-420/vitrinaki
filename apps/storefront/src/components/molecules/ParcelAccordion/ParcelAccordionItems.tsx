@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslator } from "@/lib/i18n/client"
 import { useEffect, useRef, useState } from 'react';
 
 import { Card } from '@/components/atoms';
@@ -19,6 +20,7 @@ export const ParcelAccordionItems = ({
   currency_code: string;
   shippingPriceTestId?: string;
 }) => {
+  const { tr } = useTranslator();
   const [isOpen, setIsOpen] = useState(false);
   const [height, setHeight] = useState(0);
 
@@ -50,14 +52,14 @@ export const ParcelAccordionItems = ({
         onClick={openHandler}
       >
         <p className="label-md col-span-3">
-          Order #{order.display_id}:{' '}
-          <span className="font-semibold uppercase text-primary">{steps[status]}</span>
+          {tr('Παραγγελία')} #{order.display_id}:{' '}
+          <span className="font-semibold uppercase text-primary">{tr(steps[status])}</span>
         </p>
         <p className="label-md col-span-2 px-2">
-          Seller: <span className="font-semibold text-primary">{order.seller.name}</span>
+          {tr('Πωλητής')}: <span className="font-semibold text-primary">{order.seller.name}</span>
         </p>
         <p className="label-md col-span-2 px-2 text-center">
-          Shipping:{' '}
+          {tr('Αποστολή')}:{' '}
           <span
             className="font-semibold text-primary"
             data-testid={shippingPriceTestId}
@@ -68,7 +70,7 @@ export const ParcelAccordionItems = ({
 
         <div className="flex items-center justify-end gap-4">
           <p className="label-md">
-            {totalItems > 1 ? `${totalItems} Items` : `${totalItems} Item`}
+            {totalItems} {totalItems > 1 ? tr('προϊόντα') : tr('προϊόν')}
           </p>
           <CollapseIcon
             size={20}

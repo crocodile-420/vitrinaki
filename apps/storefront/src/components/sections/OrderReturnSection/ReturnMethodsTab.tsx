@@ -1,3 +1,6 @@
+"use client"
+
+import { useTranslator } from "@/lib/i18n/client"
 import { Card, Checkbox } from "@/components/atoms"
 
 export const ReturnMethodsTab = ({
@@ -11,18 +14,19 @@ export const ReturnMethodsTab = ({
   returnMethod: string
   seller: any
 }) => {
+  const { tr } = useTranslator()
   const noShippingMethods = !shippingMethods?.length || false
 
   return (
     <>
       <div className="mb-8">
         <Card className="bg-secondary p-4">
-          <p className="label-lg uppercase">Return methods</p>
+          <p className="label-lg uppercase">{tr("Τρόποι επιστροφής")}</p>
         </Card>
         <Card className="flex items-center justify-between p-4">
           {noShippingMethods ? (
             <div className="py-4 text-center font-bold heading-md w-full">
-              No shipping methods available
+              {tr("Δεν υπάρχουν διαθέσιμοι τρόποι αποστολής")}
             </div>
           ) : (
             <ul>
@@ -42,7 +46,7 @@ export const ReturnMethodsTab = ({
       </div>
       <div>
         <Card className="bg-secondary p-4">
-          <p className="label-lg uppercase">Shipping address</p>
+          <p className="label-lg uppercase">{tr("Διεύθυνση αποστολής")}</p>
         </Card>
         <Card className="p-4">
           <p className="label-lg">{seller.name}</p>

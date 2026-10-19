@@ -1,3 +1,6 @@
+"use client"
+
+import { useTranslator } from "@/lib/i18n/client"
 import { Listbox, Transition } from "@headlessui/react"
 import { ChevronUpDown } from "@medusajs/icons"
 import { clx } from "@medusajs/ui"
@@ -23,6 +26,7 @@ const AddressSelect = ({
   addressInput,
   onSelect,
 }: AddressSelectProps) => {
+  const { tr } = useTranslator()
   const handleSelect = (id: string) => {
     const savedAddress = addresses.find((a) => a.id === id)
     if (savedAddress) {
@@ -48,7 +52,7 @@ const AddressSelect = ({
               <span className="block truncate">
                 {selectedAddress
                   ? selectedAddress.address_name
-                  : "Choose an address"}
+                  : tr("Διάλεξε διεύθυνση")}
               </span>
               <ChevronUpDown
                 className={clx("transition-rotate duration-200", {

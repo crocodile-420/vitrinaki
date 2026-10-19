@@ -1,5 +1,6 @@
 "use client"
 
+import { useTranslator } from "@/lib/i18n/client"
 import { Avatar, Badge, Card, Divider } from "@/components/atoms"
 import { CollapseIcon } from "@/icons"
 import { cn } from "@/lib/utils"
@@ -12,6 +13,11 @@ import { convertToLocale } from "@/lib/helpers/money"
 import { StepProgressBar } from "@/components/cells/StepProgressBar/StepProgressBar"
 
 const steps = ["pending", "processing", "sent"]
+const stepLabels: Record<string, string> = {
+  pending: "Σε αναμονή",
+  processing: "Σε επεξεργασία",
+  sent: "Στάλθηκε",
+}
 
 export const SingleOrderReturn = ({
   item,
@@ -28,6 +34,7 @@ export const SingleOrderReturn = ({
   priceTestId?: string
   testIdPrefix?: string
 }) => {
+  const { tr } = useTranslator()
   const [isOpen, setIsOpen] = useState(defaultOpen)
   const [height, setHeight] = useState(0)
   const contentRef = useRef<HTMLDivElement>(null)
@@ -54,7 +61,7 @@ export const SingleOrderReturn = ({
         ...orderItem,
         reason_id:
           returnReason.find((r) => r.id === correspondingLineItem?.reason_id)
-            ?.label || "No reason provided",
+            ?.label || tr("Δεν δόθηκε λόγος"),
       }
     })
 
@@ -69,10 +76,10 @@ export const SingleOrderReturn = ({
   return (
     <>
       <Card className="bg-secondary p-4 flex justify-between mt-8" data-testid={testIdPrefix ? `${testIdPrefix}-header` : undefined}>
-        <Heading level="h2" data-testid={testIdPrefix ? `${testIdPrefix}-order-id` : undefined}>Order: #{item.order.display_id}</Heading>
+        <Heading level="h2" data-testid={testIdPrefix ? `${testIdPrefix}-order-id` : undefined}>{tr("Παραγγελία")}: #{item.order.display_id}</Heading>
         <div className="flex flex-col gap-2 items-center">
           <p className="label-sm text-secondary" data-testid={testIdPrefix ? `${testIdPrefix}-requested-date` : undefined}>
-            Return requested date:{" "}
+            {tr("Ημερομηνία αιτήματος επιστροφής")}:{" "}
             {format(item.line_items[0].created_at, "MMM dd, yyyy")}
           </p>
         </div>
@@ -83,11 +90,11 @@ export const SingleOrderReturn = ({
           onClick={() => setIsOpen(!isOpen)}
         >
           <Heading level="h3" className="uppercase label-md !font-semibold" data-testid={testIdPrefix ? `${testIdPrefix}-status` : undefined}>
-            {item.status}
+            {tr(stepLabels[item.status] ?? item.status)}
           </Heading>
           <p className="label-sm text-secondary flex gap-2" data-testid={testIdPrefix ? `${testIdPrefix}-items-count` : undefined}>
             {item.line_items.length}{" "}
-            {item.line_items.length > 1 ? "items" : "item"}
+            {item.line_items.length > 1 ? tr("προϊόντα") : tr("προϊόν")}
             <CollapseIcon
               className={cn(
                 "w-5 h-5 text-secondary transition-transform duration-300",
@@ -107,7 +114,7 @@ export const SingleOrderReturn = ({
         >
           <Divider />
           <div className="p-4 uppercase">
-            <StepProgressBar steps={steps} currentStep={currentStep} />
+            <StepProgressBar steps={steps.map((s) => stepLabels[s])} currentStep={currentStep} />
           </div>
           <Divider />
           <div className="p-4 flex justify-between">
@@ -158,7 +165,7 @@ export const SingleOrderReturn = ({
                   <div className="flex justify-between w-1/2">
                     <p className="label-md !font-semibold text-primary" data-testid={testIdPrefix ? `${testIdPrefix}-item-${filteredItem.id}-reason` : undefined}>
                       <Badge className="bg-primary text-primary border rounded-sm">
-                        {filteredItem.reason_id || "No reason provided"}
+                        {filteredItem.reason_id || tr("Δεν δόθηκε λόγος")}
                       </Badge>
                     </p>
                     <p className="label-md !font-semibold text-primary" data-testid={testIdPrefix ? `${testIdPrefix}-item-${filteredItem.id}-price` : undefined}>
@@ -174,7 +181,7 @@ export const SingleOrderReturn = ({
           </div>
           <Divider />
           <div className="p-4 flex justify-between">
-            <p className="label-md text-secondary">Total:</p>
+            <p className="label-md text-secondary">{tr("Σύνολο")}:</p>
             <p className="label-md !font-semibold text-primary" data-testid={priceTestId}>
               {convertToLocale({
                 amount: total,

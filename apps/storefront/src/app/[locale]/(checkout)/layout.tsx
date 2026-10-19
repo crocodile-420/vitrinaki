@@ -1,3 +1,4 @@
+import { getTranslator } from "@/lib/i18n/server"
 import { Button } from "@/components/atoms"
 import LocalizedClientLink from "@/components/molecules/LocalizedLink/LocalizedLink"
 import { CollapseIcon } from "@/icons"
@@ -8,6 +9,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const { tr } = await getTranslator()
   return (
     <>
       <header>
@@ -16,7 +18,7 @@ export default async function RootLayout({
             <LocalizedClientLink href="/cart">
               <Button variant="tonal" className="flex items-center gap-2">
                 <CollapseIcon className="rotate-90" />
-                <span className="hidden lg:block">Back to cart</span>
+                <span className="hidden lg:block">{tr("Πίσω στο καλάθι")}</span>
               </Button>
             </LocalizedClientLink>
           </div>

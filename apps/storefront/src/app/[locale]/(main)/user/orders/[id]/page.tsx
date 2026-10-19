@@ -1,3 +1,4 @@
+import { getTranslator } from "@/lib/i18n/server"
 import { UserNavigation } from "@/components/molecules"
 import { retrieveCustomer } from "@/lib/data/customer"
 import { Button } from "@/components/atoms"
@@ -14,6 +15,7 @@ export default async function UserPage({
   params: Promise<{ id: string }>
 }) {
   const { id } = await params
+  const { tr } = await getTranslator()
 
   const user = await retrieveCustomer()
   const orderGroup = (await retrieveOrderGroup(id)) as any
@@ -31,15 +33,15 @@ export default async function UserPage({
               className="label-md text-action-on-secondary uppercase flex items-center gap-2"
             >
               <ArrowLeftIcon className="size-4" />
-              All orders
+              {tr("Όλες οι παραγγελίες")}
             </Button>
           </LocalizedClientLink>
           <div className="sm:flex items-center justify-between">
             <h1 className="heading-md uppercase my-8">
-              Order set #{orderGroup.display_id}
+              {tr("Παραγγελία")} #{orderGroup.display_id}
             </h1>
             <p className="label-md text-secondary">
-              Order date:{" "}
+              {tr("Ημερομηνία παραγγελίας")}:{" "}
               <span className="text-primary">
                 {format(orderGroup.created_at || "", "yyyy-MM-dd")}
               </span>

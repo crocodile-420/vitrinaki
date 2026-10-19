@@ -1,3 +1,6 @@
+"use client"
+
+import { useTranslator } from "@/lib/i18n/client"
 import { Button, Card } from "@/components/atoms"
 import { convertToLocale } from "@/lib/helpers/money"
 import Image from "next/image"
@@ -19,6 +22,7 @@ export const ReturnSummaryTab = ({
   returnMethod: any
   handleSubmit: () => void
 }) => {
+  const { tr } = useTranslator()
   const selected = items.filter((item) =>
     selectedItems.some((i) => i.line_item_id === item.id)
   )
@@ -70,7 +74,7 @@ export const ReturnSummaryTab = ({
 
       <Card className="p-4">
         <p className="label-md flex justify-between mb-4">
-          Subtotal refund:
+          {tr("Ποσό επιστροφής")}:
           <span className="label-md !font-bold text-primary">
             {convertToLocale({
               amount: subtotal,
@@ -87,11 +91,11 @@ export const ReturnSummaryTab = ({
         >
           {tab === 0
             ? selected.length
-              ? "Continue"
-              : "Select Items"
+              ? tr("Συνέχεια")
+              : tr("Επιλογή προϊόντων")
             : !returnMethod
-            ? "Select return method"
-            : "Request return"}
+            ? tr("Διάλεξε τρόπο επιστροφής")
+            : tr("Αίτημα επιστροφής")}
         </Button>
       </Card>
     </div>

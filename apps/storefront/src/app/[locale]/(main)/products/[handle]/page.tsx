@@ -1,23 +1,10 @@
-import { ProductDetailsPage } from "@/components/sections"
+import { redirect } from "next/navigation"
+
+import { listOffers } from "@/lib/data/offers"
 import { listProducts } from "@/lib/data/products"
-import { generateProductMetadata } from "@/lib/helpers/seo"
-import type { Metadata } from "next"
 
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ handle: string; locale: string }>
-}): Promise<Metadata> {
-  const { handle, locale } = await params
-
-  const prod = await listProducts({
-    countryCode: locale,
-    queryParams: { handle: [handle], limit: 1 },
-  }).then(({ response }) => response.products[0])
-
-  return generateProductMetadata(prod, locale)
-}
-
+// Vitrinaki has no shared marketplace catalogue: every product lives in its
+// shop, so the old product URL forwards to the same product in that shop.
 export default async function ProductPage({
   params,
 }: {
@@ -25,9 +12,19 @@ export default async function ProductPage({
 }) {
   const { handle, locale } = await params
 
-  return (
-    <main className="container">
-      <ProductDetailsPage handle={handle} locale={locale} />
-    </main>
-  )
+  const product = await listProducts({
+    countryCode: locale,
+    queryParams: { handle: [handle], limit: 1 },
+  })
+    .then(({ response }) => response.products[0])
+    .catch(() => undefined)
+
+  const offers = product
+    ? await listOffers({ productId: product.id, countryCode: locale, limit: 1, offset: 0 })
+        .then((result) => result.offers)
+        .catch(() => [])
+    : []
+  const shop = (offers[0] as { seller?: { handle?: string } } | undefined)?.seller?.handle
+
+  redirect(shop ? `/${locale}/store/${shop}/products/${handle}` : `/${locale}#vitrina`)
 }

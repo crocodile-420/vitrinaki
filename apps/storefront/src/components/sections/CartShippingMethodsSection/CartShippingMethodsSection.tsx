@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslator } from "@/lib/i18n/client"
 import { Fragment, useEffect, useState, useTransition, type FC } from 'react';
 
 import { Listbox, Transition } from '@headlessui/react';
@@ -55,6 +56,7 @@ type ShippingProps = {
 };
 
 const CartShippingMethodsSection: FC<ShippingProps> = ({ cart, availableShippingMethods }) => {
+  const { tr } = useTranslator();
   const [isLoadingPrices, setIsLoadingPrices] = useState(false);
   const [calculatedPricesMap, setCalculatedPricesMap] = useState<Record<string, number>>({});
   const [error, setError] = useState<string | null>(null);
@@ -111,7 +113,7 @@ const CartShippingMethodsSection: FC<ShippingProps> = ({ cart, availableShipping
       }
     } catch (error: any) {
       setError(
-        error?.message?.replace('Error setting up the request: ', '') || 'An error occurred'
+        error?.message?.replace('Error setting up the request: ', '') || tr('Κάτι πήγε στραβά')
       );
     } finally {
       setIsLoadingPrices(false);
@@ -187,7 +189,7 @@ const CartShippingMethodsSection: FC<ShippingProps> = ({ cart, availableShipping
           className="text-3xl-regular flex flex-row items-baseline gap-x-2"
         >
           {!isOpen && (cart.shipping_methods?.length ?? 0) > 0 && <CheckCircleSolid />}
-          Delivery
+          {tr("Αποστολή")}
         </Heading>
         {isEditEnabled && (
           <Text>
@@ -195,7 +197,7 @@ const CartShippingMethodsSection: FC<ShippingProps> = ({ cart, availableShipping
               onClick={handleEdit}
               variant="tonal"
             >
-              Edit
+              {tr("Επεξεργασία")}
             </Button>
           </Text>
         )}
@@ -206,7 +208,7 @@ const CartShippingMethodsSection: FC<ShippingProps> = ({ cart, availableShipping
             <div data-testid="delivery-options-container">
               <div className="pb-8 pt-2 md:pt-0">
                 {filteredGroupedBySellerId.length === 0
-                  ? 'No shipping options available'
+                  ? tr('Δεν υπάρχουν διαθέσιμοι τρόποι αποστολής')
                   : filteredGroupedBySellerId.map(key => {
                       const selectedMethod = getSelectedMethodForSeller(key);
 
@@ -236,7 +238,7 @@ const CartShippingMethodsSection: FC<ShippingProps> = ({ cart, availableShipping
                               {({ open }) => (
                                 <>
                                   <span className="block truncate">
-                                    {selectedMethod?.name ?? 'Choose delivery option'}
+                                    {selectedMethod?.name ?? tr('Επίλεξε τρόπο αποστολής')}
                                   </span>
                                   <ChevronUpDown
                                     className={clx('transition-rotate duration-200', {
@@ -319,7 +321,7 @@ const CartShippingMethodsSection: FC<ShippingProps> = ({ cart, availableShipping
               disabled={!allSellersHaveMethod || isPendingDeleteRow}
               loading={isLoadingPrices}
             >
-              Continue to payment
+              {tr("Συνέχεια στην πληρωμή")}
             </Button>
           </div>
         </>
@@ -333,7 +335,7 @@ const CartShippingMethodsSection: FC<ShippingProps> = ({ cart, availableShipping
                     key={method.id}
                     className="mb-4 rounded-md border p-4"
                   >
-                    <Text className="txt-medium-plus text-ui-fg-base mb-1">Method</Text>
+                    <Text className="txt-medium-plus text-ui-fg-base mb-1">{tr("Τρόπος αποστολής")}</Text>
                     <Text className="txt-medium text-ui-fg-subtle">
                       {method.name}{' '}
                       {convertToLocale({
