@@ -299,28 +299,28 @@ export default async function Home({
           lang={lang}
           intro={
             <>
-              <h1 className="text-[2.35rem] font-extrabold leading-[1.05] tracking-[-0.03em] text-white sm:text-[3rem] lg:text-[2.6rem] xl:text-[2.85rem]">
+              <h1 className="text-[2.35rem] font-extrabold leading-[1.05] tracking-[-0.03em] text-[#1F3628] sm:text-[3rem] xl:text-[2.45rem] min-[1400px]:text-[2.7rem] min-[1500px]:text-[2.95rem]">
                 {tr("Το vitrinaki σου, στο ψηφιακό εμπόριο.")}{" "}
-                <span className="relative inline-block text-[#E08A76]">
+                <span className="relative inline-block text-[#C0503C]">
                   {tr("Ποτέ δεν είναι αργά.")}
-                  <Swoosh className="absolute -bottom-2 left-0 h-2.5 w-full text-[#C0503C]" />
+                  <Swoosh className="absolute -bottom-2 left-0 h-2.5 w-full text-[#C0503C]/45" />
                 </span>
               </h1>
-              <p className="mt-4 max-w-md text-[15px] leading-7 text-white/80">
+              <p className="mt-4 max-w-md text-[15px] leading-7 text-[#1F3628]/75 xl:text-[14px] xl:leading-6 min-[1400px]:text-[15px] min-[1400px]:leading-7">
                 {tr("Δημιούργησε εύκολα το δικό σου e-shop, πούλα τα προϊόντα σου, διαχειρίσου το απόθεμα και βρες περισσότερους πελάτες μέσα από το Vitrinaki.")}
               </p>
-              <div className="mt-7 flex flex-wrap items-center gap-3">
+              <div className="mt-7 flex flex-wrap items-center gap-3 xl:mt-5 min-[1400px]:mt-7">
                 <a href={businessUrl} className={primaryBtn}>
                   {tr("Άνοιξε τη βιτρίνα σου")} <Arrow />
                 </a>
-                <a href="#vitrina" className="group inline-flex min-h-12 items-center gap-2 rounded-xl border border-white/40 px-6 text-[15px] font-semibold text-white transition hover:border-white hover:bg-white/10">
+                <a href="#vitrina" className="group inline-flex min-h-12 items-center gap-2 rounded-xl border border-[#2E4A37]/30 bg-[#F7F2E8]/60 px-6 text-[15px] font-semibold text-[#1F3628] transition hover:border-[#2E4A37] hover:bg-white">
                   {tr("Δες παραδείγματα")}
                 </a>
               </div>
-              <ul className="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-[13px] font-medium text-white/85">
+              <ul className="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-[13px] font-medium text-[#1F3628]/85 xl:mt-4 min-[1400px]:mt-6">
                 {["Χωρίς τεχνικές γνώσεις", "Έτοιμα templates", "Άνθρωποι δίπλα σου"].map((item) => (
                   <li key={item} className="flex items-center gap-1.5">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#ffffff" fillOpacity=".15" /><path d="m7.5 12 3 3 6-6" stroke="#ffffff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#2E4A37" /><path d="m7.5 12 3 3 6-6" stroke="#F7F2E8" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
                     {tr(item)}
                   </li>
                 ))}

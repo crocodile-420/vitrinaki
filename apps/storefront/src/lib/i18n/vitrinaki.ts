@@ -508,9 +508,13 @@ const en: Record<string, string> = {
   "Επαγγελματίες & Portfolio": "Professionals & portfolio",
   "Από την Ελλάδα": "From Greece",
   "μέσω vitrinaki.gr": "via vitrinaki.gr",
-  "σε όλο τον κόσμο": "to the whole world",
-  "Από την Ελλάδα, μέσω vitrinaki.gr, σε πελάτες σε όλο τον κόσμο": "From Greece, via vitrinaki.gr, to customers all over the world",
   "Το επιχειρείν εστί φιλοσοφείν": "To do business is to philosophise",
+  "Από την Ελλάδα, μέσω vitrinaki.gr, στο δικό σου e-shop": "From Greece, via vitrinaki.gr, to your own e-shop",
+  "στο δικό σου e-shop": "to your own e-shop",
+  "Νέα παραγγελία": "New order",
+  "Ελληνική παράδοση": "Greek tradition",
+  "Πελάτες παντού, μέσω vitrinaki.gr": "Customers everywhere, via vitrinaki.gr",
+  "Το δικό σου e-shop": "Your own e-shop",
 }
 
 const dictionaries: Record<Lang, Record<string, string>> = { el: {}, en }
