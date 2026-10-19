@@ -1,159 +1,170 @@
+import type React from "react"
 import { useId } from "react"
 
 import { translator, type Lang } from "@/lib/i18n/vitrinaki"
 
 /*
- * Animated "journey" of a product: it starts from a point in Greece and, through
- * vitrinaki.gr, reaches customers along many routes. Pure SVG + CSS; with
+ * The hero "story": Greek tradition (left) → the world, via vitrinaki.gr (globe, middle)
+ * → the seller's own complete e-shop (right). The desktop route is an SVG overlay on a
+ * fixed-aspect 1440×650 stage, so its coordinates line up with the stage's percentage
+ * layout at every width. Pure SVG + CSS: it plays once, then loops gently; under
  * prefers-reduced-motion the default (static, fully drawn) state is shown.
  */
 
-const ORIGIN = { x: 40, y: 104 }
-const MAIN = "M40 100 C 120 8, 300 -6, 418 62"
-const routes = [
-  { d: "M40 100 Q 170 22 288 46", to: { x: 288, y: 46 } },
-  { d: "M40 100 Q 180 70 306 84", to: { x: 306, y: 84 } },
-  { d: "M40 100 Q 200 146 342 104", to: { x: 342, y: 104 } },
-  { d: "M40 100 Q 200 0 346 38", to: { x: 346, y: 38 } },
+export const STAGE = { w: 1440, h: 650 }
+const ORIGIN = { x: 540, y: 472 }
+const END = { x: 1040, y: 196 }
+const ROUTE = `M${ORIGIN.x} ${ORIGIN.y - 4} C 580 300, 640 156, 762 120 C 900 88, 1000 116, ${END.x} ${END.y - 6}`
+// pins already painted on the globe artwork: give them a soft pulse
+const globePins = [
+  { x: 812, y: 170 },
+  { x: 652, y: 210 },
+  { x: 936, y: 213 },
+  { x: 671, y: 345 },
 ]
-const GLOBE = { x: 318, y: 74, r: 54 }
 
-export function HeroJourney({ lang, className = "" }: { lang: Lang; className?: string }) {
-  const tr = translator(lang)
-  const uid = useId().replace(/:/g, "")
-  const steps = ["Από την Ελλάδα", "μέσω vitrinaki.gr", "σε όλο τον κόσμο"]
-
+function Pin({ x, y, className = "" }: { x: number; y: number; className?: string }) {
   return (
-    <figure className={`vk-journey ${className}`} aria-label={tr("Από την Ελλάδα, μέσω vitrinaki.gr, σε πελάτες σε όλο τον κόσμο")}>
-      <style>{css}</style>
-      <svg viewBox="0 6 460 126" className="block h-auto w-full overflow-visible" aria-hidden="true">
-        <defs>
-          <radialGradient id={`${uid}-sea`} cx="38%" cy="34%" r="70%">
-            <stop offset="0" stopColor="#265E8E" stopOpacity=".55" />
-            <stop offset="1" stopColor="#265E8E" stopOpacity=".12" />
-          </radialGradient>
-          <clipPath id={`${uid}-globe`}>
-            <circle cx={GLOBE.x} cy={GLOBE.y} r={GLOBE.r} />
-          </clipPath>
-          {[MAIN, ...routes.map((r) => r.d)].map((d, i) => (
-            <mask key={d} id={`${uid}-m${i}`} maskUnits="userSpaceOnUse" x="-20" y="-30" width="500" height="210">
-              <path d={d} pathLength={1} className={`vk-j-reveal vk-j-reveal-${i}`} fill="none" stroke="#fff" strokeWidth="8" />
-            </mask>
-          ))}
-        </defs>
-
-        {/* stylised globe */}
-        <g className="vk-j-globe">
-          <circle cx={GLOBE.x} cy={GLOBE.y} r={GLOBE.r} fill={`url(#${uid}-sea)`} />
-          <g clipPath={`url(#${uid}-globe)`} fill="#2E4A37" fillOpacity=".9" stroke="#F7F2E8" strokeOpacity=".18" strokeWidth=".6">
-            {/* loose continent shapes, deliberately abstract */}
-            <path d="M270 40c8-8 22-10 30-4 6 5 2 12-6 14-6 2-6 9-12 12-7 3-14-3-15-10-1-5-1-9 3-12z" />
-            <path d="M300 74c6-3 14 0 16 7 2 8-3 18-9 24-4 4-9 1-9-5 0-7-5-10-4-17 1-4 3-7 6-9z" />
-            <path d="M318 38c10-6 30-6 42 2 8 6 10 14 2 18-7 3-14-1-20 3-7 4-16 3-22-3-5-6-7-15-2-20z" />
-            <path d="M344 92c6-2 14 1 15 7 1 5-5 9-11 8-6 0-9-5-8-9 1-3 2-5 4-6z" />
-          </g>
-          <g fill="none" stroke="#F7F2E8" strokeOpacity=".28" strokeWidth=".7">
-            <circle cx={GLOBE.x} cy={GLOBE.y} r={GLOBE.r} strokeOpacity=".45" />
-            <ellipse cx={GLOBE.x} cy={GLOBE.y} rx={GLOBE.r * 0.62} ry={GLOBE.r} />
-            <ellipse cx={GLOBE.x} cy={GLOBE.y} rx={GLOBE.r * 0.24} ry={GLOBE.r} />
-            <ellipse cx={GLOBE.x} cy={GLOBE.y} rx={GLOBE.r} ry={GLOBE.r * 0.36} />
-            <path d={`M${GLOBE.x - GLOBE.r} ${GLOBE.y}h${GLOBE.r * 2}`} />
-          </g>
-        </g>
-
-        {/* routes */}
-        {routes.map((r, i) => (
-          <g key={r.d} mask={`url(#${uid}-m${i + 1})`}>
-            <path d={r.d} fill="none" stroke="#F7F2E8" strokeOpacity=".55" strokeWidth="1.1" strokeDasharray="2.5 4" strokeLinecap="round" className="vk-j-dash" />
-          </g>
-        ))}
-        <g mask={`url(#${uid}-m0)`}>
-          <path d={MAIN} fill="none" stroke="#E08A76" strokeWidth="1.6" strokeDasharray="4 5" strokeLinecap="round" className="vk-j-dash" />
-        </g>
-
-        {/* destination pins */}
-        {routes.map((r, i) => (
-          <g key={`p${i}`} className={`vk-j-dest vk-j-dest-${i}`} style={{ transformOrigin: `${r.to.x}px ${r.to.y}px` }}>
-            <circle cx={r.to.x} cy={r.to.y} r="6" fill="#E08A76" fillOpacity=".25" />
-            <circle cx={r.to.x} cy={r.to.y} r="2.6" fill="#F7F2E8" stroke="#C0503C" strokeWidth="1.4" />
-          </g>
-        ))}
-
-        {/* origin pin: Greece */}
-        <g className="vk-j-origin" style={{ transformOrigin: `${ORIGIN.x}px ${ORIGIN.y}px` }}>
-          <circle cx={ORIGIN.x} cy={ORIGIN.y} r="9" fill="none" stroke="#E08A76" strokeWidth="1.2" className="vk-j-pulse" style={{ transformOrigin: `${ORIGIN.x}px ${ORIGIN.y}px` }} />
-          <ellipse cx={ORIGIN.x} cy={ORIGIN.y} rx="5" ry="1.8" fill="#000" fillOpacity=".3" />
-          <path
-            d={`M${ORIGIN.x} ${ORIGIN.y}c-1.4-4.5-9-10.5-9-17a9 9 0 0 1 18 0c0 6.5-7.6 12.5-9 17z`}
-            fill="#C0503C"
-            stroke="#F7F2E8"
-            strokeWidth="1.2"
-          />
-          <circle cx={ORIGIN.x} cy={ORIGIN.y - 17} r="3.2" fill="#F7F2E8" />
-        </g>
-
-        {/* travelling plane */}
-        <g className="vk-j-plane" style={{ offsetPath: `path("${MAIN}")` }}>
-          <g transform="scale(1.15)" fill="#F7F2E8">
-            <path d="M-8 0 5-1.3 8.5 0 5 1.3z" />
-            <path d="M-1.5-.6-4.5-7h2l5.2 6.4zM-1.5.6-4.5 7h2l5.2-6.4z" />
-            <path d="m-6-.5-2.2-3.2h1.4L-3.6-.5zm0 1-2.2 3.2h1.4L-3.6.5z" />
-          </g>
-        </g>
-
-        {/* delivered */}
-        <g className="vk-j-done" style={{ transformOrigin: "418px 62px" }}>
-          <circle cx="418" cy="62" r="13" fill="#F7F2E8" fillOpacity=".12" />
-          <circle cx="418" cy="62" r="9" fill="#2E4A37" stroke="#F7F2E8" strokeWidth="1.3" />
-          <path d="m413.8 62.2 2.9 2.9 5.4-5.6" fill="none" stroke="#F7F2E8" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-        </g>
-        <text x="418" y="92" textAnchor="middle" className="vk-j-done-label" fill="#F7F2E8" fontSize="10.5" fontWeight="600" letterSpacing=".02em">
-          {tr("Παραδόθηκε")}
-        </text>
-      </svg>
-
-      <figcaption className="mt-1">
-        <ol className="flex flex-wrap items-center gap-x-1.5 gap-y-1 text-[11.5px] font-semibold text-[#F7F2E8]/85">
-          {steps.map((s, i) => (
-            <li key={s} className="flex items-center gap-1.5">
-              {i > 0 ? <span aria-hidden="true" className="text-[#E08A76]">→</span> : null}
-              <span>{tr(s)}</span>
-            </li>
-          ))}
-        </ol>
-        <p className="mt-1.5 font-serif text-[13px] italic tracking-wide text-[#F7F2E8]/65">«{tr("Το επιχειρείν εστί φιλοσοφείν")}»</p>
-      </figcaption>
-    </figure>
+    <g className={className} style={{ transformOrigin: `${x}px ${y}px` }}>
+      <ellipse cx={x} cy={y} rx="7" ry="2.4" fill="#1F3628" fillOpacity=".25" />
+      <path d={`M${x} ${y}c-1.8-5.6-11-13-11-21a11 11 0 0 1 22 0c0 8-9.2 15.4-11 21z`} fill="#C0503C" stroke="#F7F2E8" strokeWidth="1.6" />
+      <circle cx={x} cy={y - 21} r="4" fill="#F7F2E8" />
+    </g>
   )
 }
 
-const css = `
-.vk-journey .vk-j-reveal{stroke-dasharray:1 1;stroke-dashoffset:0}
-.vk-journey .vk-j-plane{offset-rotate:auto;offset-distance:62%;opacity:1}
-@media (prefers-reduced-motion:no-preference){
-  .vk-journey .vk-j-origin{animation:vkjDrop .7s cubic-bezier(.2,1.4,.4,1) both}
-  .vk-journey .vk-j-pulse{animation:vkjPulse 2.4s ease-out 1s infinite both}
-  .vk-journey .vk-j-reveal{animation:vkjDraw 1.5s ease-out both}
-  .vk-journey .vk-j-reveal-0{animation-duration:3s;animation-delay:1.1s;animation-timing-function:ease-in-out}
-  .vk-journey .vk-j-reveal-1{animation-delay:.6s}
-  .vk-journey .vk-j-reveal-2{animation-delay:.85s}
-  .vk-journey .vk-j-reveal-3{animation-delay:1.1s}
-  .vk-journey .vk-j-reveal-4{animation-delay:1.35s}
-  .vk-journey .vk-j-dash{animation:vkjMarch 1.6s linear infinite}
-  .vk-journey .vk-j-dest{animation:vkjPop .5s cubic-bezier(.2,1.5,.4,1) both}
-  .vk-journey .vk-j-dest-0{animation-delay:1.9s}
-  .vk-journey .vk-j-dest-1{animation-delay:2.15s}
-  .vk-journey .vk-j-dest-2{animation-delay:2.4s}
-  .vk-journey .vk-j-dest-3{animation-delay:2.65s}
-  .vk-journey .vk-j-plane{animation:vkjFly 3s ease-in-out 1.1s both}
-  .vk-journey .vk-j-done{animation:vkjPop .55s cubic-bezier(.2,1.6,.4,1) 4s both}
-  .vk-journey .vk-j-done-label{animation:vkjFade .5s ease-out 4.25s both}
+function Parcel() {
+  return (
+    <g>
+      <rect x="-11" y="-11" width="22" height="22" rx="3" fill="#C0503C" stroke="#F7F2E8" strokeWidth="1.5" />
+      <path d="M-11-3.5h22M0-11v22" stroke="#F7F2E8" strokeOpacity=".75" strokeWidth="1.4" />
+      <path d="M-5-11 0-6.5 5-11" fill="none" stroke="#F7F2E8" strokeOpacity=".75" strokeWidth="1.2" />
+    </g>
+  )
 }
-@keyframes vkjDrop{from{opacity:0;transform:translateY(-14px)}to{opacity:1;transform:none}}
-@keyframes vkjPulse{0%{opacity:.9;transform:scale(.6)}100%{opacity:0;transform:scale(2.2)}}
-@keyframes vkjDraw{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
-@keyframes vkjMarch{to{stroke-dashoffset:-13}}
-@keyframes vkjPop{0%{opacity:0;transform:scale(0)}100%{opacity:1;transform:scale(1)}}
-@keyframes vkjFade{from{opacity:0}to{opacity:1}}
-@keyframes vkjFly{0%{offset-distance:0%;opacity:0}8%{opacity:1}88%{opacity:1}100%{offset-distance:100%;opacity:0}}
+
+/** Desktop overlay: Greek pin → route across the globe → landing on the shop. */
+export function StoryRoute({ lang }: { lang: Lang }) {
+  const tr = translator(lang)
+  const uid = useId().replace(/:/g, "")
+  return (
+    <svg viewBox={`0 0 ${STAGE.w} ${STAGE.h}`} className="vk-story pointer-events-none absolute inset-0 z-30 h-full w-full overflow-visible" aria-hidden="true">
+      <style>{css}</style>
+      <defs>
+        <mask id={`${uid}-m`} maskUnits="userSpaceOnUse" x="0" y="0" width={STAGE.w} height={STAGE.h}>
+          <path d={ROUTE} pathLength={1} className="vk-s-reveal" fill="none" stroke="#fff" strokeWidth="14" />
+        </mask>
+        <filter id={`${uid}-sh`} x="-50%" y="-50%" width="200%" height="200%">
+          <feDropShadow dx="0" dy="2" stdDeviation="2.5" floodColor="#1F3628" floodOpacity=".3" />
+        </filter>
+      </defs>
+
+      {globePins.map((p, i) => (
+        <circle key={i} cx={p.x} cy={p.y} r="9" fill="none" stroke="#C0503C" strokeWidth="1.4" className={`vk-s-ring vk-s-ring-${i}`} style={{ transformOrigin: `${p.x}px ${p.y}px` }} />
+      ))}
+
+      {/* the route: a soft halo under a marching dashed line */}
+      <g mask={`url(#${uid}-m)`}>
+        <path d={ROUTE} fill="none" stroke="#F7F2E8" strokeOpacity=".85" strokeWidth="6" strokeLinecap="round" />
+        <path d={ROUTE} fill="none" stroke="#C0503C" strokeWidth="2.2" strokeDasharray="7 7" strokeLinecap="round" className="vk-s-dash" />
+      </g>
+
+      {/* origin: Greece */}
+      <g className="vk-s-origin" style={{ transformOrigin: `${ORIGIN.x}px ${ORIGIN.y}px` }}>
+        <circle cx={ORIGIN.x} cy={ORIGIN.y} r="12" fill="none" stroke="#F7F2E8" strokeWidth="1.6" className="vk-s-pulse" style={{ transformOrigin: `${ORIGIN.x}px ${ORIGIN.y}px` }} />
+        <g filter={`url(#${uid}-sh)`}><Pin x={ORIGIN.x} y={ORIGIN.y} /></g>
+      </g>
+
+      {/* travelling parcel */}
+      <g className="vk-s-parcel" style={{ offsetPath: `path("${ROUTE}")` }} filter={`url(#${uid}-sh)`}>
+        <Parcel />
+      </g>
+
+      {/* landing on the shop */}
+      <g className="vk-s-done" style={{ transformOrigin: `${END.x}px ${END.y}px` }} filter={`url(#${uid}-sh)`}>
+        <circle cx={END.x} cy={END.y - 14} r="15" fill="#2E4A37" stroke="#F7F2E8" strokeWidth="2" />
+        <path d={`m${END.x - 6.5} ${END.y - 13.6} 4.4 4.4 8.4-8.6`} fill="none" stroke="#F7F2E8" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
+      </g>
+      <title>{tr("Από την Ελλάδα, μέσω vitrinaki.gr, στο δικό σου e-shop")}</title>
+    </svg>
+  )
+}
+
+/** Mobile connector between the stacked parts: a short dashed drop with a parcel. */
+export function StoryDrop({ className = "" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 40 64" className={`vk-story mx-auto block h-14 w-10 ${className}`} aria-hidden="true">
+      <style>{css}</style>
+      <path d="M20 2v60" stroke="#C0503C" strokeWidth="2" strokeDasharray="5 5" strokeLinecap="round" className="vk-s-dash" />
+      <g className="vk-s-drop" transform="translate(20 32) scale(.8)"><Parcel /></g>
+    </svg>
+  )
+}
+
+/** "From Greece → via vitrinaki.gr → to your own e-shop" + motto. */
+export function StoryCaption({ lang, className = "", tone = "light" }: { lang: Lang; className?: string; tone?: "light" | "dark" }) {
+  const tr = translator(lang)
+  const steps = ["Από την Ελλάδα", "μέσω vitrinaki.gr", "στο δικό σου e-shop"]
+  const ink = tone === "light" ? "text-[#F7F2E8]" : "text-[#1F3628]"
+  return (
+    <div className={className}>
+      <ol className={`flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-[13px] font-semibold ${ink}`}>
+        {steps.map((s, i) => (
+          <li key={s} className="flex items-center gap-2">
+            {i > 0 ? <span aria-hidden="true" className={tone === "light" ? "text-[#E8A493]" : "text-[#C0503C]"}>→</span> : null}
+            <span>{tr(s)}</span>
+          </li>
+        ))}
+      </ol>
+      <p className={`mt-1 text-center font-serif text-[14px] italic tracking-wide ${tone === "light" ? "text-[#F7F2E8]/75" : "text-[#2E4A37]/75"}`}>«{tr("Το επιχειρείν εστί φιλοσοφείν")}»</p>
+    </div>
+  )
+}
+
+/** Small numbered label for each part of the story. */
+export function StoryChip({ n, children, className = "" }: { n: number; children: React.ReactNode; className?: string }) {
+  return (
+    <span className={`inline-flex items-center gap-2 rounded-full bg-[#F7F2E8]/95 py-1 pl-1 pr-3 text-[12px] font-semibold text-[#1F3628] shadow-[0_6px_18px_-8px_rgba(31,54,40,0.45)] ring-1 ring-[#2E4A37]/10 ${className}`}>
+      <span className="grid h-5 w-5 place-items-center rounded-full bg-[#2E4A37] text-[10.5px] font-bold text-[#F7F2E8]">{n}</span>
+      {children}
+    </span>
+  )
+}
+
+export const storyCss = `
+.vk-toast{opacity:1}
+@media (prefers-reduced-motion:no-preference){
+  .vk-toast{animation:vksToast .6s cubic-bezier(.2,1.4,.4,1) 4.6s both}
+  .vk-toast-loop{animation:vksToast .6s cubic-bezier(.2,1.4,.4,1) 4.6s both,vksNudge 9s ease-in-out 9.6s infinite}
+}
+@keyframes vksToast{from{opacity:0;transform:translateY(-10px) scale(.92)}to{opacity:1;transform:none}}
+@keyframes vksNudge{0%,52%,100%{transform:none}56%{transform:translateY(-3px) scale(1.03)}60%{transform:none}}
+`
+
+const css = `
+.vk-story .vk-s-reveal{stroke-dasharray:1 1;stroke-dashoffset:0}
+.vk-story .vk-s-parcel{offset-rotate:0deg;offset-distance:58%;opacity:1}
+.vk-story .vk-s-ring{opacity:0}
+@media (prefers-reduced-motion:no-preference){
+  .vk-story .vk-s-origin{animation:vksDrop .7s cubic-bezier(.2,1.4,.4,1) .3s both}
+  .vk-story .vk-s-pulse{animation:vksPulse 2.6s ease-out 1s infinite both}
+  .vk-story .vk-s-reveal{animation:vksDraw 3.2s ease-in-out 1s both}
+  .vk-story .vk-s-dash{animation:vksMarch 1.4s linear infinite}
+  .vk-story .vk-s-parcel{animation:vksFly 3.2s ease-in-out 1s both,vksFlyLoop 9s ease-in-out 9s infinite}
+  .vk-story .vk-s-done{animation:vksPop .55s cubic-bezier(.2,1.6,.4,1) 4.2s both}
+  .vk-story .vk-s-ring{animation:vksPulse 3.2s ease-out infinite both}
+  .vk-story .vk-s-ring-0{animation-delay:2.2s}
+  .vk-story .vk-s-ring-1{animation-delay:3s}
+  .vk-story .vk-s-ring-2{animation-delay:3.8s}
+  .vk-story .vk-s-ring-3{animation-delay:4.6s}
+  .vk-story .vk-s-drop{animation:vksDropY 2.4s ease-in-out infinite}
+}
+@keyframes vksDrop{from{opacity:0;transform:translateY(-16px)}to{opacity:1;transform:none}}
+@keyframes vksPulse{0%{opacity:.9;transform:scale(.6)}100%{opacity:0;transform:scale(2.4)}}
+@keyframes vksDraw{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+@keyframes vksMarch{to{stroke-dashoffset:-14}}
+@keyframes vksPop{0%{opacity:0;transform:scale(0)}100%{opacity:1;transform:scale(1)}}
+@keyframes vksFly{0%{offset-distance:0%;opacity:0}6%{opacity:1}92%{opacity:1}100%{offset-distance:100%;opacity:0}}
+@keyframes vksFlyLoop{0%{offset-distance:0%;opacity:0}4%{opacity:1}34%{opacity:1}37%{offset-distance:100%;opacity:0}100%{offset-distance:100%;opacity:0}}
+@keyframes vksDropY{0%{transform:translate(20px,6px) scale(.8);opacity:0}20%{opacity:1}80%{opacity:1}100%{transform:translate(20px,58px) scale(.8);opacity:0}}
 `

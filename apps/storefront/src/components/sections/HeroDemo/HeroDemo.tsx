@@ -5,7 +5,7 @@ import { useState } from "react"
 
 import { translator, type Lang } from "@/lib/i18n/vitrinaki"
 
-import { HeroJourney } from "./HeroJourney"
+import { StoryCaption, StoryChip, StoryDrop, StoryRoute, storyCss } from "./HeroJourney"
 
 type Palette = { key: string; label: string; page: string; ink: string; accent: string; soft: string }
 
@@ -165,7 +165,7 @@ export function StudioTable({ lang, className = "" }: { lang: Lang; className?: 
 }
 
 
-/* ---------- Photographic hero with live shop composition ---------- */
+/* ---------- The hero story: Greek tradition → the world → your own e-shop ---------- */
 
 const shopProducts = [
   { name: "Κεραμικό βάζο", price: "32 €", img: "/home/p-vase.webp" },
@@ -177,6 +177,93 @@ function Photo({ src, className = "", alt = "" }: { src: string; className?: str
   return <img src={src} alt={alt} loading="lazy" decoding="async" className={`block h-full w-full object-cover ${className}`} />
 }
 
+type ShopProps = { lang: Lang; p: Palette; shopName: string; slug: string; className?: string }
+
+function ShopBrowser({ lang, p, shopName, slug, className = "" }: ShopProps) {
+  const tr = translator(lang)
+  return (
+    <Browser url={`vitrinaki.gr/${slug}`} className={className}>
+      <div className="p-2.5 transition-colors duration-500 sm:p-3" style={{ background: p.page, color: p.ink }} aria-live="polite">
+        <div className="flex items-center justify-between gap-2">
+          <span className="flex min-w-0 items-center gap-1.5 text-[10px] font-extrabold">
+            <span className="grid h-5 w-5 shrink-0 place-items-center rounded text-[7px] text-white transition-colors duration-500" style={{ background: p.accent }}>{initialsOf(shopName)}</span>
+            <span className="truncate">{shopName}</span>
+          </span>
+          <span className="flex shrink-0 gap-2 text-[7px] font-semibold opacity-60">
+            <span>{tr("Αρχική")}</span><span>{tr("Συλλογή")}</span>
+          </span>
+        </div>
+        <div className="mt-2 grid grid-cols-[1fr_1fr] overflow-hidden rounded-lg transition-colors duration-500" style={{ background: p.soft }}>
+          <div className="flex flex-col justify-center p-2.5">
+            <p className="font-serif text-[15px] leading-tight sm:text-[17px]">{tr("Νέα")}</p>
+            <p className="text-[7px] opacity-70 sm:text-[7.5px]">{tr("Φυσική ομορφιά για καθημερινές στιγμές")}</p>
+            <span className="mt-1.5 w-fit rounded px-1.5 py-0.5 text-[7px] font-bold text-white transition-colors duration-500" style={{ background: p.accent }}>{tr("Ανακάλυψε")}</span>
+          </div>
+          <div className="aspect-[4/3]"><Photo src="/home/p-desk-plant.webp" className="object-[45%_center]" /></div>
+        </div>
+        <div className="mt-2 grid grid-cols-3 gap-1.5">
+          {shopProducts.map((item) => (
+            <div key={item.img} className="rounded-md bg-white p-1">
+              <div className="aspect-square overflow-hidden rounded"><Photo src={item.img} /></div>
+              <p className="mt-1 truncate text-[6.5px] font-semibold sm:text-[7px]">{tr(item.name)}</p>
+              <p className="text-[6.5px] font-bold transition-colors duration-500 sm:text-[7px]" style={{ color: p.accent }}>{item.price}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </Browser>
+  )
+}
+
+function OrderToast({ lang, className = "" }: { lang: Lang; className?: string }) {
+  const tr = translator(lang)
+  return (
+    <div className={`vk-toast vk-toast-loop flex items-center gap-2 rounded-xl bg-white/95 px-2.5 py-2 text-left shadow-[0_14px_30px_-12px_rgba(31,54,40,0.55)] ring-1 ring-[#2E4A37]/10 backdrop-blur ${className}`}>
+      <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-[#2E4A37] text-[#F7F2E8]">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" /></svg>
+      </span>
+      <span className="min-w-0 leading-tight">
+        <span className="block truncate text-[11px] font-bold text-[#1F3628]">{tr("Νέα παραγγελία")}</span>
+        <span className="block truncate text-[10px] font-semibold text-[#2E4A37]/70">#1024 · {tr("Παραδόθηκε")}</span>
+      </span>
+    </div>
+  )
+}
+
+function PhoneShop({ lang, p, shopName, className = "" }: Omit<ShopProps, "slug">) {
+  const tr = translator(lang)
+  return (
+    <div className={`rounded-[1.4rem] bg-[#0F1C14] p-1.5 shadow-[0_30px_60px_-20px_rgba(15,28,20,0.7)] ring-1 ring-black/10 ${className}`}>
+      <div className="overflow-hidden rounded-[1.1rem] transition-colors duration-500" style={{ background: p.page, color: p.ink }}>
+        <div className="mx-auto mt-1 h-1.5 w-10 rounded-full bg-[#0F1C14]" />
+        <div className="p-2">
+          <p className="truncate text-[8px] font-extrabold">{shopName}</p>
+          <div className="mt-1 rounded bg-white px-1.5 py-0.5 text-[6px] opacity-60">{tr("Αναζήτηση προϊόντων…")}</div>
+          <div className="mt-1.5 aspect-[4/3] overflow-hidden rounded-md"><Photo src="/home/p-aloe.webp" /></div>
+          <p className="mt-1 text-[7px] font-semibold">{tr("Προτεινόμενα")}</p>
+          <div className="mt-1 grid grid-cols-2 gap-1">
+            {["/home/p-tulips.webp", "/home/p-succulents.webp"].map((src) => (
+              <div key={src} className="aspect-square overflow-hidden rounded bg-white"><Photo src={src} /></div>
+            ))}
+          </div>
+          <div className="mt-1.5 rounded py-1 text-center text-[6.5px] font-bold text-white transition-colors duration-500" style={{ background: p.accent }}>{tr("Στο καλάθι")}</div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+/* soft cypress / terracotta hills under the globe and the shop (stage units, 1440×650) */
+function Hills({ className = "" }: { className?: string }) {
+  return (
+    <svg viewBox="-300 0 2040 170" preserveAspectRatio="none" className={className} aria-hidden="true">
+      <path d="M940 170C1060 70 1180 34 1320 30c140-4 300 10 420 26v114z" fill="#C0503C" fillOpacity=".92" />
+      <path d="M480 170c110-70 250-120 420-110 150 9 250 62 400 60 150-2 290-40 440-56v106z" fill="#2E4A37" />
+      <path d="M560 150c100-58 210-92 340-90 150 3 250 62 400 60 150-2 290-40 440-56" fill="none" stroke="#D9B26F" strokeOpacity=".55" strokeWidth="1.2" vectorEffect="non-scaling-stroke" />
+    </svg>
+  )
+}
+
 export function HeroDemo({ lang, intro }: { lang: Lang; intro: React.ReactNode }) {
   const tr = translator(lang)
   const [name, setName] = useState("")
@@ -184,112 +271,69 @@ export function HeroDemo({ lang, intro }: { lang: Lang; intro: React.ReactNode }
   const p = palettes.find((x) => x.key === paletteKey) || palettes[0]
   const shopName = name.trim() || tr("Mano Χειροποίητα")
   const slug = slugify(name) || "mano"
+  const shop = { lang, p, shopName, slug }
 
   return (
     <>
-      <div className="relative isolate overflow-hidden bg-[#16271C] text-white">
-        {/* Greek landscape & products: on mobile a band on top, on desktop the left/centre backdrop */}
-        <div aria-hidden="true" className="relative h-[300px] sm:h-[380px] lg:absolute lg:inset-y-0 lg:left-0 lg:h-auto lg:w-[58%] xl:w-[56%]">
-          <img
-            src="/home/hero-greece.webp"
-            alt=""
-            width={830}
-            height={650}
-            fetchPriority="high"
-            decoding="async"
-            className="h-full w-full object-cover object-[30%_60%] lg:object-[left_bottom]"
-          />
-          {/* legibility gradients */}
-          <div className="absolute inset-0 bg-gradient-to-t from-[#16271C] via-[#16271C]/15 to-transparent lg:hidden" />
-          <div className="absolute inset-0 hidden bg-[linear-gradient(90deg,rgba(22,39,28,0.78)_0%,rgba(22,39,28,0.7)_32%,rgba(22,39,28,0.22)_64%,rgba(22,39,28,0.5)_84%,#16271C_100%)] lg:block" />
-          <div className="absolute inset-0 hidden bg-gradient-to-t from-[#16271C]/75 via-transparent to-[#16271C]/45 lg:block" />
-        </div>
-        <div aria-hidden="true" className="absolute inset-y-0 right-0 -z-10 hidden w-1/2 bg-[radial-gradient(ellipse_70%_60%_at_70%_40%,#2E4A37_0%,transparent_70%)] lg:block" />
+      <style>{storyCss}</style>
+      <div className="relative isolate overflow-hidden bg-[#F5EEE1] text-[#1F3628]">
+        {/* watercolour washes */}
+        <div aria-hidden="true" className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_40%_45%_at_58%_30%,rgba(46,74,55,0.10),transparent_70%),radial-gradient(ellipse_30%_40%_at_92%_8%,rgba(38,94,142,0.08),transparent_70%),radial-gradient(ellipse_45%_40%_at_10%_0%,rgba(192,80,60,0.06),transparent_70%)]" />
 
-        <div className="relative mx-auto grid max-w-[1280px] items-center gap-10 px-5 pb-12 sm:px-8 lg:min-h-[560px] lg:grid-cols-[0.78fr_1.22fr] lg:gap-4 lg:px-12 lg:pb-16 lg:pt-12">
-          <div className="-mt-16 max-w-[450px] sm:-mt-24 lg:mt-0">
-            {intro}
-            <HeroJourney lang={lang} className="mt-7 max-w-[430px] lg:mt-5 lg:max-w-[400px] lg:rounded-2xl lg:bg-[#0F1C14]/45 lg:px-4 lg:py-3 lg:ring-1 lg:ring-white/10 lg:backdrop-blur-[3px]" />
+        <div className="relative mx-auto w-full max-w-[1600px] xl:aspect-[1440/650]">
+          {/* Desktop panorama: Greece (left) → globe (middle) → the seller's e-shop (right) */}
+          <div aria-hidden="true" className="hidden xl:block">
+            <img src="/home/story-greece.webp" alt="" width={799} height={544} fetchPriority="high" decoding="async" className="absolute bottom-0 left-[-1.5%] w-[46%] [mask-image:linear-gradient(90deg,transparent,#000_7%)]" />
+            <img src="/home/story-globe.webp" alt="" width={730} height={603} decoding="async" className="absolute left-[37%] top-[7%] w-[37%]" />
+            <Hills className="absolute bottom-0 left-[-20.8%] h-[25%] w-[141.7%]" />
           </div>
 
-          {/* Composition */}
-          <div className="relative" aria-label={tr("Προεπισκόπηση καταστήματος")}>
-            <div aria-hidden="true" className="pointer-events-none absolute -top-12 left-[3%] z-40 hidden w-[200px] lg:block">
-              <p className="font-serif -rotate-[4deg] text-[16px] italic leading-snug text-[#F7F2E8]/90 [text-shadow:0_1px_8px_rgba(0,0,0,0.5)]">{tr("Όμορφα templates που προσαρμόζονται στο δικό σου brand")}</p>
-              <svg viewBox="0 0 120 70" className="ml-24 -mt-1 h-10 w-16 text-[#E08A76]" fill="none">
-                <path d="M8 6C30 10 60 30 70 62" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-                <path d="m62 54 8 9 4-11" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
+          {/* Headline, subtitle, CTAs: in flow on mobile, over the panorama's "sky" on desktop */}
+          <div className="relative z-40 px-5 pt-9 sm:px-8 xl:absolute xl:left-[3.3%] xl:top-[6.5%] xl:w-[38%] xl:max-w-[560px] xl:p-0">
+            <div aria-hidden="true" className="absolute -inset-x-20 -bottom-24 -top-10 -z-10 hidden bg-[radial-gradient(closest-side,rgba(245,238,225,0.96)_62%,rgba(245,238,225,0.65)_84%,transparent_100%)] xl:block" />
+            {intro}
+          </div>
+
+          <div className="hidden xl:block" aria-label={tr("Προεπισκόπηση καταστήματος")}>
+            <div className="absolute right-[1.2%] top-[3%] z-10 hidden w-[480px] origin-top-right scale-[0.62] xl:block min-[1400px]:scale-[0.68] min-[1560px]:scale-[0.76]">
+              <StudioTable lang={lang} />
             </div>
+            <ShopBrowser {...shop} className="absolute left-[68.5%] top-[30%] z-20 w-[20.5%]" />
+            <div className="absolute right-[2.5%] top-[38%] z-30 w-[10%]">
+              <OrderToast lang={lang} className="absolute -top-14 right-[-6%] w-[190px]" />
+              <PhoneShop {...shop} />
+            </div>
+            <StoryRoute lang={lang} />
+            <div className="absolute left-[31.5%] top-[76.5%] z-30"><StoryChip n={1}>{tr("Ελληνική παράδοση")}</StoryChip></div>
+            <div className="absolute left-[48.5%] top-[73%] z-30"><StoryChip n={2}>{tr("Πελάτες παντού, μέσω vitrinaki.gr")}</StoryChip></div>
+            <div className="absolute left-[69%] top-[78%] z-30"><StoryChip n={3}>{tr("Το δικό σου e-shop")}</StoryChip></div>
+            <StoryCaption lang={lang} className="absolute bottom-[3%] left-[56.5%] z-30 w-max -translate-x-1/2" />
+          </div>
 
-            <div className="relative mx-auto aspect-[10/8.6] w-full max-w-[720px] lg:mr-[-3%] lg:aspect-[10/7.3]">
-              {/* back template: dark local food */}
-              <Browser dark url="vitrinaki.gr/taste-local" className="absolute left-0 top-[4%] w-[33%] -rotate-[3deg] lg:top-[6%] lg:w-[25%]">
-                <div className="relative bg-[#1F3628] text-[#F7F2E8]">
-                  <div className="h-[86px] sm:h-[120px]"><Photo src="/home/food-dark.webp" className="object-[30%_center] opacity-90" /></div>
-                  <div className="p-2.5">
-                    <p className="font-serif text-[13px] leading-none tracking-wide sm:text-[15px]">TASTE<br />LOCAL</p>
-                    <p className="mt-1 text-[6.5px] text-[#F7F2E8]/60 sm:text-[7px]">{tr("Αυθεντικές γεύσεις από τον τόπο μας")}</p>
-                    <span className="mt-1.5 inline-block rounded bg-[#C0503C] px-1.5 py-0.5 text-[6.5px] font-bold sm:text-[7px]">{tr("Αγόρασε τώρα")}</span>
-                  </div>
-                </div>
-              </Browser>
-
-              {/* Studio dashboard */}
-              <div className="absolute right-0 top-[-3%] hidden w-[73%] lg:block">
-                <StudioTable lang={lang} />
+          {/* Mobile / tablet: the same story, stacked */}
+          <div className="relative px-5 pb-10 pt-8 sm:px-8 xl:hidden">
+            <div className="mx-auto max-w-[560px] md:max-w-[640px]">
+              <div className="relative">
+                <img src="/home/story-greece.webp" alt="" width={799} height={544} decoding="async" className="block w-full" />
+                <StoryChip n={1} className="absolute bottom-3 left-3">{tr("Ελληνική παράδοση")}</StoryChip>
               </div>
-
-              {/* Front live shop */}
-              <Browser url={`vitrinaki.gr/${slug}`} className="absolute left-[10%] top-[24%] z-10 w-[64%] lg:left-[6%] lg:top-[51%] lg:w-[45%]">
-                <div className="p-2.5 transition-colors duration-500 sm:p-3" style={{ background: p.page, color: p.ink }} aria-live="polite">
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="flex min-w-0 items-center gap-1.5 text-[10px] font-extrabold">
-                      <span className="grid h-5 w-5 shrink-0 place-items-center rounded text-[7px] text-white transition-colors duration-500" style={{ background: p.accent }}>{initialsOf(shopName)}</span>
-                      <span className="truncate">{shopName}</span>
-                    </span>
-                    <span className="flex shrink-0 gap-2 text-[7px] font-semibold opacity-60">
-                      <span>{tr("Αρχική")}</span><span>{tr("Συλλογή")}</span>
-                    </span>
+              <StoryDrop className="-mt-1" />
+              <div className="relative">
+                <img src="/home/story-globe.webp" alt="" width={730} height={603} decoding="async" className="mx-auto block w-[94%]" />
+                <StoryChip n={2} className="absolute bottom-2 left-1/2 -translate-x-1/2 whitespace-nowrap">{tr("Πελάτες παντού, μέσω vitrinaki.gr")}</StoryChip>
+              </div>
+              <StoryDrop />
+              <div className="relative">
+                <StoryChip n={3} className="mb-3">{tr("Το δικό σου e-shop")}</StoryChip>
+                <div className="relative pb-[6%] pr-[22%]" aria-label={tr("Προεπισκόπηση καταστήματος")}>
+                  <ShopBrowser {...shop} className="w-full" />
+                  <div className="absolute bottom-0 right-0 w-[30%]">
+                    <PhoneShop {...shop} />
                   </div>
-                  <div className="mt-2 grid grid-cols-[1fr_1fr] overflow-hidden rounded-lg transition-colors duration-500" style={{ background: p.soft }}>
-                    <div className="flex flex-col justify-center p-2.5">
-                      <p className="font-serif text-[15px] leading-tight sm:text-[17px]">{tr("Νέα")}</p>
-                      <p className="text-[7px] opacity-70 sm:text-[7.5px]">{tr("Φυσική ομορφιά για καθημερινές στιγμές")}</p>
-                      <span className="mt-1.5 w-fit rounded px-1.5 py-0.5 text-[7px] font-bold text-white transition-colors duration-500" style={{ background: p.accent }}>{tr("Ανακάλυψε")}</span>
-                    </div>
-                    <div className="aspect-[4/3]"><Photo src="/home/p-desk-plant.webp" className="object-[45%_center]" /></div>
-                  </div>
-                  <div className="mt-2 grid grid-cols-3 gap-1.5">
-                    {shopProducts.map((item) => (
-                      <div key={item.img} className="rounded-md bg-white p-1">
-                        <div className="aspect-square overflow-hidden rounded"><Photo src={item.img} /></div>
-                        <p className="mt-1 truncate text-[6.5px] font-semibold sm:text-[7px]">{tr(item.name)}</p>
-                        <p className="text-[6.5px] font-bold transition-colors duration-500 sm:text-[7px]" style={{ color: p.accent }}>{item.price}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </Browser>
-
-              {/* Phone */}
-              <div className="absolute bottom-[0%] right-[2%] z-20 w-[27%] rounded-[1.4rem] bg-[#0F1C14] p-1.5 shadow-[0_30px_60px_-20px_rgba(0,0,0,0.7)] ring-1 ring-white/10 lg:bottom-[-5%] lg:right-[16%] lg:w-[18%]">
-                <div className="overflow-hidden rounded-[1.1rem] transition-colors duration-500" style={{ background: p.page, color: p.ink }}>
-                  <div className="mx-auto mt-1 h-1.5 w-10 rounded-full bg-[#0F1C14]" />
-                  <div className="p-2">
-                    <p className="truncate text-[8px] font-extrabold">{shopName}</p>
-                    <div className="mt-1 rounded bg-white px-1.5 py-0.5 text-[6px] opacity-60">{tr("Αναζήτηση προϊόντων…")}</div>
-                    <div className="mt-1.5 aspect-[4/3] overflow-hidden rounded-md"><Photo src="/home/p-aloe.webp" /></div>
-                    <p className="mt-1 text-[7px] font-semibold">{tr("Προτεινόμενα")}</p>
-                    <div className="mt-1 grid grid-cols-2 gap-1">
-                      {["/home/p-tulips.webp", "/home/p-succulents.webp"].map((src) => (
-                        <div key={src} className="aspect-square overflow-hidden rounded bg-white"><Photo src={src} /></div>
-                      ))}
-                    </div>
-                    <div className="mt-1.5 rounded py-1 text-center text-[6.5px] font-bold text-white transition-colors duration-500" style={{ background: p.accent }}>{tr("Στο καλάθι")}</div>
-                  </div>
+                  <OrderToast lang={lang} className="absolute -top-2 right-0 w-[176px]" />
                 </div>
               </div>
+              <StoryCaption lang={lang} tone="dark" className="mt-8" />
             </div>
           </div>
         </div>
@@ -336,7 +380,7 @@ export function HeroDemo({ lang, intro }: { lang: Lang; intro: React.ReactNode }
       </div>
 
       {/* Studio on small screens */}
-      <div className="bg-[#F7F2E8] px-5 py-8 sm:px-8 lg:hidden">
+      <div className="bg-[#F7F2E8] px-5 py-8 sm:px-8 xl:hidden">
         <p className="mb-2 text-[12px] font-semibold text-[#2E4A37]/70">{tr("Δοκίμασε τη διαχείριση αποθέματος:")}</p>
         <StudioTable lang={lang} />
       </div>
