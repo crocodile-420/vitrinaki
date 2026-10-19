@@ -4,6 +4,7 @@ import { headers } from "next/headers"
 import Script from "next/script"
 import { SitePreview } from "@/components/sections/SitePreview/SitePreview"
 import { HeroDemo } from "@/components/sections/HeroDemo/HeroDemo"
+import { HeroBackdrop } from "@/components/sections/HeroBackdrop/HeroBackdrop"
 import { Reveal } from "@/components/atoms/Reveal/Reveal"
 import { listPublishedStorefronts, paletteColors, templateLabels, type DirectoryStorefront } from "@/lib/data/vitrinaki-storefronts"
 import { listRegions } from "@/lib/data/regions"
@@ -233,14 +234,9 @@ export default async function Home({
 
       {/* Hero */}
       <section className="relative isolate overflow-hidden bg-[#1a2e21] text-[#F7F2E8]">
-        <div aria-hidden="true" className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_80%_60%_at_70%_40%,#2f5a40_0%,transparent_60%),linear-gradient(180deg,#1a2e21_0%,#20392a_60%,#1a2e21_100%)]" />
-        <div aria-hidden="true" className="vk-glow absolute -right-40 top-10 -z-10 h-[520px] w-[520px] rounded-full bg-[#C0503C]/20 blur-[120px]" />
-        <div aria-hidden="true" className="vk-glow absolute -left-40 bottom-0 -z-10 h-[420px] w-[420px] rounded-full bg-[#265E8E]/30 blur-[120px] [animation-delay:-4s]" />
-        <div aria-hidden="true" className="vk-grain absolute inset-0 -z-10 opacity-[0.18]" />
-        <OliveBranch className="pointer-events-none absolute -left-10 bottom-6 -z-10 w-[360px] -scale-x-100 rotate-[200deg] text-[#A9C3B0]/20 lg:w-[460px]" />
-        <div aria-hidden="true" className="absolute inset-0 -z-10 bg-[linear-gradient(rgba(247,242,232,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(247,242,232,0.04)_1px,transparent_1px)] bg-[size:72px_72px] [mask-image:radial-gradient(ellipse_70%_60%_at_50%_30%,black,transparent)]" />
+        <HeroBackdrop />
 
-        <div className={`${WRAP} grid items-center gap-14 pb-20 pt-12 sm:pt-16 lg:grid-cols-[1.02fr_0.98fr] lg:gap-16 lg:pb-32 lg:pt-24`}>
+        <div className={`${WRAP} grid items-center gap-14 pb-20 pt-20 sm:pt-24 lg:grid-cols-[1.02fr_0.98fr] lg:gap-16 lg:pb-32 lg:pt-24`}>
           <div>
             <Reveal><Eyebrow light>{tr("Το δικό σου e-shop, όχι ένα ακόμη marketplace")}</Eyebrow></Reveal>
             <Reveal delay={80}>
