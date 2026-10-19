@@ -5,6 +5,8 @@ import { useState } from "react"
 
 import { translator, type Lang } from "@/lib/i18n/vitrinaki"
 
+import { HeroJourney } from "./HeroJourney"
+
 type Palette = { key: string; label: string; page: string; ink: string; accent: string; soft: string }
 
 const palettes: Palette[] = [
@@ -186,26 +188,29 @@ export function HeroDemo({ lang, intro }: { lang: Lang; intro: React.ReactNode }
   return (
     <>
       <div className="relative isolate overflow-hidden bg-[#16271C] text-white">
-        {/* Photo: on mobile a band on top, on desktop the left/centre backdrop */}
-        <div aria-hidden="true" className="relative h-[300px] sm:h-[380px] lg:absolute lg:inset-y-0 lg:left-[7%] lg:h-auto lg:w-[62%] xl:left-[11%] xl:w-[60%]">
+        {/* Greek landscape & products: on mobile a band on top, on desktop the left/centre backdrop */}
+        <div aria-hidden="true" className="relative h-[300px] sm:h-[380px] lg:absolute lg:inset-y-0 lg:left-0 lg:h-auto lg:w-[58%] xl:w-[56%]">
           <img
-            src="/home/hero-owner.webp"
+            src="/home/hero-greece.webp"
             alt=""
-            width={800}
-            height={600}
+            width={830}
+            height={650}
             fetchPriority="high"
             decoding="async"
-            className="h-full w-full object-cover object-[62%_30%] lg:object-[center_30%]"
+            className="h-full w-full object-cover object-[30%_60%] lg:object-[left_bottom]"
           />
           {/* legibility gradients */}
-          <div className="absolute inset-0 bg-gradient-to-t from-[#16271C] via-[#16271C]/10 to-transparent lg:hidden" />
-          <div className="absolute inset-0 hidden bg-[linear-gradient(90deg,#16271C_0%,rgba(22,39,28,0.9)_24%,rgba(22,39,28,0.35)_42%,rgba(22,39,28,0.05)_55%,rgba(22,39,28,0.45)_78%,#16271C_100%)] lg:block" />
-          <div className="absolute inset-0 hidden bg-gradient-to-t from-[#16271C]/70 via-transparent to-[#16271C]/40 lg:block" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#16271C] via-[#16271C]/15 to-transparent lg:hidden" />
+          <div className="absolute inset-0 hidden bg-[linear-gradient(90deg,rgba(22,39,28,0.78)_0%,rgba(22,39,28,0.7)_32%,rgba(22,39,28,0.22)_64%,rgba(22,39,28,0.5)_84%,#16271C_100%)] lg:block" />
+          <div className="absolute inset-0 hidden bg-gradient-to-t from-[#16271C]/75 via-transparent to-[#16271C]/45 lg:block" />
         </div>
         <div aria-hidden="true" className="absolute inset-y-0 right-0 -z-10 hidden w-1/2 bg-[radial-gradient(ellipse_70%_60%_at_70%_40%,#2E4A37_0%,transparent_70%)] lg:block" />
 
-        <div className="relative mx-auto grid max-w-[1280px] items-center gap-10 px-5 pb-12 sm:px-8 lg:min-h-[560px] lg:grid-cols-[0.78fr_1.22fr] lg:gap-4 lg:px-12 lg:pb-20 lg:pt-16">
-          <div className="-mt-16 max-w-[450px] sm:-mt-24 lg:mt-0">{intro}</div>
+        <div className="relative mx-auto grid max-w-[1280px] items-center gap-10 px-5 pb-12 sm:px-8 lg:min-h-[560px] lg:grid-cols-[0.78fr_1.22fr] lg:gap-4 lg:px-12 lg:pb-16 lg:pt-12">
+          <div className="-mt-16 max-w-[450px] sm:-mt-24 lg:mt-0">
+            {intro}
+            <HeroJourney lang={lang} className="mt-7 max-w-[430px] lg:mt-5 lg:max-w-[400px] lg:rounded-2xl lg:bg-[#0F1C14]/45 lg:px-4 lg:py-3 lg:ring-1 lg:ring-white/10 lg:backdrop-blur-[3px]" />
+          </div>
 
           {/* Composition */}
           <div className="relative" aria-label={tr("Προεπισκόπηση καταστήματος")}>
