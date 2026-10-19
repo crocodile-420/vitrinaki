@@ -1,6 +1,7 @@
 import LocalizedClientLink from "@/components/molecules/LocalizedLink/LocalizedLink"
 
 import { LanguageSwitcher } from "@/components/molecules/LanguageSwitcher/LanguageSwitcher"
+import { HeaderShell } from "./HeaderShell"
 import { getTranslator } from "@/lib/i18n/server"
 import { studioLoginUrl, studioRegisterUrl } from "@/lib/vitrinaki-links"
 
@@ -20,7 +21,7 @@ function VitrinakiWordmark() {
 export const Header = async ({ locale }: { locale: string }) => {
   const { lang, tr } = await getTranslator()
   return (
-    <header className="sticky top-0 z-40 border-b border-[#2E4A37]/10 bg-[#F7F2E8]/95 backdrop-blur" data-testid="header" data-locale={locale}>
+    <HeaderShell locale={locale}>
       <div className="mx-auto flex max-w-[1600px] items-center justify-between gap-3 px-4 py-3 sm:px-6 lg:px-10">
         <LocalizedClientLink href="/" className="shrink-0" aria-label={tr("Vitrinaki αρχική σελίδα")} data-testid="header-logo-link">
           <VitrinakiWordmark />
@@ -45,12 +46,12 @@ export const Header = async ({ locale }: { locale: string }) => {
           </a>
           <a
             href={studioRegisterUrl}
-            className="inline-flex min-h-10 items-center justify-center whitespace-nowrap rounded-md bg-[#2E4A37] px-3 py-2 text-[13px] sm:text-sm font-semibold text-[#F7F2E8] transition hover:bg-[#1f3527] sm:px-5"
+            className="inline-flex min-h-10 items-center justify-center whitespace-nowrap rounded-full bg-[#2E4A37] px-3 py-2 text-[13px] sm:text-sm font-semibold text-[#F7F2E8] transition hover:bg-[#1f3527] sm:px-5"
           >
             {tr("Άνοιξε τη βιτρίνα σου")}
           </a>
         </div>
       </div>
-    </header>
+    </HeaderShell>
   )
 }
