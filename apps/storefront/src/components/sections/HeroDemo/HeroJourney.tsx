@@ -1,5 +1,4 @@
 import type React from "react"
-import { useId } from "react"
 
 import { translator, type Lang } from "@/lib/i18n/vitrinaki"
 
@@ -46,7 +45,8 @@ function Parcel() {
 /** Desktop overlay: Greek pin → route across the globe → landing on the shop. */
 export function StoryRoute({ lang }: { lang: Lang }) {
   const tr = translator(lang)
-  const uid = useId().replace(/:/g, "")
+  // Fixed id: StoryRoute renders once, and useId differed between server and client trees
+  const uid = "vk-story"
   return (
     <svg viewBox={`0 0 ${STAGE.w} ${STAGE.h}`} className="vk-story pointer-events-none absolute inset-0 z-30 h-full w-full overflow-visible" aria-hidden="true">
       <style>{css}</style>
