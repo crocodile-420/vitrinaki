@@ -1,6 +1,7 @@
 import LocalizedClientLink from "@/components/molecules/LocalizedLink/LocalizedLink"
 
 import { LanguageSwitcher } from "@/components/molecules/LanguageSwitcher/LanguageSwitcher"
+import { HeaderShell } from "./HeaderShell"
 import { getTranslator } from "@/lib/i18n/server"
 import { studioLoginUrl, studioRegisterUrl } from "@/lib/vitrinaki-links"
 
@@ -14,14 +15,14 @@ const navigation = [
 
 function VitrinakiWordmark() {
   // eslint-disable-next-line @next/next/no-img-element
-  return <img src="/brand/vitrinaki-logo.png" alt="vitrinaki.gr" width={1510} height={390} className="h-10 w-auto sm:h-12" />
+  return <img src="/brand/vitrinaki-logo.png" alt="vitrinaki.gr" width={1510} height={390} className="h-7 w-auto sm:h-12" />
 }
 
 export const Header = async ({ locale }: { locale: string }) => {
   const { lang, tr } = await getTranslator()
   return (
-    <header className="sticky top-0 z-40 border-b border-[#e8e1d7] bg-[#F7F2E8]/95 backdrop-blur" data-testid="header" data-locale={locale}>
-      <div className="mx-auto flex max-w-[1600px] items-center justify-between gap-5 px-4 py-3 sm:px-6 lg:px-10">
+    <HeaderShell locale={locale}>
+      <div className="mx-auto flex max-w-[1600px] items-center justify-between gap-3 px-4 py-3 sm:px-6 lg:px-10">
         <LocalizedClientLink href="/" className="shrink-0" aria-label={tr("Vitrinaki αρχική σελίδα")} data-testid="header-logo-link">
           <VitrinakiWordmark />
         </LocalizedClientLink>
@@ -31,26 +32,26 @@ export const Header = async ({ locale }: { locale: string }) => {
             <LocalizedClientLink
               key={item.label}
               href={item.href}
-              className="text-sm font-semibold text-[#2E4A37] transition-colors hover:text-[#C0503C]"
+              className="text-[13px] font-medium tracking-wide text-[#2E4A37]/80 transition-colors hover:text-[#2E4A37]"
             >
               {tr(item.label)}
             </LocalizedClientLink>
           ))}
         </nav>
 
-        <div className="flex shrink-0 items-center gap-2 sm:gap-3">
+        <div className="flex shrink-0 items-center gap-1.5 sm:gap-3">
           <LanguageSwitcher lang={lang} label={tr("Γλώσσα")} className="text-[#2E4A37]" />
           <a href={studioLoginUrl} className="hidden text-sm font-semibold text-[#2E4A37] transition-colors hover:text-[#C0503C] sm:inline-flex">
             {tr("Σύνδεση")}
           </a>
           <a
             href={studioRegisterUrl}
-            className="inline-flex min-h-10 items-center justify-center rounded-full bg-[#C0503C] px-4 py-2 text-sm font-bold text-white shadow-sm transition hover:bg-[#a5412f] sm:px-5"
+            className="inline-flex min-h-10 items-center justify-center whitespace-nowrap rounded-full bg-[#2E4A37] px-3 py-2 text-[13px] sm:text-sm font-semibold text-[#F7F2E8] transition hover:bg-[#1f3527] sm:px-5"
           >
             {tr("Άνοιξε τη βιτρίνα σου")}
           </a>
         </div>
       </div>
-    </header>
+    </HeaderShell>
   )
 }

@@ -24,12 +24,12 @@ export function SitePreview({
     .toUpperCase()
 
   return (
-    <div className={`overflow-hidden rounded-2xl border border-black/10 bg-white shadow-xl shadow-black/10 ${className}`}>
+    <div className={`overflow-hidden rounded-md border border-black/10 bg-white ${className}`}>
       <div className="flex items-center gap-1.5 border-b border-black/5 bg-white px-3 py-2">
-        <span className="h-2 w-2 rounded-full bg-[#C0503C]" />
-        <span className="h-2 w-2 rounded-full bg-[#e7c16f]" />
-        <span className="h-2 w-2 rounded-full bg-[#9dbba5]" />
-        <span className="ml-2 truncate rounded-full bg-[#f1eee8] px-2.5 py-0.5 text-[9px] font-medium text-[#6b7a72]">{address}</span>
+        <span className="h-2 w-2 rounded-full bg-black/10" />
+        <span className="h-2 w-2 rounded-full bg-black/10" />
+        <span className="h-2 w-2 rounded-full bg-black/10" />
+        <span className="ml-2 truncate rounded-sm bg-[#f4f2ee] px-2.5 py-0.5 text-[9px] font-medium text-[#6b7a72]">{address}</span>
       </div>
       <div style={{ background: c.page, color: c.ink }} className="p-3 sm:p-4">
         <div className="flex items-center justify-between">
@@ -45,28 +45,28 @@ export function SitePreview({
         </div>
 
         {site.template === "local" ? (
-          <div style={{ background: c.soft }} className="mt-3 rounded-xl p-3 text-center">
+          <div style={{ background: c.soft }} className="mt-3 rounded-sm p-3 text-center">
             <p className="text-[8px] font-bold uppercase tracking-[0.18em] opacity-60">{tr("Στη γειτονιά σου")}</p>
             <p className="mt-1 text-sm font-extrabold leading-tight">{tr(site.tagline)}</p>
-            <span style={{ background: c.accent }} className="mt-2 inline-block rounded-full px-2.5 py-1 text-[8px] font-bold text-white">{tr("Βρες μας")}</span>
+            <span style={{ background: c.accent }} className="mt-2 inline-block rounded-sm px-2.5 py-1 text-[8px] font-bold text-white">{tr("Βρες μας")}</span>
           </div>
         ) : site.template === "services" ? (
           <div className="mt-3 grid grid-cols-[1.2fr_0.8fr] gap-2">
             <div>
               <p className="text-sm font-extrabold leading-tight">{tr(site.tagline)}</p>
-              <span style={{ background: c.accent }} className="mt-2 inline-block rounded-full px-2.5 py-1 text-[8px] font-bold text-white">{tr("Κλείσε ραντεβού")}</span>
+              <span style={{ background: c.accent }} className="mt-2 inline-block rounded-sm px-2.5 py-1 text-[8px] font-bold text-white">{tr("Κλείσε ραντεβού")}</span>
             </div>
-            <div style={{ background: c.soft }} className="space-y-1 rounded-xl p-2">
+            <div style={{ background: c.soft }} className="space-y-1 rounded-sm p-2">
               {["Δευ–Παρ 9:00–18:00", "Σάβ 10:00–14:00"].map(tr).map((line) => (
                 <p key={line} className="text-[7px] font-semibold opacity-70">{line}</p>
               ))}
             </div>
           </div>
         ) : (
-          <div style={{ background: c.soft }} className="mt-3 rounded-xl p-3">
+          <div style={{ background: c.soft }} className="mt-3 rounded-sm p-3">
             <p className="text-[8px] font-bold uppercase tracking-[0.18em] opacity-60">{tr("Νέα συλλογή")}</p>
             <p className="mt-1 max-w-[80%] text-sm font-extrabold leading-tight">{tr(site.tagline)}</p>
-            <span style={{ background: c.accent }} className="mt-2 inline-block rounded-full px-2.5 py-1 text-[8px] font-bold text-white">{tr("Ανακάλυψε")}</span>
+            <span style={{ background: c.accent }} className="mt-2 inline-block rounded-sm px-2.5 py-1 text-[8px] font-bold text-white">{tr("Ανακάλυψε")}</span>
           </div>
         )}
 
