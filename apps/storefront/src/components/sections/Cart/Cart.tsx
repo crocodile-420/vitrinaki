@@ -4,9 +4,11 @@ import { Button } from '@/components/atoms';
 import LocalizedClientLink from '@/components/molecules/LocalizedLink/LocalizedLink';
 import { CartEmpty, CartItems, CartSummary } from '@/components/organisms';
 import { useCartContext } from '@/components/providers';
+import { useTranslator } from '@/lib/i18n/client';
 
 export const Cart = () => {
   const { cart } = useCartContext();
+  const { tr } = useTranslator()
 
   if (!cart || !cart.items?.length) {
     return <CartEmpty />;
@@ -29,7 +31,7 @@ export const Cart = () => {
             discount_total={cart?.discount_subtotal || 0}
           />
           <LocalizedClientLink href="/checkout?step=address">
-            <Button className="flex w-full items-center justify-center py-3">Go to checkout</Button>
+            <Button className="flex w-full items-center justify-center py-3">{tr("Ολοκλήρωση παραγγελίας")}</Button>
           </LocalizedClientLink>
         </div>
       </div>

@@ -1,5 +1,6 @@
 "use client"
 
+import { useTranslator } from "@/lib/i18n/client"
 import { convertToLocale } from "@/lib/helpers/money"
 
 export const CartSummary = ({
@@ -17,11 +18,12 @@ export const CartSummary = ({
   tax: number
   discount_total: number
 }) => {
+  const { tr } = useTranslator()
   return (
     <div data-testid="cart-summary">
       <div className="space-y-4 label-md text-secondary mb-4">
         <div className="flex justify-between" data-testid="cart-summary-items">
-          <span>Items:</span>
+          <span>{tr("Προϊόντα")}:</span>
           <span className="text-primary">
             {convertToLocale({
               amount: item_total,
@@ -30,7 +32,7 @@ export const CartSummary = ({
           </span>
         </div>
         <div className="flex justify-between" data-testid="cart-summary-delivery">
-          <span>Delivery:</span>
+          <span>{tr("Αποστολή")}:</span>
           <span className="text-primary">
             {convertToLocale({
               amount: shipping_total,
@@ -39,7 +41,7 @@ export const CartSummary = ({
           </span>
         </div>
         <div className="flex justify-between" data-testid="cart-summary-tax">
-          <span>Tax:</span>
+          <span>{tr("ΦΠΑ")}:</span>
           <span className="text-primary">
             {convertToLocale({
               amount: tax,
@@ -48,7 +50,7 @@ export const CartSummary = ({
           </span>
         </div>
         <div className="flex justify-between" data-testid="cart-summary-discount">
-          <span>Discount:</span>
+          <span>{tr("Έκπτωση")}:</span>
           <span className="text-primary">
             {convertToLocale({
               amount: discount_total,
@@ -57,7 +59,7 @@ export const CartSummary = ({
           </span>
         </div>
         <div className="flex justify-between border-t pt-4 items-center" data-testid="cart-summary-total">
-          <span>Total:</span>
+          <span>{tr("Σύνολο")}:</span>
           <span className="label-xl text-primary">
             {convertToLocale({
               amount: total,

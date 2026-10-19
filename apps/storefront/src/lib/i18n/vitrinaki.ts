@@ -176,6 +176,15 @@ const en: Record<string, string> = {
   "Γειτονιά": "Neighbourhood",
   "Για τοπικές επιχειρήσεις: ζεστό ύφος, ωράριο, επικοινωνία.": "For local businesses: a warm style, opening hours, contact.",
   "Για επαγγελματίες και υπηρεσίες, με έμφαση στο ραντεβού.": "For professionals and services, built around bookings.",
+  "Ολοκλήρωση παραγγελίας": "Go to checkout",
+  "Το καλάθι σου": "Your cart",
+  "Το καλάθι σου είναι άδειο.": "Your cart is empty.",
+  "Δες τις βιτρίνες": "See the shops",
+  "Αποστολή": "Delivery",
+  "Προϊόντα": "Items",
+  "ΦΠΑ": "VAT",
+  "Έκπτωση": "Discount",
+  "Σύνολο": "Total",
 }
 
 const dictionaries: Record<Lang, Record<string, string>> = { el: {}, en }

@@ -1,31 +1,32 @@
 :root {
     /* Neutral colors are the foundation of the color system. Almost everything in UI design — text, fields, backgrounds, dividers — are usually gray. */
     --neutral-0: 255, 255, 255;
-    --neutral-25: 247, 247, 247;
-    --neutral-50: 238, 238, 238;
-    --neutral-100: 226, 226, 226;
-    --neutral-200: 198, 198, 198;
-    --neutral-300: 163, 163, 163;
-    --neutral-400: 115, 115, 115;
-    --neutral-500: 82, 82, 82;
-    --neutral-600: 64, 64, 64;
-    --neutral-700: 38, 38, 38;
-    --neutral-800: 27, 27, 27;
-    --neutral-900: 22, 22, 22;
-    --neutral-1000: 9, 9, 9;
+    --neutral-25: 247, 242, 232;
+    --neutral-50: 239, 232, 219;
+    --neutral-100: 230, 223, 211;
+    --neutral-200: 205, 196, 182;
+    --neutral-300: 170, 189, 177;
+    --neutral-400: 120, 133, 124;
+    --neutral-500: 86, 101, 91;
+    --neutral-600: 64, 82, 70;
+    --neutral-700: 46, 74, 55;
+    --neutral-800: 36, 58, 43;
+    --neutral-900: 27, 44, 33;
+    --neutral-1000: 24, 36, 28;
 
+    /* Vitrinaki palette: warm cream neutrals with κυπαρισσί ink, κεραμιδί for actions. */
     /* Brand colors are used across all interactive elements such as buttons, links, inputs, etc. This color can define the overall feel and can elicit emotion. */
-    --brand-25: 247, 247, 247;
-    --brand-50: 238, 238, 238;
-    --brand-100: 226, 226, 226;
-    --brand-200: 198, 198, 198;
-    --brand-300: 163, 163, 163;
-    --brand-400: 115, 115, 115;
-    --brand-500: 82, 82, 82;
-    --brand-600: 64, 64, 64;
-    --brand-700: 27, 27, 27;
-    --brand-800: 22, 22, 22;
-    --brand-900: 9, 9, 9;
+    --brand-25: 253, 244, 241;
+    --brand-50: 250, 230, 225;
+    --brand-100: 244, 205, 196;
+    --brand-200: 233, 163, 148;
+    --brand-300: 218, 122, 102;
+    --brand-400: 204, 98, 77;
+    --brand-500: 192, 80, 60;
+    --brand-600: 176, 70, 51;
+    --brand-700: 165, 65, 47;
+    --brand-800: 145, 56, 40;
+    --brand-900: 192, 80, 60;
     
     /* Red colors are used across error states and in "destructive" actions. */
     --red-25: 254, 243, 242;
@@ -93,8 +94,8 @@
     --bg-component-secondary-pressed: var(--neutral-100);
 
     --bg-action-primary: var(--brand-900);
-    --bg-action-primary-hover: var(--brand-800);
-    --bg-action-primary-pressed: var(--brand-700);
+    --bg-action-primary-hover: var(--brand-700);
+    --bg-action-primary-pressed: var(--brand-800);
     --bg-action-secondary: rgba(var(--neutral-1000), 0.05);
     --bg-action-secondary-hover: rgba(var(--neutral-1000), 0.1);
     --bg-action-secondary-pressed: rgba(var(--neutral-1000), 0.2);
@@ -132,7 +133,7 @@
     --content-action-primary: var(--brand-900);
     --content-action-primary-hover: var(--brand-800);
     --content-action-primary-pressed: var(--brand-700);
-    --content-action-on-primary: var(--brand-25);
+    --content-action-on-primary: var(--neutral-0);
     --content-action-on-secondary: var(--neutral-1000);
     --content-action-on-tertiary: var(--neutral-0);
 
