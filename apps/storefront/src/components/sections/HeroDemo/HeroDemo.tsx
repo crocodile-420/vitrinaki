@@ -340,9 +340,9 @@ export function HeroDemo({ lang, intro }: { lang: Lang; intro: React.ReactNode }
       </div>
 
       {/* Try it: compact name & colour strip */}
-      <div className="border-b border-[#2E4A37]/10 bg-white">
+      <div className="border-b border-[#F7F2E8]/10 bg-[#2E4A37] text-[#F7F2E8]">
         <div className="mx-auto flex max-w-[1280px] flex-col gap-3 px-5 py-4 sm:px-8 md:flex-row md:items-center md:gap-5 lg:px-12">
-          <label htmlFor="vk-demo-name" className="flex shrink-0 items-center gap-2 text-[12px] font-bold uppercase tracking-[0.16em] text-[#2E4A37]">
+          <label htmlFor="vk-demo-name" className="flex shrink-0 items-center gap-2 text-[12px] font-bold uppercase tracking-[0.16em] text-[#F7F2E8]">
             <span className="h-1.5 w-1.5 rounded-full bg-[#C0503C]" />
             {tr("Δοκίμασέ το με το όνομά σου")}
           </label>
@@ -355,7 +355,7 @@ export function HeroDemo({ lang, intro }: { lang: Lang; intro: React.ReactNode }
               autoComplete="off"
               placeholder={tr("Το όνομα της επιχείρησής σου")}
               onChange={(e) => setName(e.target.value)}
-              className="min-w-0 flex-1 rounded-lg border border-[#2E4A37]/15 bg-[#FBF9F4] px-3 py-2 text-[14px] text-[#1F3628] outline-none transition placeholder:text-[#2E4A37]/40 focus:border-[#C0503C] focus:ring-2 focus:ring-[#C0503C]/20"
+              className="min-w-0 flex-1 rounded-lg border border-[#F7F2E8]/30 bg-[#F7F2E8] px-3 py-2 text-[14px] text-[#1F3628] outline-none transition placeholder:text-[#2E4A37]/70 focus:border-[#F7F2E8] focus:ring-2 focus:ring-[#F7F2E8]/40"
             />
             <div role="radiogroup" aria-label={tr("Χρώματα")} className="flex shrink-0 gap-1.5">
               {palettes.map((x) => (
@@ -367,14 +367,14 @@ export function HeroDemo({ lang, intro }: { lang: Lang; intro: React.ReactNode }
                   aria-label={tr(x.label)}
                   title={tr(x.label)}
                   onClick={() => setPaletteKey(x.key)}
-                  className={`h-7 w-7 rounded-full ring-offset-2 transition hover:scale-110 ${x.key === paletteKey ? "ring-2 ring-[#1F3628]" : ""}`}
+                  className={`h-7 w-7 rounded-full border-2 border-[#F7F2E8]/70 ring-offset-2 ring-offset-[#2E4A37] transition hover:scale-110 ${x.key === paletteKey ? "ring-2 ring-[#F7F2E8]" : ""}`}
                   style={{ background: x.accent }}
                 />
               ))}
             </div>
           </div>
-          <p className="truncate text-[13px] text-[#2E4A37]/70">
-            {tr("Η διεύθυνσή σου:")} vitrinaki.gr/<span className="font-semibold text-[#265E8E]">{slug}</span>
+          <p className="truncate text-[13px] text-[#F7F2E8]/80">
+            {tr("Η διεύθυνσή σου:")} vitrinaki.gr/<span className="font-semibold text-[#F7F2E8] underline decoration-[#C0503C] decoration-2 underline-offset-4">{slug}</span>
           </p>
         </div>
       </div>

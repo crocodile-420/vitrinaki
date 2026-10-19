@@ -331,16 +331,16 @@ export default async function Home({
       </section>
 
       {/* Features */}
-      <section id="included" className="scroll-mt-20 border-y border-[#2E4A37]/10 bg-white">
+      <section id="included" className="scroll-mt-20 bg-[#2E4A37] text-[#F7F2E8]">
         <div className={`${WRAP} py-12 lg:py-14`}>
           <Reveal className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
-            <h2 className="max-w-xl text-[1.7rem] font-extrabold leading-tight tracking-[-0.02em] text-[#1F3628] sm:text-[2rem]">{tr("Ένα ολοκληρωμένο e-shop. Δικό σου.")}</h2>
-            <p className={`max-w-md text-[15px] leading-7 ${MUTED}`}>{tr("Όλα όσα χρειάζεσαι για να πουλάς online, σε ένα σημείο.")}</p>
+            <h2 className="max-w-xl text-[1.7rem] font-extrabold leading-tight tracking-[-0.02em] text-[#F7F2E8] sm:text-[2rem]">{tr("Ένα ολοκληρωμένο e-shop. Δικό σου.")}</h2>
+            <p className="max-w-md text-[15px] leading-7 text-[#F7F2E8]/80">{tr("Όλα όσα χρειάζεσαι για να πουλάς online, σε ένα σημείο.")}</p>
           </Reveal>
           <div className="mt-8 grid grid-cols-1 gap-3 min-[480px]:grid-cols-2 md:grid-cols-4 xl:grid-cols-8">
             {features.map((f, i) => (
               <Reveal key={f.title} delay={(i % 4) * 60} className="h-full">
-                <div className="group relative h-full rounded-2xl border border-[#2E4A37]/10 bg-[#FBF9F4] p-4 transition duration-300 hover:-translate-y-1 hover:border-[#2E4A37]/20 hover:bg-white hover:shadow-[0_24px_50px_-30px_rgba(46,74,55,0.45)]">
+                <div className="group relative h-full rounded-2xl border border-[#F7F2E8]/20 bg-[#F7F2E8] p-4 text-[#1F3628] shadow-[0_18px_40px_-28px_rgba(0,0,0,0.6)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_55px_-30px_rgba(0,0,0,0.7)]">
                   {"soon" in f ? <span className="absolute right-2.5 top-2.5 rounded-full bg-[#265E8E]/10 px-2 py-0.5 text-[10.5px] font-semibold text-[#265E8E]">{tr("Σύντομα")}</span> : null}
                   <span className="grid h-10 w-10 place-items-center rounded-full" style={{ background: `${f.color}17`, color: f.color }}>
                     <FeatureIcon name={f.icon} size={20} />
@@ -400,11 +400,11 @@ export default async function Home({
       </section>
 
       {/* Live shops */}
-      <section id="vitrina" className="scroll-mt-20 bg-white">
+      <section id="vitrina" className="scroll-mt-20 bg-[#2E4A37] text-[#F7F2E8]">
         <div className={`${WRAP} py-14 lg:py-20`}>
           <Reveal className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
-            <h2 className="max-w-xl text-[1.9rem] font-extrabold leading-tight tracking-[-0.02em] text-[#1F3628] sm:text-4xl">{tr("Επιχειρήσεις που άνοιξαν το e-shop τους.")}</h2>
-            <p className={`max-w-md text-[15px] leading-7 ${MUTED}`}>{tr("Κάθε κατάστημα έχει το δικό του όνομα, ύφος και χρώματα. Άνοιξε ένα και δες το όπως θα το έβλεπε ένας πελάτης.")}</p>
+            <h2 className="max-w-xl text-[1.9rem] font-extrabold leading-tight tracking-[-0.02em] text-[#F7F2E8] sm:text-4xl">{tr("Επιχειρήσεις που άνοιξαν το e-shop τους.")}</h2>
+            <p className="max-w-md text-[15px] leading-7 text-[#F7F2E8]/80">{tr("Κάθε κατάστημα έχει το δικό του όνομα, ύφος και χρώματα. Άνοιξε ένα και δες το όπως θα το έβλεπε ένας πελάτης.")}</p>
           </Reveal>
           {published.length ? (
             <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
@@ -412,7 +412,7 @@ export default async function Home({
                 const c = paletteColors[site.palette] || paletteColors.forest
                 return (
                   <Reveal key={site.handle} delay={(i % 3) * 80} className="h-full">
-                    <Link href={`/${locale}/store/${site.handle}`} className="group flex h-full flex-col overflow-hidden rounded-2xl border border-[#2E4A37]/10 bg-[#FBF9F4] transition duration-300 hover:-translate-y-1.5 hover:shadow-[0_30px_60px_-35px_rgba(46,74,55,0.55)]">
+                    <Link href={`/${locale}/store/${site.handle}`} className="group flex h-full flex-col overflow-hidden rounded-2xl border border-[#F7F2E8]/20 bg-[#F7F2E8] text-[#1F3628] shadow-[0_22px_50px_-32px_rgba(0,0,0,0.65)] transition duration-300 hover:-translate-y-1.5 hover:shadow-[0_34px_64px_-34px_rgba(0,0,0,0.75)]">
                       <div className="px-4 pt-4" style={{ background: c.soft }}>
                         <div className="translate-y-2 transition duration-500 group-hover:translate-y-0" aria-hidden="true">
                           <SitePreview lang={lang} site={site} address={siteAddress(site)} className="rounded-b-none shadow-xl" />
@@ -432,9 +432,9 @@ export default async function Home({
               })}
             </div>
           ) : (
-            <Reveal className="mt-10 rounded-2xl border border-dashed border-[#2E4A37]/25 bg-[#FBF9F4] p-10 text-center">
+            <Reveal className="mt-10 rounded-2xl border border-dashed border-[#F7F2E8]/40 bg-[#F7F2E8]/[0.06] p-10 text-center">
               <h3 className="text-xl font-bold">{tr("Το πρώτο κατάστημα μπορεί να είναι το δικό σου.")}</h3>
-              <p className={`mt-2 text-sm ${MUTED}`}>{tr("Ξεκίνα σήμερα και άνοιξε τη βιτρίνα σου στο ψηφιακό εμπόριο.")}</p>
+              <p className="mt-2 text-sm text-[#F7F2E8]/80">{tr("Ξεκίνα σήμερα και άνοιξε τη βιτρίνα σου στο ψηφιακό εμπόριο.")}</p>
             </Reveal>
           )}
         </div>
@@ -508,16 +508,16 @@ export default async function Home({
       </section>
 
       {/* FAQ */}
-      <section id="faq" className="scroll-mt-20 bg-white/50">
+      <section id="faq" className="scroll-mt-20 bg-[#2E4A37] text-[#F7F2E8]">
         <div className={`${WRAP} grid gap-12 py-24 lg:grid-cols-[0.8fr_1.2fr] lg:gap-20 lg:py-32`}>
           <Reveal>
-            <Eyebrow>{tr("Ερωτήσεις")}</Eyebrow>
+            <Eyebrow light>{tr("Ερωτήσεις")}</Eyebrow>
             <H2>{tr("Όσα ρωτούν συνήθως πριν ξεκινήσουν.")}</H2>
           </Reveal>
           <div className="space-y-3">
             {faqs.map((item, i) => (
               <Reveal key={item.q} delay={i * 50}>
-                <details className="group rounded-2xl border border-[#2E4A37]/10 bg-white px-6 py-5 transition open:shadow-[0_20px_50px_-35px_rgba(46,74,55,0.5)]">
+                <details className="group rounded-2xl border border-[#F7F2E8]/20 bg-[#F7F2E8] px-6 py-5 text-[#1F3628] transition open:shadow-[0_24px_55px_-30px_rgba(0,0,0,0.7)]">
                   <summary className="font-serif flex cursor-pointer list-none items-center justify-between gap-6 text-lg font-medium sm:text-xl [&::-webkit-details-marker]:hidden">
                     {tr(item.q)}
                     <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-[#2E4A37]/[0.07] text-xl font-light transition duration-300 group-open:rotate-45 group-open:bg-[#C0503C] group-open:text-white" aria-hidden="true">+</span>
