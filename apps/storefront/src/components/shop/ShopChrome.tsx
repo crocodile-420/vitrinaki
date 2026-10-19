@@ -24,7 +24,13 @@ export function ShopHeader({
 }) {
   const tr = translator(lang)
   const { storefront, seller } = shop
-  const isServices = storefront.template === "services"
+  const type = shop.profile?.businessType
+  const isServices = type ? ["services", "beauty", "portfolio"].includes(type) : storefront.template === "services"
+  const firstNav = type === "portfolio"
+    ? { href: "#projects", label: "Έργα", show: Boolean(shop.profile?.portfolio.projects.length) }
+    : type === "services" || type === "beauty"
+      ? { href: "#services", label: "Υπηρεσίες", show: Boolean(shop.profile?.services.items.length) }
+      : { href: "#catalog", label: isServices ? "Υπηρεσίες" : "Συλλογή", show: true }
   return (
     <header style={{ background: colors.page, borderColor: `${colors.ink}1a` }} className="sticky top-0 z-30 border-b backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-5 px-5 py-4 sm:px-8">
@@ -39,7 +45,7 @@ export function ShopHeader({
           <span className="truncate text-lg font-extrabold tracking-tight">{storefront.storeName}</span>
         </Link>
         <nav className="flex items-center gap-5 text-sm font-semibold">
-          <a href={`${home}#catalog`} className="hidden opacity-75 hover:opacity-100 sm:inline">{tr(isServices ? "Υπηρεσίες" : "Συλλογή")}</a>
+          {firstNav.show ? <a href={`${home}${firstNav.href}`} className="hidden opacity-75 hover:opacity-100 sm:inline">{tr(firstNav.label)}</a> : null}
           <a href={`${home}#about`} className="hidden opacity-75 hover:opacity-100 sm:inline">{tr("Σχετικά")}</a>
           <a href={`${home}#contact`} className="hidden opacity-75 hover:opacity-100 sm:inline">{tr("Επικοινωνία")}</a>
           <LanguageSwitcher lang={lang} label={tr("Γλώσσα")} />

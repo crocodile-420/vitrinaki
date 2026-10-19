@@ -61,3 +61,22 @@ Then, pass the arguments in the `exec` command after the file path:
 ```bash
 npx medusa exec ./src/scripts/my-script.ts arg1 arg2
 ```
+## Vitrinaki demo stores (`seed-demo-profiles.ts`)
+
+Creates one clearly labelled DEMO store per business type (`demo-trofima`,
+`demo-xeiropoiita`, `demo-katastima`, `demo-omorfia`, `demo-ypiresies`,
+`demo-portfolio`), filled through the same store-profile fields as the Studio
+wizard. Additive and idempotent: an existing handle is skipped, nothing is
+deleted. Needs the `vitrinaki_seller_private` table, so run the migration first.
+
+```bash
+npx medusa db:migrate --skip-links          # adds the vitrinaki_seller_private table
+VITRINAKI_STOREFRONT_URL=https://vitrinaki.gr npm run seed:demo-profiles
+# hide them again (unpublish, keeps the data):
+DEMO_PROFILES_ACTION=unpublish npm run seed:demo-profiles
+```
+
+Demo images point to the storefront's own `/home/*.webp` files under
+`VITRINAKI_STOREFRONT_URL`. Demo logins: `<handle>@vitrinaki.gr`, password from
+`DEMO_SELLER_PASSWORD` (default `supersecret`). To delete a demo store for
+good, use the admin panel.

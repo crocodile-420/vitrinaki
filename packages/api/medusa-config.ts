@@ -33,6 +33,10 @@ module.exports = withMercur({
   },
   modules: [
     {
+      // Private legal/owner details of each store (never exposed publicly).
+      resolve: './src/modules/vitrinaki-private',
+    },
+    {
       resolve: '@mercurjs/core/modules/admin-ui',
       options: {
         appDir: dashboardAppDir('admin'),
