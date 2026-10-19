@@ -22,31 +22,6 @@ const audiences = [
   { icon: "sprout", title: "Νέες επιχειρήσεις", text: "Ξεκίνα από εκεί που βρίσκεσαι σήμερα και μεγάλωσε τη βιτρίνα σου μαζί με την επιχείρηση." },
 ] as const
 
-const lineIcons = {
-  leaf: "M5 19c0-8 5-14 14-14 0 9-6 14-14 14Zm0 0 7-7",
-  hand: "M7 11V6a1.5 1.5 0 0 1 3 0v4m0-5a1.5 1.5 0 0 1 3 0v5m0-4a1.5 1.5 0 0 1 3 0v6c0 4-2.5 7-6 7-2.5 0-4-1.5-5.5-4L4 13a1.5 1.5 0 0 1 2.6-1.5L7 12",
-  store: "M4 9l1.5-5h13L20 9M4 9h16M4 9v11h16V9M9 20v-6h6v6",
-  laptop: "M5 6h14v9H5zM3 18h18",
-  sprout: "M12 20v-8m0 0c0-4-3-6-7-6 0 4 3 6 7 6Zm0 0c0-3 2.5-5 6-5 0 3-2.5 5-6 5Z",
-  palette: "M12 3a9 9 0 1 0 0 18c1 0 1.5-.7 1.5-1.5 0-1.2-1-1.5-1-2.5s.8-1.5 2-1.5H17a4 4 0 0 0 4-4c0-4.7-4-8.5-9-8.5ZM7.5 11h.01M10 7.5h.01M15 7.5h.01",
-  globe: "M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Zm-9 9h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3Z",
-  bag: "M5 8h14l-1 12H6L5 8Zm4 0V6a3 3 0 0 1 6 0v2",
-  book: "M5 4h9a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3V4Zm0 13a3 3 0 0 1 3-3h9",
-  chart: "M4 20V4m0 16h16M8 16v-4m4 4V8m4 8v-6",
-  people: "M9 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm-6 9c0-3.3 2.7-6 6-6s6 2.7 6 6m1-9a3 3 0 1 0 0-6m2 15c0-2.6-1.4-4.8-3.5-5.6",
-}
-
-function LineIcon({ name, tone = "cypress" }: { name: keyof typeof lineIcons; tone?: "cypress" | "blue" }) {
-  const toneClass = tone === "blue" ? "bg-[#265E8E]/[0.08] text-[#265E8E]" : "bg-[#2E4A37]/[0.06] text-[#2E4A37]"
-  return (
-    <span className={`grid h-10 w-10 shrink-0 place-items-center rounded-xl ${toneClass}`}>
-      <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-        <path d={lineIcons[name]} />
-      </svg>
-    </span>
-  )
-}
-
 const included = [
   { icon: "palette", title: "Η δική σου ταυτότητα", text: "Το όνομα, το λογότυπο και τα χρώματά σου, σε ύφος που ταιριάζει στη δουλειά σου. Κανένα κατάστημα δεν μοιάζει με αντίγραφο." },
   { icon: "globe", title: "Η δική σου διεύθυνση", text: "Το e-shop σου ανοίγει στο vitrinaki.gr και μπορεί να συνδεθεί με το δικό σου domain." },
@@ -158,9 +133,27 @@ const fallbackSites: DirectoryStorefront[] = [
 const siteAddress = (site: DirectoryStorefront) =>
   site.customDomain || `vitrinaki.gr/${site.handle || site.storeName.toLowerCase().replace(/\s+/g, "-")}`
 
-function Eyebrow({ children, light = false }: { children: React.ReactNode; light?: boolean }) {
-  return <p className={`text-xs font-extrabold uppercase tracking-[0.18em] ${light ? "text-[#f2a28f]" : "text-[#C0503C]"}`}>{children}</p>
+const INK = "text-[#2E4A37]"
+const MUTED = "text-[#2E4A37]/70"
+const RULE = "border-[#2E4A37]/[0.12]"
+const WRAP = "mx-auto max-w-[1280px] px-5 sm:px-8 lg:px-12"
+
+function Label({ n, children, light = false, center = false }: { n?: string; children: React.ReactNode; light?: boolean; center?: boolean }) {
+  return (
+    <p className={`flex items-center gap-3 ${center ? "justify-center" : ""} text-[11px] font-semibold uppercase tracking-[0.24em] ${light ? "text-[#F7F2E8]/60" : "text-[#2E4A37]/60"}`}>
+      {n ? <span className="font-serif text-[13px] tracking-normal">{n}</span> : null}
+      {n ? <span className={`h-px w-8 ${light ? "bg-[#F7F2E8]/30" : "bg-[#2E4A37]/30"}`} /> : null}
+      {children}
+    </p>
+  )
 }
+
+function H2({ children, className = "" }: { children: React.ReactNode; className?: string }) {
+  return <h2 className={`font-serif mt-5 text-[2rem] font-medium leading-[1.12] tracking-tight sm:text-[2.75rem] ${className}`}>{children}</h2>
+}
+
+const primaryBtn = "inline-flex min-h-12 items-center justify-center rounded-md bg-[#C0503C] px-6 py-3 text-[15px] font-semibold text-white transition hover:bg-[#a5412f]"
+const textLink = "inline-flex items-center gap-1.5 text-[15px] font-semibold text-[#2E4A37] underline decoration-[#2E4A37]/30 underline-offset-[6px] transition hover:decoration-[#2E4A37]"
 
 export default async function Home({
   params,
@@ -175,12 +168,12 @@ export default async function Home({
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || `${protocol}://${host}`
 
   const published = await listPublishedStorefronts()
-  const heroSites = [...published, ...fallbackSites].slice(0, 3)
+  const heroSite = [...published, ...fallbackSites][0]
   const exampleFor = (template: DirectoryStorefront["template"]) =>
     published.find((site) => site.template === template)
 
   return (
-    <main className="overflow-hidden bg-[#F7F2E8] text-[#2E4A37]">
+    <main className={`overflow-hidden bg-[#F7F2E8] ${INK}`}>
       <Script
         id="ld-org"
         type="application/ld+json"
@@ -209,144 +202,131 @@ export default async function Home({
       />
 
       {/* Hero */}
-      <section className="relative border-b border-[#eee4d6] bg-[#F7F2E8]">
-        <div className="mx-auto grid max-w-[1400px] items-center gap-12 px-5 pb-14 pt-10 sm:px-8 md:pt-14 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16 lg:px-10 lg:pb-20 lg:pt-16">
-          <div className="relative z-10">
-            <p className="inline-flex items-center gap-2 rounded-full border border-[#e3d8c6] bg-white/70 px-3 py-1 text-xs font-bold">
-              <span className="h-1.5 w-1.5 rounded-full bg-[#C0503C]" />
-              {tr("ΤΟ")} <span className="text-[#265E8E]">vitrinaki</span> {tr("σου, στο ψηφιακό εμπόριο")}
-            </p>
-            <h1 className="font-serif mt-6 text-[2.6rem] font-extrabold leading-[1.02] tracking-tight sm:text-6xl lg:text-[4.6rem]">
-              {tr("Σταμάτα να νοικιάζεις ράφι σε ξένο μαγαζί.")}
-              <span className="mt-2 block text-[#C0503C]">{tr("Άνοιξε τη δική σου βιτρίνα.")}</span>
+      <section className={`border-b ${RULE}`}>
+        <div className={`${WRAP} grid items-center gap-14 pb-20 pt-14 sm:pt-20 lg:grid-cols-[1.1fr_0.9fr] lg:gap-20 lg:pb-28 lg:pt-28`}>
+          <div>
+            <h1 className="font-serif text-[2.6rem] font-medium leading-[1.05] tracking-tight sm:text-6xl lg:text-[4.4rem]">
+              {tr("Το vitrinaki σου, στο ψηφιακό εμπόριο.")}
+              <span className="mt-3 block italic text-[#C0503C]">{tr("Ποτέ δεν είναι αργά.")}</span>
             </h1>
-            <p className="mt-7 max-w-xl text-base leading-7 text-[#456257] sm:text-lg">
+            <p className={`mt-8 max-w-xl text-[17px] leading-8 ${MUTED}`}>
               {tr("Στα marketplaces είσαι ένα ακόμη προϊόν δίπλα στον ανταγωνιστή σου, με τους δικούς τους κανόνες. Στο Vitrinaki αποκτάς ολοκληρωμένο e-shop με το όνομα, το λογότυπο και τα χρώματά σου, στη δική σου διεύθυνση. Οι πελάτες σου μένουν δικοί σου.")}
             </p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <a href={businessUrl} className="inline-flex min-h-12 items-center justify-center rounded-full bg-[#C0503C] px-6 py-3 font-bold text-white shadow-lg shadow-[#C0503C]/20 transition hover:-translate-y-0.5 hover:bg-[#a5412f]">
+            <div className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-5">
+              <a href={businessUrl} className={primaryBtn}>
                 {tr("Άνοιξε τη βιτρίνα σου")} <span className="ml-2" aria-hidden="true">→</span>
               </a>
-              <a href="#vitrina" className="inline-flex min-h-12 items-center justify-center rounded-full border border-[#aabdb1] bg-white/80 px-6 py-3 font-bold transition hover:bg-white">
-                {tr("Δες καταστήματα")}
-              </a>
+              <a href="#vitrina" className={textLink}>{tr("Δες καταστήματα")}</a>
             </div>
-            <p className="mt-6 text-sm text-[#5c7268]">{tr("Χωρίς τεχνικές γνώσεις. Και χωρίς να το κάνεις μόνος σου.")}</p>
+            <p className={`mt-10 border-t ${RULE} pt-5 text-[13px] tracking-wide text-[#2E4A37]/60`}>{tr("Χωρίς τεχνικές γνώσεις. Και χωρίς να το κάνεις μόνος σου.")}</p>
           </div>
 
-          {/* A shop window: the awning from the logo over live shops. */}
-          <div className="relative mx-auto w-full max-w-[640px]" aria-hidden="true">
-            <svg viewBox="0 0 640 70" className="relative z-10 block w-full drop-shadow-sm" preserveAspectRatio="none">
-              <rect x="0" y="0" width="640" height="14" rx="7" fill="#2E4A37" />
-              {Array.from({ length: 10 }).map((_, i) => (
-                <path key={i} d={`M${i * 64} 12 h64 v34 a32 22 0 0 1 -64 0 Z`} fill={i % 2 ? "#F7F2E8" : "#C0503C"} stroke="#2E4A37" strokeWidth="2" />
-              ))}
-            </svg>
-            <div className="-mt-6 rounded-b-[2rem] border-x-[10px] border-b-[10px] border-[#2E4A37] bg-[#efe8da] px-4 pb-6 pt-10 sm:px-6">
-              <div className="relative min-h-[380px] sm:min-h-[420px]">
-                <SitePreview lang={lang} site={heroSites[0]} address={siteAddress(heroSites[0])} className="absolute left-0 top-0 w-[66%] -rotate-2" />
-                <SitePreview lang={lang} site={heroSites[1]} address={siteAddress(heroSites[1])} className="absolute right-0 top-12 w-[58%] rotate-2" />
-                <SitePreview lang={lang} site={heroSites[2]} address={siteAddress(heroSites[2])} className="absolute bottom-0 left-[16%] w-[60%]" />
-              </div>
+          <figure className="mx-auto w-full max-w-[560px]" aria-hidden="true">
+            <div className="border border-[#2E4A37]/15 bg-white p-3 sm:p-5">
+              <SitePreview lang={lang} site={heroSite} address={siteAddress(heroSite)} />
             </div>
-          </div>
+            <figcaption className="mt-4 flex items-center justify-between gap-4 truncate text-[11px] uppercase tracking-[0.22em] text-[#2E4A37]/50">
+              <span className="hidden sm:inline">{tr(heroSite.storeName)}</span>
+              <span>{siteAddress(heroSite)}</span>
+            </figcaption>
+          </figure>
         </div>
       </section>
 
-      {/* Manifesto: marketplace vs your own shop window */}
-      <section className="bg-[#2E4A37] text-[#F7F2E8]">
-        <div className="mx-auto max-w-[1400px] px-5 py-14 sm:px-8 lg:px-10 lg:py-20">
+      {/* Manifesto */}
+      <section className={`border-b ${RULE}`}>
+        <div className={`${WRAP} py-20 lg:py-28`}>
           <div className="max-w-3xl">
-            <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-[#f2a28f]">{tr("Η διαφορά")}</p>
-            <h2 className="font-serif mt-3 text-3xl font-extrabold leading-tight sm:text-5xl">{tr("Στο marketplace είσαι ένα αποτέλεσμα. Στη βιτρίνα σου είσαι ο προορισμός.")}</h2>
+            <Label>{tr("Η διαφορά")}</Label>
+            <H2>{tr("Στο marketplace είσαι ένα αποτέλεσμα. Στη βιτρίνα σου είσαι ο προορισμός.")}</H2>
           </div>
-          <div className="mt-10 grid overflow-hidden rounded-3xl border border-white/10 md:grid-cols-2">
-            <div className="bg-white/[0.03] p-6 sm:p-8">
-              <p className="text-sm font-extrabold uppercase tracking-[0.14em] text-[#9fb5a8]">{tr("Σε ξένη πλατφόρμα")}</p>
-              <ul className="mt-5 space-y-4 text-[#c9d6ce]">
+          <div className="mt-14 grid gap-12 md:grid-cols-2 md:gap-16">
+            <div>
+              <p className={`border-b ${RULE} pb-4 text-[11px] font-semibold uppercase tracking-[0.24em] text-[#2E4A37]/50`}>{tr("Σε ξένη πλατφόρμα")}</p>
+              <ul className={`divide-y ${RULE.replace("border", "divide")}`}>
                 {marketplaceSide.map((line) => (
-                  <li key={line} className="flex gap-3"><span className="mt-1 text-[#9fb5a8]">✕</span>{tr(line)}</li>
+                  <li key={line} className="py-4 text-[16px] leading-7 text-[#2E4A37]/55">{tr(line)}</li>
                 ))}
               </ul>
             </div>
-            <div className="bg-[#F7F2E8] p-6 text-[#2E4A37] sm:p-8">
-              <p className="text-sm font-extrabold uppercase tracking-[0.14em] text-[#C0503C]">{tr("Στο δικό σου vitrinaki")}</p>
-              <ul className="mt-5 space-y-4 font-semibold">
+            <div>
+              <p className="border-b border-[#2E4A37]/40 pb-4 text-[11px] font-semibold uppercase tracking-[0.24em] text-[#C0503C]">{tr("Στο δικό σου vitrinaki")}</p>
+              <ul className={`divide-y ${RULE.replace("border", "divide")}`}>
                 {vitrinakiSide.map((line) => (
-                  <li key={line} className="flex gap-3"><span className="mt-1 text-[#C0503C]">✓</span>{tr(line)}</li>
+                  <li key={line} className="font-serif py-4 text-[18px] leading-7">{tr(line)}</li>
                 ))}
               </ul>
             </div>
           </div>
         </div>
       </section>
+
       {/* Who it is for */}
-      <section id="for-whom" className="mx-auto max-w-[1400px] scroll-mt-20 px-5 pt-14 sm:px-8 lg:px-10 lg:pt-20">
-        <div className="max-w-2xl">
-          <Eyebrow>{tr("Για ποιον είναι")}</Eyebrow>
-          <h2 className="font-serif mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">{tr("Όλοι αξίζουν μια θέση στη μεγάλη βιτρίνα.")}</h2>
-          <p className="mt-3 leading-7 text-[#5c7268]">{tr("Δεν χρειάζεται να ξέρεις από design, προγραμματισμό ή διαφημίσεις για να μεγαλώσεις την επιχείρησή σου. Και ποτέ δεν είναι αργά για το επόμενο βήμα.")}</p>
-        </div>
-        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-          {audiences.map((item) => (
-            <article key={item.title} className="rounded-2xl border border-[#eae3d8] bg-white/80 p-6">
-              <LineIcon name={item.icon} />
-              <h3 className="mt-4 text-base font-extrabold">{tr(item.title)}</h3>
-              <p className="mt-2 text-sm leading-6 text-[#63766c]">{tr(item.text)}</p>
-            </article>
-          ))}
+      <section id="for-whom" className={`scroll-mt-20 border-b ${RULE}`}>
+        <div className={`${WRAP} grid gap-12 py-20 lg:grid-cols-[0.85fr_1.15fr] lg:gap-20 lg:py-28`}>
+          <div>
+            <Label n="01">{tr("Για ποιον είναι")}</Label>
+            <H2>{tr("Όλοι αξίζουν μια θέση στη μεγάλη βιτρίνα.")}</H2>
+            <p className={`mt-6 max-w-md leading-7 ${MUTED}`}>{tr("Δεν χρειάζεται να ξέρεις από design, προγραμματισμό ή διαφημίσεις για να μεγαλώσεις την επιχείρησή σου. Και ποτέ δεν είναι αργά για το επόμενο βήμα.")}</p>
+          </div>
+          <ol className={`border-t ${RULE}`}>
+            {audiences.map((item, i) => (
+              <li key={item.title} className={`grid grid-cols-[2.5rem_1fr] gap-x-4 border-b ${RULE} py-6 sm:grid-cols-[3rem_14rem_1fr] sm:gap-x-6`}>
+                <span className="font-serif text-sm text-[#2E4A37]/45">{String(i + 1).padStart(2, "0")}</span>
+                <h3 className="font-serif text-xl">{tr(item.title)}</h3>
+                <p className={`col-start-2 mt-2 text-[15px] leading-7 sm:col-start-3 sm:mt-0 ${MUTED}`}>{tr(item.text)}</p>
+              </li>
+            ))}
+          </ol>
         </div>
       </section>
 
       {/* Live shops */}
-      <section id="vitrina" className="mx-auto max-w-[1400px] scroll-mt-20 px-5 py-14 sm:px-8 lg:px-10 lg:py-20">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <Eyebrow>{tr("Η βιτρίνα")}</Eyebrow>
-            <h2 className="font-serif mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">{tr("Επιχειρήσεις που άνοιξαν το e-shop τους.")}</h2>
+      <section id="vitrina" className={`scroll-mt-20 border-b ${RULE}`}>
+        <div className={`${WRAP} py-20 lg:py-28`}>
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+            <div className="max-w-2xl">
+              <Label n="02">{tr("Η βιτρίνα")}</Label>
+              <H2>{tr("Επιχειρήσεις που άνοιξαν το e-shop τους.")}</H2>
+            </div>
+            <p className={`max-w-sm text-[15px] leading-7 ${MUTED}`}>{tr("Κάθε κατάστημα έχει το δικό του όνομα, ύφος και χρώματα. Άνοιξε ένα και δες το όπως θα το έβλεπε ένας πελάτης.")}</p>
           </div>
-          <p className="max-w-md text-sm leading-6 text-[#61756a]">{tr("Κάθε κατάστημα έχει το δικό του όνομα, ύφος και χρώματα. Άνοιξε ένα και δες το όπως θα το έβλεπε ένας πελάτης.")}</p>
-        </div>
 
-        {published.length ? (
-          <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {published.map((site) => (
-              <Link key={site.handle} href={`/${locale}/store/${site.handle}`} className="group rounded-3xl border border-[#e6dfd3] bg-white p-3 transition hover:-translate-y-1 hover:shadow-xl hover:shadow-[#23483a]/10">
-                <SitePreview lang={lang} site={site} address={siteAddress(site)} className="shadow-none" />
-                <div className="px-2 pb-2 pt-4">
-                  <div className="flex items-center justify-between gap-3">
-                    <h3 className="text-lg font-extrabold">{site.storeName}</h3>
-                    <span className="rounded-full bg-[#F7F2E8] px-2.5 py-1 text-[11px] font-bold text-[#5c7268]">{tr(templateLabels[site.template]?.name || "")}</span>
-                  </div>
-                  <p className="mt-1 line-clamp-2 text-sm leading-6 text-[#61756a]">{site.description || site.tagline}</p>
-                  <span className="mt-3 inline-flex text-sm font-bold text-[#C0503C]">{tr("Άνοιξε το κατάστημα")} <span className="ml-1 transition group-hover:translate-x-1" aria-hidden="true">→</span></span>
-                </div>
-              </Link>
-            ))}
-          </div>
-        ) : (
-          <div className="mt-8 rounded-3xl border border-dashed border-[#d8cfbf] bg-white/60 p-10 text-center">
-            <h3 className="text-xl font-extrabold">{tr("Το πρώτο κατάστημα μπορεί να είναι το δικό σου.")}</h3>
-            <p className="mt-2 text-sm text-[#61756a]">{tr("Ξεκίνα σήμερα και άνοιξε τη βιτρίνα σου στο ψηφιακό εμπόριο.")}</p>
-          </div>
-        )}
+          {published.length ? (
+            <div className="mt-14 grid gap-px border border-[#2E4A37]/[0.12] bg-[#2E4A37]/[0.12] sm:grid-cols-2 lg:grid-cols-3">
+              {published.map((site) => (
+                <Link key={site.handle} href={`/${locale}/store/${site.handle}`} className="group flex flex-col bg-[#F7F2E8] p-6 transition hover:bg-white sm:p-8">
+                  <p className="text-[11px] uppercase tracking-[0.22em] text-[#2E4A37]/50">{tr(templateLabels[site.template]?.name || "")}</p>
+                  <h3 className="font-serif mt-3 text-2xl">{site.storeName}</h3>
+                  <p className={`mt-2 line-clamp-1 text-[15px] ${MUTED}`}>{site.description || site.tagline}</p>
+                  <span className="mt-6 text-sm font-semibold underline decoration-[#2E4A37]/30 underline-offset-[6px] group-hover:decoration-[#2E4A37]">
+                    {tr("Δες τη βιτρίνα")} <span aria-hidden="true">→</span>
+                  </span>
+                </Link>
+              ))}
+            </div>
+          ) : (
+            <div className={`mt-14 border ${RULE} p-10 text-center`}>
+              <h3 className="font-serif text-2xl">{tr("Το πρώτο κατάστημα μπορεί να είναι το δικό σου.")}</h3>
+              <p className={`mt-2 text-sm ${MUTED}`}>{tr("Ξεκίνα σήμερα και άνοιξε τη βιτρίνα σου στο ψηφιακό εμπόριο.")}</p>
+            </div>
+          )}
+        </div>
       </section>
 
       {/* What you get */}
-      <section id="included" className="border-y border-[#e8e1d6] bg-white/60">
-        <div className="mx-auto max-w-[1400px] scroll-mt-20 px-5 py-14 sm:px-8 lg:px-10 lg:py-20">
+      <section id="included" className={`scroll-mt-20 border-b ${RULE} bg-white`}>
+        <div className={`${WRAP} py-20 lg:py-28`}>
           <div className="max-w-2xl">
-            <Eyebrow>{tr("Τι παίρνεις")}</Eyebrow>
-            <h2 className="font-serif mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">{tr("Ένα ολοκληρωμένο e-shop. Δικό σου.")}</h2>
+            <Label n="03">{tr("Τι παίρνεις")}</Label>
+            <H2>{tr("Ένα ολοκληρωμένο e-shop. Δικό σου.")}</H2>
           </div>
-          <div className="mt-10 grid gap-x-10 gap-y-9 sm:grid-cols-2 lg:grid-cols-3">
-            {included.map((item) => (
-              <div key={item.title} className="flex gap-4">
-                <LineIcon name={item.icon} tone="blue" />
-                <div>
-                  <h3 className="font-extrabold">{tr(item.title)}</h3>
-                  <p className="mt-1.5 text-sm leading-6 text-[#61756a]">{tr(item.text)}</p>
-                </div>
+          <div className="mt-14 grid gap-x-12 sm:grid-cols-2 lg:grid-cols-3">
+            {included.map((item, i) => (
+              <div key={item.title} className={`border-t ${RULE} py-8`}>
+                <span className="font-serif text-sm text-[#2E4A37]/45">{String(i + 1).padStart(2, "0")}</span>
+                <h3 className="font-serif mt-3 text-xl">{tr(item.title)}</h3>
+                <p className={`mt-3 text-[15px] leading-7 ${MUTED}`}>{tr(item.text)}</p>
               </div>
             ))}
           </div>
@@ -354,83 +334,84 @@ export default async function Home({
       </section>
 
       {/* How it works */}
-      <section id="how-it-works" className="mx-auto max-w-[1400px] scroll-mt-20 px-5 py-14 sm:px-8 lg:px-10 lg:py-20">
-        <div className="max-w-2xl">
-          <Eyebrow>{tr("Πώς ξεκινάς")}</Eyebrow>
-          <h2 className="font-serif mt-2 text-3xl font-extrabold leading-tight tracking-tight sm:text-4xl">{tr("Τρία βήματα. Και κάποιος δίπλα σου σε κάθε ένα.")}</h2>
+      <section id="how-it-works" className={`scroll-mt-20 border-b ${RULE}`}>
+        <div className={`${WRAP} py-20 lg:py-28`}>
+          <div className="max-w-2xl">
+            <Label n="04">{tr("Πώς ξεκινάς")}</Label>
+            <H2>{tr("Τρία βήματα. Και κάποιος δίπλα σου σε κάθε ένα.")}</H2>
+          </div>
+          <ol className="mt-14 grid gap-12 md:grid-cols-3 md:gap-12">
+            {steps.map((step) => (
+              <li key={step.number} className="border-t border-[#2E4A37]/40 pt-6">
+                <span className="font-serif text-5xl font-light text-[#2E4A37]/30">{step.number}</span>
+                <h3 className="font-serif mt-5 text-2xl">{tr(step.title)}</h3>
+                <p className={`mt-3 text-[15px] leading-7 ${MUTED}`}>{tr(step.text)}</p>
+              </li>
+            ))}
+          </ol>
         </div>
-        <ol className="mt-10 grid gap-8 md:grid-cols-3 md:gap-6">
-          {steps.map((step) => (
-            <li key={step.number} className="relative border-t-2 border-[#2E4A37] pt-6">
-              <span className="font-serif text-4xl font-extrabold text-[#C0503C]">{step.number}</span>
-              <h3 className="mt-3 text-xl font-extrabold">{tr(step.title)}</h3>
-              <p className="mt-2 text-sm leading-6 text-[#61756a]">{tr(step.text)}</p>
-            </li>
-          ))}
-        </ol>
       </section>
 
       {/* Philosophy */}
-      <section id="philosophy" className="px-5 sm:px-8 lg:px-10">
-        <div className="relative mx-auto max-w-[1320px] overflow-hidden rounded-[2rem] bg-[#2E4A37] px-6 py-14 text-[#F7F2E8] sm:px-12 sm:py-20">
-          <div className="pointer-events-none absolute -right-16 -top-24 h-80 w-80 rounded-full border-[48px] border-white/[0.04]" />
-          <div className="relative grid gap-10 lg:grid-cols-[1fr_1fr] lg:items-center">
-            <div>
-              <Eyebrow light>{tr("Η φιλοσοφία μας")}</Eyebrow>
-              <blockquote className="font-serif mt-4 text-4xl font-extrabold leading-tight sm:text-5xl">{tr("«Το επιχειρείν")}<br />{tr("εστίν φιλοσοφείν.»")}</blockquote>
-            </div>
-            <div className="space-y-4 text-base leading-7 text-[#d6e3db] sm:text-lg">
-              <p>{tr("Το επιχειρείν δεν είναι μόνο η πώληση ενός προϊόντος. Είναι η σκέψη, η δημιουργία, η επιμονή και η αναζήτηση ενός καλύτερου τρόπου να προσφέρεις κάτι στον κόσμο.")}</p>
-              <p>{tr("Η ιστορία κάθε επιχείρησης έχει αξία. Η τεχνολογία πρέπει να την αναδεικνύει, όχι να μπαίνει εμπόδιο. Γι' αυτό φτιάξαμε το Vitrinaki.")}</p>
-            </div>
+      <section id="philosophy" className="bg-[#2E4A37] text-[#F7F2E8]">
+        <div className={`${WRAP} grid gap-12 py-24 lg:grid-cols-2 lg:items-center lg:gap-20 lg:py-32`}>
+          <div>
+            <Label n="05" light>{tr("Η φιλοσοφία μας")}</Label>
+            <blockquote className="font-serif mt-6 text-4xl font-medium italic leading-[1.15] sm:text-6xl">{tr("«Το επιχειρείν")}<br />{tr("εστίν φιλοσοφείν.»")}</blockquote>
+          </div>
+          <div className="space-y-5 border-l border-[#F7F2E8]/20 pl-6 text-[17px] leading-8 text-[#F7F2E8]/75 sm:pl-10">
+            <p>{tr("Το επιχειρείν δεν είναι μόνο η πώληση ενός προϊόντος. Είναι η σκέψη, η δημιουργία, η επιμονή και η αναζήτηση ενός καλύτερου τρόπου να προσφέρεις κάτι στον κόσμο.")}</p>
+            <p>{tr("Η ιστορία κάθε επιχείρησης έχει αξία. Η τεχνολογία πρέπει να την αναδεικνύει, όχι να μπαίνει εμπόδιο. Γι' αυτό φτιάξαμε το Vitrinaki.")}</p>
           </div>
         </div>
       </section>
 
       {/* Styles */}
-      <section id="examples" className="mx-auto max-w-[1400px] scroll-mt-20 px-5 py-14 sm:px-8 lg:px-10 lg:py-20">
-        <div className="max-w-2xl">
-          <Eyebrow>{tr("Ύφος")}</Eyebrow>
-          <h2 className="font-serif mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">{tr("Διάλεξε το ύφος που σου μοιάζει.")}</h2>
-          <p className="mt-3 leading-7 text-[#5c7268]">{tr("Ξεκινάς από ένα ύφος και το κάνεις δικό σου με το λογότυπο, τα χρώματα και τις φωτογραφίες σου.")}</p>
-        </div>
-        <div className="mt-8 grid gap-5 md:grid-cols-3">
-          {(Object.keys(templateLabels) as DirectoryStorefront["template"][]).map((template) => {
-            const example = exampleFor(template) || fallbackSites.find((site) => site.template === template)!
-            const label = templateLabels[template]
-            return (
-              <article key={template} className="rounded-3xl border border-[#e6dfd3] bg-white p-3">
-                <SitePreview lang={lang} site={example} address={siteAddress(example)} className="shadow-none" />
-                <div className="px-2 pb-2 pt-4">
-                  <h3 className="text-lg font-extrabold">{tr(label.name)}</h3>
-                  <p className="mt-1 text-sm leading-6 text-[#61756a]">{tr(label.text)}</p>
+      <section id="examples" className={`scroll-mt-20 border-b ${RULE}`}>
+        <div className={`${WRAP} py-20 lg:py-28`}>
+          <div className="max-w-2xl">
+            <Label n="06">{tr("Ύφος")}</Label>
+            <H2>{tr("Διάλεξε το ύφος που σου μοιάζει.")}</H2>
+            <p className={`mt-6 leading-7 ${MUTED}`}>{tr("Ξεκινάς από ένα ύφος και το κάνεις δικό σου με το λογότυπο, τα χρώματα και τις φωτογραφίες σου.")}</p>
+          </div>
+          <div className="mt-14 grid gap-12 md:grid-cols-3 md:gap-8">
+            {(Object.keys(templateLabels) as DirectoryStorefront["template"][]).map((template) => {
+              const example = exampleFor(template) || fallbackSites.find((site) => site.template === template)!
+              const label = templateLabels[template]
+              return (
+                <article key={template}>
+                  <div className="border border-[#2E4A37]/[0.12] bg-white p-3">
+                    <SitePreview lang={lang} site={example} address={siteAddress(example)} />
+                  </div>
+                  <h3 className="font-serif mt-6 text-2xl">{tr(label.name)}</h3>
+                  <p className={`mt-2 text-[15px] leading-7 ${MUTED}`}>{tr(label.text)}</p>
                   {example.handle ? (
-                    <Link href={`/${locale}/store/${example.handle}`} className="mt-3 inline-flex text-sm font-bold text-[#C0503C]">
+                    <Link href={`/${locale}/store/${example.handle}`} className={`mt-4 text-sm ${textLink}`}>
                       {tr("Δες το ζωντανά:")} {example.storeName} →
                     </Link>
                   ) : null}
-                </div>
-              </article>
-            )
-          })}
+                </article>
+              )
+            })}
+          </div>
         </div>
       </section>
 
       {/* FAQ */}
-      <section id="faq" className="border-t border-[#e8e1d6] bg-white/60">
-        <div className="mx-auto grid max-w-[1400px] scroll-mt-20 gap-10 px-5 py-14 sm:px-8 lg:grid-cols-[0.8fr_1.2fr] lg:px-10 lg:py-20">
+      <section id="faq" className={`scroll-mt-20 border-b ${RULE}`}>
+        <div className={`${WRAP} grid gap-12 py-20 lg:grid-cols-[0.8fr_1.2fr] lg:gap-20 lg:py-28`}>
           <div>
-            <Eyebrow>{tr("Ερωτήσεις")}</Eyebrow>
-            <h2 className="font-serif mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">{tr("Όσα ρωτούν συνήθως πριν ξεκινήσουν.")}</h2>
+            <Label n="07">{tr("Ερωτήσεις")}</Label>
+            <H2>{tr("Όσα ρωτούν συνήθως πριν ξεκινήσουν.")}</H2>
           </div>
-          <div className="divide-y divide-[#e6dfd3] border-y border-[#e6dfd3]">
+          <div className={`border-t ${RULE}`}>
             {faqs.map((item) => (
-              <details key={tr(item.q)} className="group py-5">
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-extrabold">
+              <details key={item.q} className={`group border-b ${RULE} py-6`}>
+                <summary className="font-serif flex cursor-pointer list-none items-center justify-between gap-6 text-lg sm:text-xl">
                   {tr(item.q)}
-                  <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full border border-[#d8cfbf] text-[#C0503C] transition group-open:rotate-45" aria-hidden="true">+</span>
+                  <span className="shrink-0 text-2xl font-light text-[#2E4A37]/50 transition group-open:rotate-45" aria-hidden="true">+</span>
                 </summary>
-                <p className="mt-3 max-w-2xl text-sm leading-6 text-[#61756a]">{tr(item.a)}</p>
+                <p className={`mt-4 max-w-2xl text-[15px] leading-7 ${MUTED}`}>{tr(item.a)}</p>
               </details>
             ))}
           </div>
@@ -438,14 +419,12 @@ export default async function Home({
       </section>
 
       {/* CTA */}
-      <section className="px-5 py-14 sm:px-8 lg:px-10 lg:py-20">
-        <div className="mx-auto flex max-w-[1320px] flex-col items-start gap-7 rounded-[2rem] border border-[#e3d8c6] bg-[#fbf8f2] px-6 py-10 sm:px-12 sm:py-14 lg:flex-row lg:items-center lg:justify-between">
-          <div className="max-w-2xl">
-            <Eyebrow>{tr("Το επόμενο βήμα")}</Eyebrow>
-            <h2 className="font-serif mt-3 text-3xl font-extrabold leading-tight tracking-tight sm:text-4xl">{tr("Ποτέ δεν είναι αργά για να ανοίξεις τη βιτρίνα σου.")}</h2>
-            <p className="mt-3 max-w-xl text-[#5c7268]">{tr("Πες μας για την επιχείρησή σου και κάνε το πρώτο βήμα στο ψηφιακό εμπόριο. Δεν θα το κάνεις μόνος σου.")}</p>
-          </div>
-          <a href={businessUrl} className="inline-flex min-h-12 shrink-0 items-center justify-center rounded-full bg-[#C0503C] px-7 py-3 font-bold text-white shadow-lg shadow-[#C0503C]/20 transition hover:bg-[#a5412f]">
+      <section>
+        <div className={`${WRAP} py-24 text-center lg:py-32`}>
+          <Label center>{tr("Το επόμενο βήμα")}</Label>
+          <h2 className="font-serif mx-auto mt-6 max-w-3xl text-[2.2rem] font-medium leading-[1.1] tracking-tight sm:text-6xl">{tr("Ποτέ δεν είναι αργά για να ανοίξεις τη βιτρίνα σου.")}</h2>
+          <p className={`mx-auto mt-6 max-w-xl leading-7 ${MUTED}`}>{tr("Πες μας για την επιχείρησή σου και κάνε το πρώτο βήμα στο ψηφιακό εμπόριο. Δεν θα το κάνεις μόνος σου.")}</p>
+          <a href={businessUrl} className={`mt-10 ${primaryBtn}`}>
             {tr("Άνοιξε τη βιτρίνα σου")} <span className="ml-2" aria-hidden="true">→</span>
           </a>
         </div>

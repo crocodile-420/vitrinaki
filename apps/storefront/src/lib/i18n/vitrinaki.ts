@@ -9,6 +9,9 @@ export const LANG_COOKIE = "vk_lang"
 export const isLang = (value: unknown): value is Lang => LANGS.includes(value as Lang)
 
 const en: Record<string, string> = {
+  "Το vitrinaki σου, στο ψηφιακό εμπόριο.": "Your vitrinaki, in online retail.",
+  "Ποτέ δεν είναι αργά.": "It's never too late.",
+  "Δες τη βιτρίνα": "See the shop window",
   // Audiences
   "Παραγωγοί": "Producers",
   "Λάδι, μέλι, κρασί, τυριά. Το προϊόν σου, απευθείας στον πελάτη, σε όλη την Ελλάδα.": "Olive oil, honey, wine, cheese. Your product, straight to customers all over Greece.",
