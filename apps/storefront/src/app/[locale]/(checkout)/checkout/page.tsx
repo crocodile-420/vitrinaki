@@ -12,7 +12,8 @@ import CartShippingMethodsSection from '@/components/sections/CartShippingMethod
 import { retrieveCart } from '@/lib/data/cart';
 import { retrieveCustomer } from '@/lib/data/customer';
 import { listCartShippingMethods } from '@/lib/data/fulfillment';
-import { listCartPaymentMethods } from '@/lib/data/payment';
+import { getCartCardPayment, listCartPaymentMethods } from '@/lib/data/payment';
+import { isStripe } from '@/lib/constants';
 
 export async function generateMetadata(): Promise<Metadata> {
   const { tr } = await getTranslator();
@@ -41,8 +42,16 @@ async function CheckoutPageContent({}) {
   }
 
   const shippingMethods = await listCartShippingMethods(cart.id, false);
-  const paymentMethods = await listCartPaymentMethods(cart.region?.id ?? '');
+  const regionPaymentMethods = await listCartPaymentMethods(cart.region?.id ?? '');
   const customer = await retrieveCustomer();
+  // Card is charged on the shop's own Stripe account: offer it only when the
+  // backend says this cart can be paid that way.
+  const offersCard = regionPaymentMethods?.some(method => isStripe(method.id)) ?? false;
+  const cardPayment = offersCard ? await getCartCardPayment(cart.id) : null;
+  const paymentMethods = cardPayment?.available
+    ? regionPaymentMethods
+    : regionPaymentMethods?.filter(method => !isStripe(method.id)) ?? null;
+  const cardNotice = cardPayment?.reason === 'mixed_shops' ? 'mixed_shops' : null;
 
   return (
     <PaymentWrapper cart={cart}>
@@ -60,6 +69,7 @@ async function CheckoutPageContent({}) {
             <CartPaymentSection
               cart={cart}
               availablePaymentMethods={paymentMethods}
+              cardNotice={cardNotice}
             />
           </div>
 

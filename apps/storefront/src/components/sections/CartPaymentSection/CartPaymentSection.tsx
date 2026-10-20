@@ -27,10 +27,12 @@ type StoreCardPaymentMethod = any & {
 
 const CartPaymentSection = ({
   cart,
-  availablePaymentMethods
+  availablePaymentMethods,
+  cardNotice = null
 }: {
   cart: any;
   availablePaymentMethods: StoreCardPaymentMethod[] | null;
+  cardNotice?: 'mixed_shops' | null;
 }) => {
   const { tr } = useTranslator();
   const activeSession = cart.payment_collection?.payment_sessions?.find(
@@ -138,6 +140,14 @@ const CartPaymentSection = ({
       </div>
       <div>
         <div className={isOpen ? 'block' : 'hidden'}>
+          {cardNotice === 'mixed_shops' && (
+            <Text
+              className="txt-medium text-ui-fg-subtle bg-ui-bg-subtle mb-4 rounded-sm p-3"
+              data-testid="card-payment-mixed-shops-notice"
+            >
+              {tr('Η πληρωμή με κάρτα γίνεται για ένα κατάστημα τη φορά. Ολοκλήρωσε χωριστά την παραγγελία κάθε καταστήματος.')}
+            </Text>
+          )}
           {!paidByGiftcard && availablePaymentMethods?.length && (
             <>
               <RadioGroup
