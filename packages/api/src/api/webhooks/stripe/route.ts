@@ -121,9 +121,10 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
 
   await updateSellersWorkflow(req.scope).run({ input: { selector: { id: sellerId }, update: { metadata } } })
 
-  // «Φέρε έναν συνάδελφο»: a referred shop's first real paid invoice earns both
-  // shops a free month; any paid invoice also applies this shop's pending
-  // free months. Never fails the webhook (the subscription is already saved).
+  // «Σύστασε έναν συνάδελφο»: a referred shop's first real paid invoice earns
+  // it a free month and its referrer a discount on one month; any paid invoice
+  // also applies this shop's pending rewards. Never fails the webhook (the
+  // subscription is already saved).
   let referral: Record<string, unknown> | undefined
   if (event.type === "invoice.paid") {
     try {

@@ -5,6 +5,10 @@ import { updateSellersWorkflow } from "@mercurjs/core/workflows"
 import { stripeRequest } from "./stripe-connect"
 import {
   extendedPeriodEnd,
+  extensionDaysFor,
+  percentForRole,
+  rewardPercent,
+  scaledCredit,
   generateReferralCode,
   monthlyCreditAmount,
   planPriceIds,
@@ -130,8 +134,9 @@ export async function applyPendingReferralRewards(scope: MedusaContainer, seller
     const plan = rewardPlanFor(periodEnd ? { ...subscription, currentPeriodEnd: periodEnd } : subscription)
     if (plan.kind === "pending") continue
     if (plan.kind === "extension") {
-      const newEnd = extendedPeriodEnd(plan.currentPeriodEnd, now)
-      updates.set(reward.id, { status: "applied", method: "extension", previousPeriodEnd: plan.currentPeriodEnd, newPeriodEnd: newEnd, appliedAt: now.toISOString(), lastError: undefined })
+      const days = extensionDaysFor(rewardPercent(reward))
+      const newEnd = extendedPeriodEnd(plan.currentPeriodEnd, now, days)
+      updates.set(reward.id, { status: "applied", method: "extension", extensionDays: days, previousPeriodEnd: plan.currentPeriodEnd, newPeriodEnd: newEnd, appliedAt: now.toISOString(), lastError: undefined })
       periodEnd = newEnd
       continue
     }
@@ -140,14 +145,15 @@ export async function applyPendingReferralRewards(scope: MedusaContainer, seller
       continue
     }
     try {
-      const credit = await creditFor(plan.planId, { ...deps, stripe })
+      const month = await creditFor(plan.planId, { ...deps, stripe })
+      const credit = { amount: scaledCredit(month.amount, rewardPercent(reward)), currency: month.currency }
       const transaction = await stripe<{ id: string }>(
         "POST",
         `/customers/${encodeURIComponent(plan.customerId)}/balance_transactions`,
         {
           amount: String(-credit.amount),
           currency: credit.currency,
-          description: stripeCreditDescription(reward.role, reward.otherName),
+          description: stripeCreditDescription(reward.role, reward.otherName, rewardPercent(reward)),
           "metadata[vitrinaki_referral_id]": reward.referralId,
           "metadata[vitrinaki_reward_id]": reward.id,
           "metadata[seller_id]": seller.id,
@@ -205,13 +211,13 @@ export async function qualifyReferral(scope: MedusaContainer, referredSellerId: 
   await updateReferral(scope, referred.id, deps, (current) => {
     if (current.qualifiedAt) return current
     const earned = referrer
-      ? recordEarnedReward(current, { referralId, role: "referred", otherSellerId: referrer.id, otherName: referrer.name }, now).state
+      ? recordEarnedReward(current, { referralId, role: "referred", otherSellerId: referrer.id, otherName: referrer.name, percent: percentForRole("referred", deps.env || process.env) }, now).state
       : current
     return { ...earned, qualifiedAt: now.toISOString() }
   })
   if (referrer) {
     await updateReferral(scope, referrer.id, deps, (current) => {
-      const earned = recordEarnedReward(current, { referralId, role: "referrer", otherSellerId: referred.id, otherName: referred.name }, now).state
+      const earned = recordEarnedReward(current, { referralId, role: "referrer", otherSellerId: referred.id, otherName: referred.name, percent: percentForRole("referrer", deps.env || process.env) }, now).state
       const referrals = earned.referrals || []
       const known = referrals.some((entry) => entry.sellerId === referred.id)
       return {

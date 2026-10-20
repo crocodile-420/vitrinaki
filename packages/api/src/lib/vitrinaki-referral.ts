@@ -1,16 +1,18 @@
-// «Φέρε έναν συνάδελφο, πάρε έναν μήνα δωρεάν»: shop owners refer other
-// businesses. Everything lives in seller.metadata.vitrinaki_referral:
+// «Σύστασε έναν συνάδελφο»: shop owners refer other businesses. Everything
+// lives in seller.metadata.vitrinaki_referral:
 //
 //   code / codeCreatedAt       the shop's own short code (made lazily)
 //   referredBy                 { sellerId, code, at } — who referred this shop (one, set at sign-up)
 //   referrals                  shops this one referred: [{ sellerId, name, at, qualifiedAt }]
 //   qualifiedAt                when this shop's first real paid subscription started (rewards granted)
-//   rewards                    one entry per free month: see ReferralReward
+//   rewards                    one entry per reward: see ReferralReward
 //
 // A reward is earned by BOTH shops when the referred shop's first real paid
-// Stripe invoice is paid (not promo codes, not trials). It is applied as a
-// Stripe customer balance credit (one month of the plan's monthly price), or
-// by extending a promo subscription by 30 days, or kept pending until the shop
+// Stripe invoice is paid (not promo codes, not trials): the referred shop gets
+// a whole free month, the referrer a discount of a percentage of one month
+// (VITRINAKI_REFERRAL_REFERRER_PERCENT). It is applied as a Stripe customer
+// balance credit (that share of the plan's monthly price), or by extending a
+// promo subscription by that share of 30 days, or kept pending until the shop
 // subscribes. This file is the pure logic; the side effects are in
 // vitrinaki-referral-rewards.ts.
 
@@ -20,6 +22,24 @@ export const REFERRAL_METADATA_KEY = "vitrinaki_referral"
 export const REWARD_CAP_PER_YEAR = 12
 export const EXTENSION_DAYS = 30
 const DAY_MS = 24 * 60 * 60 * 1000
+
+// The referred (new) shop gets a whole free month; the shop that referred it
+// gets a discount of VITRINAKI_REFERRAL_REFERRER_PERCENT % of one month
+// (integer 1–100, default 50). The percent is stored on each reward when it
+// is earned, so changing the env later does not alter earned rewards.
+export const DEFAULT_REFERRER_PERCENT = 50
+export function referrerPercent(env: NodeJS.ProcessEnv = process.env): number {
+  const raw = String(env.VITRINAKI_REFERRAL_REFERRER_PERCENT ?? "").trim()
+  const value = Number(raw)
+  return /^\d+$/.test(raw) && value >= 1 && value <= 100 ? value : DEFAULT_REFERRER_PERCENT
+}
+export const percentForRole = (role: ReferralRole, env: NodeJS.ProcessEnv = process.env) => (role === "referrer" ? referrerPercent(env) : 100)
+// Rewards earned before percentages existed were whole months.
+export const rewardPercent = (reward: Pick<ReferralReward, "percent">) =>
+  Number.isInteger(reward.percent) && (reward.percent as number) >= 1 && (reward.percent as number) <= 100 ? (reward.percent as number) : 100
+export const scaledCredit = (monthlyAmount: number, percent: number) => Math.round((monthlyAmount * percent) / 100)
+// At least one day, so a small percent never becomes an empty reward.
+export const extensionDaysFor = (percent: number) => Math.max(1, Math.round((EXTENSION_DAYS * percent) / 100))
 
 export type ReferralRole = "referrer" | "referred"
 export type RewardStatus = "applied" | "pending" | "capped"
@@ -33,12 +53,14 @@ export type ReferralReward = {
   otherName?: string
   earnedAt: string
   status: RewardStatus
+  percent?: number // share of one month, fixed when earned (100 = a free month)
   method?: RewardMethod
   amount?: number // minor units (cents), for stripe_credit
   currency?: string
   stripeBalanceTransactionId?: string
   previousPeriodEnd?: string | null
   newPeriodEnd?: string
+  extensionDays?: number
   appliedAt?: string
   lastError?: string
 }
@@ -154,7 +176,7 @@ export const rewardIdFor = (referralId: string, role: ReferralRole) => `${referr
 
 const yearOf = (iso: string | undefined) => (iso ? new Date(iso).getUTCFullYear() : NaN)
 
-// Free months already earned in a calendar year (applied or waiting).
+// Rewards already earned in a calendar year (applied or waiting), whatever their percent.
 export const rewardsInYear = (state: ReferralState, year: number) =>
   (state.rewards || []).filter((reward) => reward.status !== "capped" && yearOf(reward.earnedAt) === year).length
 
@@ -162,7 +184,7 @@ export const rewardsInYear = (state: ReferralState, year: number) =>
 // or the shop reached its yearly cap. Returns the new state and the reward.
 export function recordEarnedReward(
   state: ReferralState,
-  input: { referralId: string; role: ReferralRole; otherSellerId: string; otherName?: string },
+  input: { referralId: string; role: ReferralRole; otherSellerId: string; otherName?: string; percent: number },
   now = new Date()
 ): { state: ReferralState; reward: ReferralReward; isNew: boolean } {
   const id = rewardIdFor(input.referralId, input.role)
@@ -237,23 +259,28 @@ export function laterPeriodEnd(promoEnd: string | null, currentEnd: unknown): st
   return Number.isFinite(current) && current > new Date(promoEnd).getTime() ? new Date(current).toISOString() : promoEnd
 }
 
-export const stripeIdempotencyKey =(rewardId: string) => `vitrinaki-referral-${rewardId}`
+export const stripeIdempotencyKey = (rewardId: string) => `vitrinaki-referral-${rewardId}`
 
-export const stripeCreditDescription = (role: ReferralRole, otherName?: string) =>
+export const stripeCreditDescription = (role: ReferralRole, otherName?: string, percent = 100) =>
   role === "referrer"
-    ? `Vitrinaki: ένας μήνας δωρεάν για τη σύσταση${otherName ? ` του «${otherName}»` : ""}`
+    ? `Vitrinaki: ${percent >= 100 ? "ένας μήνας δωρεάν" : `έκπτωση ${percent}% σε έναν μήνα`} για τη σύσταση${otherName ? ` του «${otherName}»` : ""}`
     : `Vitrinaki: ένας μήνας δωρεάν με κωδικό σύστασης${otherName ? ` από «${otherName}»` : ""}`
 
 // ---------- Studio summary ----------
 
+// Discounts the shop earned by referring others, and its own welcome month
+// when it signed up with someone's code. The yearly cap counts both.
 export function referralSummary(state: ReferralState, now = new Date()) {
   const rewards = state.rewards || []
+  const asReferrer = rewards.filter((reward) => reward.role === "referrer")
+  const welcome = rewards.find((reward) => reward.role === "referred")
   return {
     referredCount: (state.referrals || []).length,
     qualifiedCount: (state.referrals || []).filter((entry) => entry.qualifiedAt).length,
-    monthsEarned: rewards.filter((reward) => reward.status === "applied").length,
-    monthsPending: rewards.filter((reward) => reward.status === "pending").length,
-    monthsThisYear: rewardsInYear(state, now.getUTCFullYear()),
+    rewardsEarned: asReferrer.filter((reward) => reward.status === "applied").length,
+    rewardsPending: asReferrer.filter((reward) => reward.status === "pending").length,
+    rewardsThisYear: rewardsInYear(state, now.getUTCFullYear()),
+    welcomeMonth: welcome && welcome.status !== "capped" ? welcome.status : null,
     cap: REWARD_CAP_PER_YEAR,
   }
 }
