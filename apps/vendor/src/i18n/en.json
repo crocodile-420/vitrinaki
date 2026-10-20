@@ -51,6 +51,36 @@
       "body": "Live courier rates, voucher printing and Box Now locker choice at checkout. For now the price is flat and you create the voucher with the courier."
     }
   },
+  "vitrinakiReferral": {
+    "nav": "Refer a colleague",
+    "eyebrow": "One month free",
+    "title": "Refer a colleague",
+    "intro": "Know a business that wants its own e-shop? Send them your code and you both earn a month free.",
+    "loading": "Loading…",
+    "loadError": "Could not load your referral code.",
+    "codeLabel": "Your code",
+    "linkLabel": "Link to share",
+    "copyCode": "Copy code",
+    "copyLink": "Copy link",
+    "copied": "Copied",
+    "howTitle": "How it works",
+    "how1": "Your colleague opens their shop from your link, or types your code when signing up.",
+    "how2": "Once they pay their first subscription, you both get a month free: a credit on your next bill or 30 extra days.",
+    "stats": {
+      "referred": "Shops you referred",
+      "earned": "Free months received",
+      "pending": "Free months waiting"
+    },
+    "pendingNote": "Waiting months are added as soon as you start a subscription.",
+    "cap": "Up to {{count}} free months a year (this year: {{used}}).",
+    "listTitle": "Your referrals",
+    "joined": "Joined {{date}}",
+    "status": {
+      "signedUp": "Signed up",
+      "qualified": "Paid · you both earned a month"
+    },
+    "empty": "You haven't referred any shops yet."
+  },
   "vitrinakiPayments": {
     "eyebrow": "Vitrinaki Studio",
     "title": "Card payments",

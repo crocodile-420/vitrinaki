@@ -3,6 +3,7 @@ import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 import { updateSellersWorkflow } from "@mercurjs/core/workflows"
 
 import { isPlanId, type PlanId } from "../../../../../lib/vitrinaki-plans"
+import { applyPendingReferralRewards, loadSeller } from "../../../../../lib/vitrinaki-referral-rewards"
 
 type SellerRequest = AuthenticatedMedusaRequest & { seller_context?: { seller_id?: string } }
 
@@ -66,5 +67,12 @@ export async function POST(req: SellerRequest, res: MedusaResponse) {
     },
   }
   await updateSellersWorkflow(req.scope).run({ input: { selector: { id: sellerId }, update: { metadata } } })
-  return res.json({ status: "active", planId: promo.planId, currentPeriodEnd })
+
+  // Free months from referrals that were waiting for a subscription extend the promo.
+  let end = currentPeriodEnd
+  if (currentPeriodEnd) {
+    const { applied } = await applyPendingReferralRewards(req.scope, sellerId).catch(() => ({ applied: 0 }))
+    if (applied) end = (await loadSeller(req.scope, sellerId))?.metadata?.vitrinaki_subscription?.currentPeriodEnd || end
+  }
+  return res.json({ status: "active", planId: promo.planId, currentPeriodEnd: end })
 }

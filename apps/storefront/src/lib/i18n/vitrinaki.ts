@@ -45,6 +45,17 @@ const en: Record<string, string> = {
   "Ναι. Όλα όσα συμπληρώνεις εδώ αλλάζουν όποτε θέλεις από το Studio.": "Yes. Everything you fill in here can be changed anytime from the Studio.",
   "Ένα όνομα, ένα email, ένας κωδικός. Τα υπόλοιπα, μαζί.": "A name, an email, a password. The rest, together.",
   "Ξεκίνα τώρα": "Start now",
+  // Sign-up form: referral code («Φέρε έναν συνάδελφο»)
+  "Κωδικός σύστασης": "Referral code",
+  "Έχεις κωδικό σύστασης;": "Have a referral code?",
+  "Αν σε σύστησε άλλη επιχείρηση, γράψε τον κωδικό της.": "If another business referred you, enter their code.",
+  "π.χ. FOURNOS": "e.g. FOURNOS",
+  "Σε σύστησε:": "Referred by:",
+  "Μόλις πληρώσεις την πρώτη σου συνδρομή, παίρνετε κι οι δύο έναν μήνα δωρεάν.": "Once you pay your first subscription, you both get a month free.",
+  "Δεν βρήκαμε αυτόν τον κωδικό σύστασης. Μπορείς να συνεχίσεις και χωρίς.": "We couldn't find this referral code. You can carry on without it.",
+  "Δεν μπορείς να χρησιμοποιήσεις τον δικό σου κωδικό σύστασης.": "You can't use your own referral code.",
+  "Έχεις ήδη χρησιμοποιήσει κωδικό σύστασης.": "You have already used a referral code.",
+  "Ο κωδικός σύστασης ισχύει μόνο για νέα καταστήματα.": "Referral codes are for new shops only.",
   // Sign-up form
   "Βήμα": "Step",
   "Μόνο τα απαραίτητα. Όλα τα υπόλοιπα, όποτε θέλεις.": "Only the essentials. Everything else, whenever you like.",
