@@ -6,7 +6,9 @@ import {
   type MedusaResponse,
 } from "@medusajs/framework/http"
 
+import { cardPaymentForCart } from "../lib/card-payments"
 import { scrubNested } from "../lib/public-seller-scrub"
+import { cardPaymentMessage, isStripeProviderId, SELLER_DATA_KEY, STRIPE_ACCOUNT_DATA_KEY } from "../lib/stripe-connect"
 import { memberLimitMessage } from "../lib/vitrinaki-plans"
 import { teamSeats } from "../lib/vitrinaki-team-limit"
 
@@ -46,6 +48,33 @@ async function enforceTeamLimit(req: MedusaRequest, res: MedusaResponse, next: M
   }
 }
 
+// Card payment sessions are charged on the shop's own Stripe account. The
+// backend decides which account, never the client: a card session is refused
+// unless the whole cart is from one shop with an active Stripe account, and
+// that account is written into the session data the provider reads.
+async function guardCardPaymentSession(req: MedusaRequest, res: MedusaResponse, next: MedusaNextFunction) {
+  try {
+    const body = ((req as any).body || {}) as Record<string, any>
+    const data = body.data && typeof body.data === "object" && !Array.isArray(body.data) ? { ...body.data } : {}
+    delete data[STRIPE_ACCOUNT_DATA_KEY]
+    delete data[SELLER_DATA_KEY]
+    if (isStripeProviderId(body.provider_id)) {
+      const decision = await cardPaymentForCart(req.scope, { paymentCollectionId: req.params?.id })
+      if (!decision.available || !decision.stripeAccount) {
+        const message = decision.reason ? cardPaymentMessage[decision.reason] : cardPaymentMessage.not_connected
+        return res.status(400).json({ type: "not_allowed", message })
+      }
+      data[STRIPE_ACCOUNT_DATA_KEY] = decision.stripeAccount
+      if (decision.sellerId) data[SELLER_DATA_KEY] = decision.sellerId
+    }
+    ;(req as any).body = { ...body, data }
+    if ((req as any).validatedBody) (req as any).validatedBody = { ...(req as any).validatedBody, data }
+    return next()
+  } catch (error) {
+    return next(error)
+  }
+}
+
 export default defineMiddlewares({
   routes: [
     { matcher: "/admin/vitrinaki/overview", middlewares: [adminAuth] },
@@ -55,8 +84,14 @@ export default defineMiddlewares({
     { matcher: "/store/sellers*", methods: ["GET"], middlewares: [scrubPublicSellers] },
     { matcher: "/store/offers*", methods: ["GET"], middlewares: [scrubPublicSellers] },
     { matcher: "/store/products*", methods: ["GET"], middlewares: [scrubPublicSellers] },
+    { matcher: "/store/payment-collections/:id/payment-sessions", methods: ["POST"], middlewares: [guardCardPaymentSession] },
     {
       matcher: "/webhooks/stripe",
+      methods: ["POST"],
+      bodyParser: { preserveRawBody: true },
+    },
+    {
+      matcher: "/webhooks/stripe-connect",
       methods: ["POST"],
       bodyParser: { preserveRawBody: true },
     },
