@@ -3,6 +3,7 @@
 import { Button } from '@/components/atoms';
 import LocalizedClientLink from '@/components/molecules/LocalizedLink/LocalizedLink';
 import { CartEmpty, CartItems, CartSummary } from '@/components/organisms';
+import { OtherShopCarts } from '@/components/organisms/OtherShopCarts/OtherShopCarts';
 import { PromoCode } from '@/components/organisms/PromoCode/PromoCode';
 import { useCartContext } from '@/components/providers';
 import { useTranslator } from '@/lib/i18n/client';
@@ -12,11 +13,17 @@ export const Cart = () => {
   const { tr } = useTranslator()
 
   if (!cart || !cart.items?.length) {
-    return <CartEmpty />;
+    return (
+      <>
+        <OtherShopCarts />
+        <CartEmpty />
+      </>
+    );
   }
 
   return (
     <>
+      <OtherShopCarts />
       <div className="col-span-12 lg:col-span-6">
         <CartItems cart={cart} />
       </div>
