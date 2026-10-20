@@ -38,7 +38,7 @@ const initialsOf = (value: string) =>
 
 /* ---------- small building blocks ---------- */
 
-function Browser({ url, children, className = "", dark = false }: { url: React.ReactNode; children: React.ReactNode; className?: string; dark?: boolean }) {
+export function Browser({ url, children, className = "", dark = false }: { url: React.ReactNode; children: React.ReactNode; className?: string; dark?: boolean }) {
   return (
     <div className={`overflow-hidden rounded-xl bg-white shadow-[0_24px_50px_-24px_rgba(31,54,40,0.45),0_2px_6px_rgba(31,54,40,0.06)] ring-1 ring-[#2E4A37]/10 ${className}`}>
       <div className={`flex items-center gap-1.5 px-2.5 py-1.5 ${dark ? "bg-[#1F3628]" : "bg-[#F4F1EA]"}`}>

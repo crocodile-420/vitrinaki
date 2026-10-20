@@ -1113,6 +1113,33 @@ const en: Record<string, string> = {
   "Οι πελάτες σου πληρώνουν απευθείας στο κατάστημά σου.": "Your customers pay directly in your shop.",
   "Παραστατικά με διασύνδεση στο myDATA της ΑΑΔΕ.": "Invoices connected to the tax authority's myDATA.",
   "Ραντεβού και κρατήσεις για όσους προσφέρουν υπηρεσίες.": "Appointments and bookings for service businesses.",
+  // Homepage: scroll-driven "how it works"
+  "Από το template στην πρώτη παραγγελία.": "From template to first order.",
+  "Τέσσερα βήματα, με τον δικό σου ρυθμό. Και άνθρωποι δίπλα σου σε κάθε ένα.": "Four steps, at your own pace. And people by your side at every one.",
+  "Διαλέγεις template και χρώματα": "You pick a template and colours",
+  "Atelier, Γειτονιά ή Υπηρεσίες. Βάζεις το όνομα, το λογότυπο και τα χρώματά σου και η βιτρίνα παίρνει το ύφος της επιχείρησής σου.": "Atelier, Neighbourhood or Services. Add your name, logo and colours and the shop takes on your business's style.",
+  "Προσθέτεις τα προϊόντα σου": "You add your products",
+  "Φωτογραφία, τιμή και απόθεμα, από το Studio. Ό,τι προσθέτεις εμφανίζεται στη βιτρίνα σου, χωρίς τεχνικές γνώσεις.": "Photo, price and stock, from the Studio. Whatever you add shows up in your shop, no technical skills needed.",
+  "Όταν είσαι έτοιμος, ανοίγεις στους πελάτες στο vitrinaki.gr/το-όνομά-σου ή στο δικό σου domain, και μοιράζεσαι το link.": "When you are ready, you open to customers at vitrinaki.gr/your-name or on your own domain, and share the link.",
+  "Έρχεται η πρώτη παραγγελία": "Your first order comes in",
+  "Ο πελάτης βάζει στο καλάθι και παραγγέλνει. Εσύ βλέπεις την παραγγελία στο Studio, με ειδοποίηση για κάθε νέα.": "The customer adds to cart and orders. You see the order in the Studio, with a notification for every new one.",
+  "Δημοσίευση": "Publish",
+  "Πρόχειρο": "Draft",
+  "Νέο": "New",
+  "Φτιαγμένα στο χέρι": "Made by hand",
+  "Η βιτρίνα σου είναι online": "Your shop is online",
+  "Αντιγραφή link": "Copy link",
+  "ή στο δικό σου domain, π.χ. mano.gr": "or on your own domain, e.g. mano.gr",
+  // Homepage: "try it" demo
+  "Φτιάξε μια βιτρίνα, εδώ, τώρα.": "Build a shop, right here, right now.",
+  "Άλλαξε χρώματα, template και όνομα και δες το κατάστημα να αλλάζει αμέσως. Δεν αποθηκεύεται τίποτα.": "Change the colours, template and name and watch the shop change instantly. Nothing is saved.",
+  "Δοκίμασε ένα κατάστημα": "Try a sample shop",
+  "Για επαγγελματίες και υπηρεσίες, με τιμοκατάλογο και επικοινωνία.": "For professionals and services, with a price list and contact details.",
+  "Σήμα «-10%» στα προϊόντα": "«-10%» badge on products",
+  "Δες πώς φαίνεται μια προσφορά στη βιτρίνα.": "See how an offer looks in the shop.",
+  "-10% σε όλα τα προϊόντα": "-10% on all products",
+  "Προεπισκόπηση": "Preview",
+  "Αυτό ήταν ένα παράδειγμα. Τη δική σου βιτρίνα τη στήνεις με τα δικά σου προϊόντα και φωτογραφίες.": "This was an example. You build your own shop with your own products and photos.",
 }
 
 const dictionaries: Record<Lang, Record<string, string>> = { el: {}, en }
