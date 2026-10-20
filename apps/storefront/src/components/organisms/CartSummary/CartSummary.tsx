@@ -49,15 +49,17 @@ export const CartSummary = ({
             })}
           </span>
         </div>
-        <div className="flex justify-between" data-testid="cart-summary-discount">
-          <span>{tr("Έκπτωση")}:</span>
-          <span className="text-primary">
-            {convertToLocale({
-              amount: discount_total,
-              currency_code,
-            })}
-          </span>
-        </div>
+        {discount_total > 0 && (
+          <div className="flex justify-between" data-testid="cart-summary-discount">
+            <span>{tr("Έκπτωση")}:</span>
+            <span className="text-primary">
+              −{convertToLocale({
+                amount: discount_total,
+                currency_code,
+              })}
+            </span>
+          </div>
+        )}
         <div className="flex justify-between border-t pt-4 items-center" data-testid="cart-summary-total">
           <span>{tr("Σύνολο")}:</span>
           <span className="label-xl text-primary">

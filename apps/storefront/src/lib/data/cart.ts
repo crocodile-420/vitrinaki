@@ -34,7 +34,7 @@ export async function retrieveCart(cartId?: string) {
       $id: id,
       fields:
         '*items,*region, *items.product, *items.variant, *items.variant.options,' +
-        '*items.thumbnail, *items.metadata, +items.total, *promotions, +shipping_methods.name, *items.offer, *items.offer.seller' +
+        '*items.thumbnail, *items.metadata, +items.total, *items.adjustments, *promotions, +shipping_methods.name, *items.offer, *items.offer.seller' +
         '',
       fetchOptions: { headers, cache: 'no-cache' }
     })
@@ -280,36 +280,54 @@ export async function initiatePaymentSession(
   }
 }
 
-export async function applyPromotions(codes: string[]) {
+export type PromotionResult =
+  | { success: true; applied: boolean }
+  | { success: false; error: 'invalid' | 'no_cart' | 'failed' }
+
+// Applies a discount code through the cart promotions route. Mercur scopes a
+// shop's code to that shop's lines, so a valid code can still end up with
+// nothing to discount (`applied: false`). Codes are matched as typed first,
+// then upper-cased, since shop owners usually create them in capitals.
+export async function applyPromotions(codes: string[]): Promise<PromotionResult> {
   const cartId = await getCartId();
 
   if (!cartId) {
-    return { success: false, error: "No existing cart found" }
+    return { success: false, error: 'no_cart' };
   }
 
   const headers = {
     ...(await getAuthHeaders())
   };
 
-  try {
-    const { cart } = await sdk.store.carts.$id.mutate({
+  const apply = (promo_codes: string[]) =>
+    (sdk.store.carts.$id.promotions.mutate({
       $id: cartId,
-      promo_codes: codes,
+      promo_codes,
       fetchOptions: { headers }
-    })
-    const cartCacheTag = await getCacheTag("carts")
-    revalidateTag(cartCacheTag)
-    // @ts-ignore
-    const applied = cart.promotions?.some((promotion: any) =>
-      codes.includes(promotion.code)
-    )
-    return { success: true, applied }
+    } as never) as unknown as Promise<{ cart: HttpTypes.StoreCart & { promotions?: { code?: string }[] } }>);
+
+  const isInvalid = (error: any) =>
+    error?.status === 400 && /invalid/i.test(String(error?.message || ''));
+
+  let tried = codes;
+  try {
+    let cart: Awaited<ReturnType<typeof apply>>['cart'];
+    try {
+      ({ cart } = await apply(codes));
+    } catch (error) {
+      const upper = codes.map(code => code.toUpperCase());
+      if (!isInvalid(error) || upper.every((code, i) => code === codes[i])) throw error;
+      tried = upper;
+      ({ cart } = await apply(upper));
+    }
+    const applied = !!cart.promotions?.some(promotion => tried.includes(promotion.code || ''));
+    return { success: true, applied };
   } catch (error: any) {
-    const errorMessage =
-      error?.response?.data?.message ||
-      error?.message ||
-      "Failed to apply promotion code"
-    return { success: false, error: errorMessage }
+    if (isInvalid(error)) return { success: false, error: 'invalid' };
+    console.error('Failed to apply promotion code', error?.message || error);
+    return { success: false, error: 'failed' };
+  } finally {
+    revalidateTag(await getCacheTag('carts'));
   }
 }
 
@@ -337,28 +355,30 @@ export async function removeShippingMethod(shippingMethodId: string) {
     .catch(medusaError);
 }
 
-export async function deletePromotionCode(promoId: string) {
+export async function deletePromotionCode(code: string): Promise<{ success: boolean }> {
   const cartId = await getCartId();
 
   if (!cartId) {
-    throw new Error('No existing cart found');
+    return { success: false };
   }
 
   const headers = {
     ...(await getAuthHeaders())
   };
 
-  return ((sdk.store.carts.$id.promotions as unknown as { delete: (i: never) => unknown })
-    .delete({
+  try {
+    await (sdk.store.carts.$id.promotions.delete({
       $id: cartId,
-      promo_codes: [promoId],
+      promo_codes: [code],
       fetchOptions: { headers }
-    } as never) as unknown as Promise<{ cart: HttpTypes.StoreCart }>)
-    .then(async () => {
-      const cartCacheTag = await getCacheTag('carts');
-      revalidateTag(cartCacheTag);
-    })
-    .catch(medusaError);
+    } as never) as unknown as Promise<{ cart: HttpTypes.StoreCart }>);
+    return { success: true };
+  } catch (error: any) {
+    console.error('Failed to remove promotion code', error?.message || error);
+    return { success: false };
+  } finally {
+    revalidateTag(await getCacheTag('carts'));
+  }
 }
 
 export async function setAddresses(currentState: unknown, formData: FormData) {

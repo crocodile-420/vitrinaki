@@ -3,6 +3,7 @@
 import { Button } from '@/components/atoms';
 import LocalizedClientLink from '@/components/molecules/LocalizedLink/LocalizedLink';
 import { CartEmpty, CartItems, CartSummary } from '@/components/organisms';
+import { PromoCode } from '@/components/organisms/PromoCode/PromoCode';
 import { useCartContext } from '@/components/providers';
 import { useTranslator } from '@/lib/i18n/client';
 
@@ -21,6 +22,9 @@ export const Cart = () => {
       </div>
       <div className="lg:col-span-2"></div>
       <div className="col-span-12 lg:col-span-4">
+        <div className="mb-4">
+          <PromoCode cart={cart} />
+        </div>
         <div className="h-fit rounded-sm border p-4">
           <CartSummary
             item_total={cart?.item_subtotal || 0}
