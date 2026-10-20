@@ -5,7 +5,7 @@ import { useState } from "react"
 
 import { translator, type Lang } from "@/lib/i18n/vitrinaki"
 
-import { StoryCaption, StoryChip, StoryDrop, StoryRoute, storyCss } from "./HeroJourney"
+import { Callout, StoryCaption, StoryChip, StoryDrop, StoryRoute, storyCss } from "./HeroJourney"
 
 type Palette = { key: string; label: string; page: string; ink: string; accent: string; soft: string }
 
@@ -223,8 +223,8 @@ function OrderToast({ lang, className = "" }: { lang: Lang; className?: string }
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" /></svg>
       </span>
       <span className="min-w-0 leading-tight">
-        <span className="block truncate text-[11px] font-bold text-[#1F3628]">{tr("Νέα παραγγελία")}</span>
-        <span className="block truncate text-[10px] font-semibold text-[#2E4A37]/70">#1024 · {tr("Παραδόθηκε")}</span>
+        <span className="block truncate text-[11px] font-bold text-[#1F3628]">{tr("Νέα παραγγελία")} #1024</span>
+        <span className="block truncate text-[10px] font-semibold text-[#2E4A37]/70">{tr("Αρωματικό κερί")} · 18,00 €</span>
       </span>
     </div>
   )
@@ -249,6 +249,36 @@ function PhoneShop({ lang, p, shopName, className = "" }: Omit<ShopProps, "slug"
           <div className="mt-1.5 rounded py-1 text-center text-[6.5px] font-bold text-white transition-colors duration-500" style={{ background: p.accent }}>{tr("Στο καλάθι")}</div>
         </div>
       </div>
+    </div>
+  )
+}
+
+/* "You manage it from here": a small, static glimpse of the Studio (the full,
+   interactive table sits right under the hero). */
+function StudioMini({ lang, className = "" }: { lang: Lang; className?: string }) {
+  const tr = translator(lang)
+  const rows = [
+    { name: "Κεραμικό βάζο", stock: 12, s: "in" as Status },
+    { name: "Αρωματικό κερί", stock: 4, s: "low" as Status },
+    { name: "Σετ δώρου", stock: 0, s: "out" as Status },
+  ]
+  return (
+    <div className={`overflow-hidden rounded-xl bg-white shadow-[0_24px_50px_-24px_rgba(31,54,40,0.45),0_2px_6px_rgba(31,54,40,0.06)] ring-1 ring-[#2E4A37]/10 ${className}`}>
+      <div className="flex items-center justify-between bg-[#2E4A37] px-2.5 py-1.5 text-[#F7F2E8]">
+        <span className="text-[10px] font-extrabold tracking-tight">vitrinaki<span className="text-[#E8A493]">.</span> <span className="font-semibold uppercase tracking-[0.18em] text-[#F7F2E8]/60">Studio</span></span>
+        <span className="text-[8.5px] font-semibold text-[#F7F2E8]/75">{tr("Προϊόντα")}</span>
+      </div>
+      <ul className="px-2.5 py-1.5 text-[9.5px] text-[#1F3628]">
+        {rows.map((r) => (
+          <li key={r.name} className="flex items-center justify-between gap-2 border-t border-[#2E4A37]/[0.07] py-1 first:border-t-0">
+            <span className="truncate font-medium">{tr(r.name)}</span>
+            <span className="flex shrink-0 items-center gap-1.5">
+              <span className="tabular-nums text-[#2E4A37]/60">{r.stock}</span>
+              <span className={`rounded-full px-1.5 py-0.5 text-[8px] font-semibold ${statusMeta[r.s].cls}`}>{tr(statusMeta[r.s].label)}</span>
+            </span>
+          </li>
+        ))}
+      </ul>
     </div>
   )
 }
@@ -295,18 +325,27 @@ export function HeroDemo({ lang, intro }: { lang: Lang; intro: React.ReactNode }
           </div>
 
           <div className="hidden xl:block" aria-label={tr("Προεπισκόπηση καταστήματος")}>
-            <div className="absolute right-[1.2%] top-[3%] z-10 hidden w-[480px] origin-top-right scale-[0.62] xl:block min-[1400px]:scale-[0.68] min-[1560px]:scale-[0.76]">
-              <StudioTable lang={lang} />
+            {/* Part 3, the seller's e-shop: the shop is the main piece with the phone beside it,
+                the Studio a small "you manage it from here" card, the order a notification. */}
+            <div className="absolute left-[67.5%] top-[13%] z-30 w-[14.5%]"><StoryChip n={3} title={tr("Το δικό σου e-shop")} text={tr("Εσύ το διαχειρίζεσαι, οι πελάτες παραγγέλνουν")} /></div>
+            <div className="absolute left-[67.5%] top-[31%] z-20 w-[21.5%]">
+              <ShopBrowser {...shop} />
+              <Callout icon="shop" className="mt-2 whitespace-nowrap">{tr("Οι πελάτες σου: vitrinaki.gr/το-όνομά-σου")}</Callout>
             </div>
-            <ShopBrowser {...shop} className="absolute left-[68.5%] top-[30%] z-20 w-[20.5%]" />
-            <div className="absolute right-[2.5%] top-[38%] z-30 w-[10%]">
-              <OrderToast lang={lang} className="absolute -top-14 right-[-6%] w-[190px]" />
-              <PhoneShop {...shop} />
+            {/* the seller's side: Studio and order notifications */}
+            <div className="absolute right-[1.6%] top-[4%] z-20 flex w-[15.5%] flex-col items-end">
+              <Callout icon="studio" className="mb-1.5 whitespace-nowrap">{tr("Εσύ: προϊόντα & απόθεμα στο Studio")}</Callout>
+              <StudioMini lang={lang} className="w-full" />
+              <OrderToast lang={lang} className="mt-3 w-full" />
+              <Callout icon="bell" className="mt-1.5 whitespace-nowrap">{tr("Σε ειδοποιεί για κάθε παραγγελία")}</Callout>
+            </div>
+            <div className="absolute right-[2.4%] top-[49%] z-30 flex w-[7.8%] flex-col items-end">
+              <PhoneShop {...shop} className="w-full" />
+              <Callout icon="phone" className="mt-2 whitespace-nowrap">{tr("Έτοιμο για κινητά")}</Callout>
             </div>
             <StoryRoute lang={lang} />
-            <div className="absolute left-[31.5%] top-[76.5%] z-30"><StoryChip n={1}>{tr("Ελληνική παράδοση")}</StoryChip></div>
-            <div className="absolute left-[48.5%] top-[73%] z-30"><StoryChip n={2}>{tr("Πελάτες παντού, μέσω vitrinaki.gr")}</StoryChip></div>
-            <div className="absolute left-[69%] top-[78%] z-30"><StoryChip n={3}>{tr("Το δικό σου e-shop")}</StoryChip></div>
+            <div className="absolute left-[23%] top-[74%] z-30"><StoryChip n={1} title={tr("Η επιχείρησή σου")} text={tr("Εδώ, στην Ελλάδα, όπως τη δουλεύεις σήμερα")} /></div>
+            <div className="absolute left-[44.5%] top-[71%] z-30"><StoryChip n={2} title={tr("Το vitrinaki.gr σε βγάζει online")} text={tr("Η γραμμή δείχνει τη διαδρομή: πελάτες από παντού σε βρίσκουν και φτάνουν στο κατάστημά σου")} /></div>
             <StoryCaption lang={lang} className="absolute bottom-[3%] left-[56.5%] z-30 w-max -translate-x-1/2" />
           </div>
 
@@ -315,23 +354,29 @@ export function HeroDemo({ lang, intro }: { lang: Lang; intro: React.ReactNode }
             <div className="mx-auto max-w-[560px] md:max-w-[640px]">
               <div className="relative">
                 <img src="/home/story-greece.webp" alt="" width={799} height={544} decoding="async" className="block w-full" />
-                <StoryChip n={1} className="absolute bottom-3 left-3">{tr("Ελληνική παράδοση")}</StoryChip>
+                <StoryChip n={1} title={tr("Η επιχείρησή σου")} text={tr("Εδώ, στην Ελλάδα, όπως τη δουλεύεις σήμερα")} className="absolute bottom-3 left-3 max-w-[calc(100%-1.5rem)]" />
               </div>
               <StoryDrop className="-mt-1" />
               <div className="relative">
                 <img src="/home/story-globe.webp" alt="" width={730} height={603} decoding="async" className="mx-auto block w-[94%]" />
-                <StoryChip n={2} className="absolute bottom-2 left-1/2 -translate-x-1/2 whitespace-nowrap">{tr("Πελάτες παντού, μέσω vitrinaki.gr")}</StoryChip>
+                <StoryChip n={2} title={tr("Το vitrinaki.gr σε βγάζει online")} text={tr("Πελάτες από παντού σε βρίσκουν και φτάνουν στο κατάστημά σου")} className="absolute bottom-2 left-1/2 w-max max-w-[calc(100%-1.5rem)] -translate-x-1/2" />
               </div>
               <StoryDrop />
               <div className="relative">
-                <StoryChip n={3} className="mb-3">{tr("Το δικό σου e-shop")}</StoryChip>
+                <StoryChip n={3} title={tr("Το δικό σου e-shop")} text={tr("Εσύ το διαχειρίζεσαι, οι πελάτες παραγγέλνουν")} className="mb-3" />
                 <div className="relative pb-[6%] pr-[22%]" aria-label={tr("Προεπισκόπηση καταστήματος")}>
                   <ShopBrowser {...shop} className="w-full" />
                   <div className="absolute bottom-0 right-0 w-[30%]">
                     <PhoneShop {...shop} />
                   </div>
-                  <OrderToast lang={lang} className="absolute -top-2 right-0 w-[176px]" />
                 </div>
+                <ul className="mt-4 grid gap-2 sm:grid-cols-2">
+                  <li><Callout icon="shop">{tr("Οι πελάτες σου: vitrinaki.gr/το-όνομά-σου")}</Callout></li>
+                  <li><Callout icon="phone">{tr("Έτοιμο για κινητά")}</Callout></li>
+                  <li><Callout icon="studio">{tr("Εσύ: προϊόντα & απόθεμα στο Studio")}</Callout></li>
+                  <li><Callout icon="bell">{tr("Σε ειδοποιεί για κάθε παραγγελία")}</Callout></li>
+                </ul>
+                <OrderToast lang={lang} className="mt-2 w-[200px]" />
               </div>
               <StoryCaption lang={lang} tone="dark" className="mt-8" />
             </div>
@@ -379,10 +424,12 @@ export function HeroDemo({ lang, intro }: { lang: Lang; intro: React.ReactNode }
         </div>
       </div>
 
-      {/* Studio on small screens */}
-      <div className="bg-[#F7F2E8] px-5 py-8 sm:px-8 xl:hidden">
-        <p className="mb-2 text-[12px] font-semibold text-[#2E4A37]/70">{tr("Δοκίμασε τη διαχείριση αποθέματος:")}</p>
-        <StudioTable lang={lang} />
+      {/* The Studio, interactive: on every width, right under the story */}
+      <div className="bg-[#F7F2E8] px-5 py-8 sm:px-8">
+        <div className="mx-auto max-w-[720px]">
+          <p className="mb-2 text-[12px] font-semibold text-[#2E4A37]/70">{tr("Δοκίμασε τη διαχείριση αποθέματος:")}</p>
+          <StudioTable lang={lang} />
+        </div>
       </div>
     </>
   )
