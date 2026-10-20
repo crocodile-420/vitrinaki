@@ -228,7 +228,16 @@ export function extendedPeriodEnd(currentPeriodEnd: string, now = new Date(), da
   return new Date(from + days * DAY_MS).toISOString()
 }
 
-export const stripeIdempotencyKey = (rewardId: string) => `vitrinaki-referral-${rewardId}`
+// A promo code activated on a shop whose subscription already runs later (for
+// example after a referral extension) keeps the later end. No end (null) means
+// no expiry and wins.
+export function laterPeriodEnd(promoEnd: string | null, currentEnd: unknown): string | null {
+  if (!promoEnd) return null
+  const current = typeof currentEnd === "string" ? new Date(currentEnd).getTime() : NaN
+  return Number.isFinite(current) && current > new Date(promoEnd).getTime() ? new Date(current).toISOString() : promoEnd
+}
+
+export const stripeIdempotencyKey =(rewardId: string) => `vitrinaki-referral-${rewardId}`
 
 export const stripeCreditDescription = (role: ReferralRole, otherName?: string) =>
   role === "referrer"
