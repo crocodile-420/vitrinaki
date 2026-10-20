@@ -420,7 +420,12 @@ export default async function Home({
                         </div>
                       </div>
                       <div className="flex flex-1 flex-col p-5">
-                        <p className="text-[11px] font-semibold uppercase tracking-[0.18em]" style={{ color: c.accent }}>{tr(templateLabels[site.template]?.name || "")}</p>
+                        <div className="flex items-center justify-between gap-2">
+                          <p className="text-[11px] font-semibold uppercase tracking-[0.18em]" style={{ color: c.accent }}>{tr(templateLabels[site.template]?.name || "")}</p>
+                          {site.isFeatured && (
+                            <span className="rounded-full bg-[#C0503C] px-2.5 py-0.5 text-[11px] font-semibold text-white">{tr("Προτεινόμενο")}</span>
+                          )}
+                        </div>
                         <h3 className="mt-1 text-xl font-bold text-[#1F3628]">{site.storeName}</h3>
                         <p className={`mt-1 line-clamp-2 text-[14px] leading-6 ${MUTED}`}>{site.description || site.tagline}</p>
                         <span className="mt-auto inline-flex items-center gap-2 pt-4 text-sm font-semibold text-[#C0503C]">

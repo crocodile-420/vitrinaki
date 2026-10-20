@@ -9,9 +9,10 @@ export type DirectoryStorefront = {
   logo: string | null
   banner: string | null
   customDomain: string
+  isFeatured?: boolean
 }
 
-// Published Vitrinaki websites, newest first. Returns [] when the backend is
+// Published Vitrinaki websites: featured first, then newest. Returns [] when the backend is
 // unreachable so the homepage still renders.
 export async function listPublishedStorefronts(): Promise<DirectoryStorefront[]> {
   const backend = (process.env.MEDUSA_BACKEND_URL || "http://localhost:9100").replace(/\/+$/, "")
