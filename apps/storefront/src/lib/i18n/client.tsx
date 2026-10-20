@@ -1,6 +1,6 @@
 "use client"
 
-import { createContext, useContext, type ReactNode } from "react"
+import { createContext, useContext, useMemo, type ReactNode } from "react"
 
 import { translator, type Lang } from "./vitrinaki"
 
@@ -14,5 +14,7 @@ export function LangProvider({ lang, children }: { lang: Lang; children: ReactNo
 
 export function useTranslator() {
   const lang = useContext(LangContext)
-  return { lang, tr: translator(lang) }
+  // Stable per language, so `tr` is safe in hook dependency lists.
+  const tr = useMemo(() => translator(lang), [lang])
+  return { lang, tr }
 }

@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
   const form = await request.formData().catch(() => null)
   const tr = translator(isLang(form?.get("lang")) ? (form!.get("lang") as "el" | "en") : "el")
   const session = await readStartSession()
-  if (!session) return NextResponse.json({ message: tr("Η σύνδεση έληξε. Συνέχισε από το Studio.") }, { status: 401 })
+  if (!session) return NextResponse.json({ message: tr("Η σύνδεση έληξε. Συνδέσου ξανά για να συνεχίσεις.") }, { status: 401 })
 
   const file = form?.get("file")
   if (!(file instanceof File)) return NextResponse.json({ message: tr("Διάλεξε μια εικόνα.") }, { status: 400 })

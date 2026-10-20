@@ -136,14 +136,16 @@ function StepBar({ current, done = () => true }: { current: number; done?: (inde
 }
 
 export function StartFlow({
-  studioLoginUrl,
+  shopHref,
+  resetPasswordUrl,
   termsUrl,
   privacyUrl,
   resume,
   intro,
   benefits,
 }: {
-  studioLoginUrl: string
+  shopHref: string
+  resetPasswordUrl: string
   termsUrl?: string
   privacyUrl?: string
   resume?: Created | null
@@ -331,8 +333,11 @@ export function StartFlow({
     setStepErrors({})
     setStepMessage("")
     const i = OPTIONAL_STEPS.indexOf(phase as OptionalStep)
-    setPhase(i >= 0 && i < OPTIONAL_STEPS.length - 1 ? OPTIONAL_STEPS[i + 1] : "done")
-  }, [phase])
+    if (i >= 0 && i < OPTIONAL_STEPS.length - 1) return setPhase(OPTIONAL_STEPS[i + 1])
+    // The rest of the profile is filled in on /shop-registration.
+    setPhase("done")
+    window.location.assign(shopHref)
+  }, [phase, shopHref])
 
   function stepPayload(step: OptionalStep): Record<string, unknown> | null {
     switch (step) {
@@ -586,9 +591,9 @@ export function StartFlow({
           {serverError && (serverError.code === "email_exists" || serverError.code === "account_exists") && serverFields.email ? (
             <p className="mt-1 pl-[22px] text-[13px] text-[#1F3628]/80">
               {tr("Είναι δικό σου;")}{" "}
-              <a href={studioLoginUrl} className="font-semibold text-[#2E4A37] underline underline-offset-2">{tr("Σύνδεση στο Studio")}</a>
+              <a href={shopHref} className="font-semibold text-[#2E4A37] underline underline-offset-2">{tr("Συνδέσου στη βιτρίνα σου")}</a>
               <span className="mx-1.5 opacity-40">·</span>
-              <a href={`${studioLoginUrl.replace(/\/login$/, "")}/reset-password`} className="font-semibold text-[#2E4A37] underline underline-offset-2">{tr("Ξέχασες τον κωδικό;")}</a>
+              <a href={resetPasswordUrl} className="font-semibold text-[#2E4A37] underline underline-offset-2">{tr("Ξέχασες τον κωδικό;")}</a>
             </p>
           ) : null}
         </div>
@@ -689,8 +694,8 @@ export function StartFlow({
       </button>
       <p className="mt-4 text-center text-[14px] text-[#2E4A37]/70">
         {tr("Έχεις ήδη λογαριασμό;")}{" "}
-        <a href={studioLoginUrl} className="font-semibold text-[#2E4A37] underline-offset-2 hover:underline">
-          {tr("Σύνδεση στο Studio")}
+        <a href={shopHref} className="font-semibold text-[#2E4A37] underline-offset-2 hover:underline">
+          {tr("Σύνδεση")}
         </a>
       </p>
     </form>
@@ -864,7 +869,7 @@ export function StartFlow({
               </Field>
             </div>
             <p className="col-span-2 rounded-xl bg-[#F7F2E8] px-3.5 py-2.5 text-[13px] leading-5 text-[#2E4A37]/75">
-              {tr("Δουλεύεις μόνο online; Πάτα «Αργότερα». Ωράριο και ακριβή διεύθυνση τα βάζεις από το Studio, αν θέλεις.")}
+              {tr("Δουλεύεις μόνο online; Πάτα «Αργότερα». Ωράριο και ακριβή διεύθυνση τα βάζεις μετά, στο προφίλ του καταστήματος, αν θέλεις.")}
             </p>
           </div>
         )
@@ -968,7 +973,7 @@ export function StartFlow({
           {tr("Η βιτρίνα σου είναι έτοιμη")}
         </h2>
         <p className="mt-1.5 text-[14.5px] leading-6 text-[#2E4A37]/75">
-          {tr("Το επόμενο βήμα γίνεται στο Studio: πρόσθεσε τα πρώτα σου προϊόντα και, όταν είσαι έτοιμος, δημοσίευσε τη σελίδα σου.")}
+          {tr("Συμπλήρωσε το προφίλ του καταστήματος, ενεργοποίησε το πακέτο σου και δημοσίευσε τη σελίδα σου, όλα εδώ στο Vitrinaki.")}
         </p>
 
         <div className="mt-5 rounded-xl border border-[#2E4A37]/12 bg-[#F7F2E8] p-3.5">
@@ -990,28 +995,19 @@ export function StartFlow({
                 <Icon name="check" size={12} />
               </span>
               <span className={saved.has(s) ? "font-medium text-[#1F3628]" : "text-[#2E4A37]/60"}>{stepMeta[s].title.replace(/;$/, "")}</span>
-              {!saved.has(s) ? <span className="text-[12.5px] text-[#2E4A37]/50">· {tr("αργότερα, από το Studio")}</span> : null}
+              {!saved.has(s) ? <span className="text-[12.5px] text-[#2E4A37]/50">· {tr("αργότερα, στο προφίλ")}</span> : null}
             </li>
           ))}
         </ul>
 
         <div className="mt-6 grid gap-2.5">
+          <a href={shopHref} className={`${primaryBtn} w-full`}>
+            {tr("Συνέχισε στο προφίλ του καταστήματος")} <Icon name="arrow" size={18} />
+          </a>
           <form method="post" action={`${API}/handoff`}>
             <input type="hidden" name="to" value="studio" />
-            <button type="submit" className={`${primaryBtn} w-full`}>
-              {tr("Μπες στο Studio")} <Icon name="arrow" size={18} />
-            </button>
+            <button type="submit" className={`${secondaryBtn} w-full text-[14px]`}>{tr("Πρόσθεσε προϊόντα στο Studio")}</button>
           </form>
-          <div className="grid gap-2.5 sm:grid-cols-2">
-            <form method="post" action={`${API}/handoff`}>
-              <input type="hidden" name="to" value="profile" />
-              <button type="submit" className={`${secondaryBtn} w-full px-3 text-[14px]`}>{tr("Συμπλήρωσε προφίλ")}</button>
-            </form>
-            <form method="post" action={`${API}/handoff`}>
-              <input type="hidden" name="to" value="website" />
-              <button type="submit" className={`${secondaryBtn} w-full px-3 text-[14px]`}>{tr("Δες τη σελίδα")}</button>
-            </form>
-          </div>
         </div>
         {saved.size < OPTIONAL_STEPS.length ? (
           <p className="mt-4 text-center text-[13.5px] text-[#2E4A37]/70">

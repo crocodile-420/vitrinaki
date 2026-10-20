@@ -10,6 +10,11 @@ export const studioLoginUrl = `${studioUrl}/login`
 export const startPath = "/start"
 export const startHref = (locale: string) => `/${locale}${startPath}`
 
+// The seller's shop profile on this site: /<locale>/shop-registration. Sign-up
+// lands here, and it doubles as the Vitrinaki login for sellers.
+export const shopRegistrationPath = "/shop-registration"
+export const shopRegistrationHref = (locale: string) => `/${locale}${shopRegistrationPath}`
+
 // Legal pages linked from the sign-up terms checkbox. Not built yet: until the
 // env vars are set the checkbox shows the names without links.
 export const termsUrl = process.env.NEXT_PUBLIC_TERMS_URL || ""

@@ -2,8 +2,9 @@ import LocalizedClientLink from "@/components/molecules/LocalizedLink/LocalizedL
 
 import { LanguageSwitcher } from "@/components/molecules/LanguageSwitcher/LanguageSwitcher"
 import { HeaderShell } from "./HeaderShell"
+import { readStartSession } from "@/lib/data/vitrinaki-start"
 import { getTranslator } from "@/lib/i18n/server"
-import { startHref, studioLoginUrl } from "@/lib/vitrinaki-links"
+import { shopRegistrationHref, startHref } from "@/lib/vitrinaki-links"
 
 const navigation = [
   { label: "Για ποιον", href: "/#for-whom" },
@@ -20,6 +21,7 @@ function VitrinakiWordmark() {
 
 export const Header = async ({ locale }: { locale: string }) => {
   const { lang, tr } = await getTranslator()
+  const signedIn = Boolean(await readStartSession())
   return (
     <HeaderShell locale={locale}>
       <div className="mx-auto flex max-w-[1600px] items-center justify-between gap-3 px-4 py-3 sm:px-6 lg:px-10">
@@ -41,8 +43,8 @@ export const Header = async ({ locale }: { locale: string }) => {
 
         <div className="flex shrink-0 items-center gap-1.5 sm:gap-3">
           <LanguageSwitcher lang={lang} label={tr("Γλώσσα")} className="text-[#2E4A37]" />
-          <a href={studioLoginUrl} className="hidden text-sm font-semibold text-[#2E4A37] transition-colors hover:text-[#C0503C] sm:inline-flex">
-            {tr("Σύνδεση")}
+          <a href={shopRegistrationHref(locale)} className="hidden text-sm font-semibold text-[#2E4A37] transition-colors hover:text-[#C0503C] sm:inline-flex">
+            {signedIn ? tr("Η βιτρίνα μου") : tr("Σύνδεση")}
           </a>
           <a
             href={startHref(locale)}

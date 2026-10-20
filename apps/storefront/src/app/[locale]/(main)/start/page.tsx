@@ -3,12 +3,12 @@ import type { Metadata } from "next"
 import { StartFlow } from "@/components/sections/StartFlow/StartFlow"
 import { readStartSession } from "@/lib/data/vitrinaki-start"
 import { getTranslator } from "@/lib/i18n/server"
-import { privacyUrl, studioLoginUrl, termsUrl } from "@/lib/vitrinaki-links"
+import { privacyUrl, shopRegistrationHref, studioUrl, termsUrl } from "@/lib/vitrinaki-links"
 import { caps } from "@/lib/vitrinaki-start"
 
 // «Άνοιξε τη βιτρίνα σου»: the sign-up as a short question flow. The first step
 // creates a real shop (see /api/vitrinaki/start), the next ones are optional and
-// fill the live preview, then the new seller is handed over to the Studio. The
+// fill the live preview, then the new seller goes on to /shop-registration. The
 // pitch lives on the homepage, so this page carries only the flow.
 
 export const dynamic = "force-dynamic"
@@ -65,7 +65,8 @@ function OliveSprig({ className = "" }: { className?: string }) {
   )
 }
 
-export default async function StartPage() {
+export default async function StartPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params
   const { tr } = await getTranslator()
   const session = await readStartSession()
 
@@ -111,7 +112,8 @@ export default async function StartPage() {
         <div aria-hidden="true" className="absolute -right-40 -top-40 -z-10 h-[34rem] w-[34rem] rounded-full bg-[#C0503C]/[0.07] blur-3xl" />
         <div className={`${WRAP} flex min-h-[calc(100svh-5rem)] flex-col justify-center pb-14 pt-8 sm:pt-10 lg:pb-16`}>
           <StartFlow
-            studioLoginUrl={studioLoginUrl}
+            shopHref={shopRegistrationHref(locale)}
+            resetPasswordUrl={`${studioUrl}/reset-password`}
             termsUrl={termsUrl || undefined}
             privacyUrl={privacyUrl || undefined}
             resume={session ? { name: session.name, handle: session.handle, email: session.email, saved: session.saved || [] } : null}
