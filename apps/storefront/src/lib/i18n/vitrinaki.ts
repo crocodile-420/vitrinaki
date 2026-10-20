@@ -51,7 +51,7 @@ const en: Record<string, string> = {
   "Αν σε σύστησε άλλη επιχείρηση, γράψε τον κωδικό της.": "If another business referred you, enter their code.",
   "π.χ. FOURNOS": "e.g. FOURNOS",
   "Σε σύστησε:": "Referred by:",
-  "Μόλις πληρώσεις την πρώτη σου συνδρομή, παίρνετε κι οι δύο έναν μήνα δωρεάν.": "Once you pay your first subscription, you both get a month free.",
+  "Μόλις πληρώσεις την πρώτη σου συνδρομή, παίρνεις έναν μήνα δωρεάν.": "Once you pay your first subscription, you get a month free.",
   "Δεν βρήκαμε αυτόν τον κωδικό σύστασης. Μπορείς να συνεχίσεις και χωρίς.": "We couldn't find this referral code. You can carry on without it.",
   "Δεν μπορείς να χρησιμοποιήσεις τον δικό σου κωδικό σύστασης.": "You can't use your own referral code.",
   "Έχεις ήδη χρησιμοποιήσει κωδικό σύστασης.": "You have already used a referral code.",

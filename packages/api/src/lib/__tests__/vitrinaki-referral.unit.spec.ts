@@ -14,6 +14,10 @@ import {
   referralSummary,
   REWARD_CAP_PER_YEAR,
   rewardPlanFor,
+  extensionDaysFor,
+  referrerPercent,
+  rewardPercent,
+  scaledCredit,
   type ReferralState,
 } from "../vitrinaki-referral"
 import { applyPendingReferralRewards, qualifyReferral, recordReferralClaim } from "../vitrinaki-referral-rewards"
@@ -85,7 +89,7 @@ describe("eligibility", () => {
 
 describe("rewards", () => {
   const now = new Date("2026-10-20T12:00:00Z")
-  const input = { referralId: "ref_sel_b", role: "referrer" as const, otherSellerId: "sel_b" }
+  const input = { referralId: "ref_sel_b", role: "referrer" as const, otherSellerId: "sel_b", percent: 50 }
 
   it("is idempotent per referral and role", () => {
     const first = recordEarnedReward({}, input, now)
@@ -129,7 +133,7 @@ describe("rewards", () => {
         { id: "2", referralId: "2", role: "referrer", otherSellerId: "b", earnedAt: "2026-06-01T00:00:00Z", status: "pending" },
       ],
     }
-    expect(referralSummary(state, now)).toEqual({ referredCount: 2, qualifiedCount: 1, monthsEarned: 1, monthsPending: 1, monthsThisYear: 2, cap: 12 })
+    expect(referralSummary(state, now)).toEqual({ referredCount: 2, qualifiedCount: 1, rewardsEarned: 1, rewardsPending: 1, rewardsThisYear: 2, welcomeMonth: null, cap: 12 })
   })
 })
 
@@ -182,13 +186,13 @@ describe("qualifying a referral", () => {
     const toB = credits.find((c) => c.path.includes("cus_b"))
     const toA = credits.find((c) => c.path.includes("cus_a"))
     expect(toB.form.amount).toBe("-1900")
-    expect(toA.form.amount).toBe("-3900")
+    expect(toA.form.amount).toBe("-1950")
     expect(toB.options.idempotencyKey).toBe("vitrinaki-referral-ref_sel_b:referred")
     expect(toA.options.idempotencyKey).toBe("vitrinaki-referral-ref_sel_b:referrer")
-    expect(toA.form.description).toContain("Κεραμικά Νίκος")
+    expect(toA.form.description).toBe("Vitrinaki: έκπτωση 50% σε έναν μήνα για τη σύσταση του «Κεραμικά Νίκος»")
 
     const a = readReferral(sellers.sel_a.metadata)
-    expect(a.rewards?.[0]).toMatchObject({ status: "applied", method: "stripe_credit", amount: 3900, role: "referrer" })
+    expect(a.rewards?.[0]).toMatchObject({ status: "applied", method: "stripe_credit", amount: 1950, percent: 50, role: "referrer" })
     expect(a.referrals?.[0].qualifiedAt).toBeTruthy()
     expect(readReferral(sellers.sel_b.metadata).qualifiedAt).toBeTruthy()
 
@@ -206,8 +210,8 @@ describe("qualifying a referral", () => {
     }
     const { scope, deps } = setup(sellers)
     await qualifyReferral(scope, "sel_b", deps)
-    expect(sellers.sel_a.metadata.vitrinaki_subscription.currentPeriodEnd).toBe("2026-12-01T00:00:00.000Z")
-    expect(readReferral(sellers.sel_a.metadata).rewards?.[0]).toMatchObject({ status: "applied", method: "extension", newPeriodEnd: "2026-12-01T00:00:00.000Z" })
+    expect(sellers.sel_a.metadata.vitrinaki_subscription.currentPeriodEnd).toBe("2026-11-16T00:00:00.000Z")
+    expect(readReferral(sellers.sel_a.metadata).rewards?.[0]).toMatchObject({ status: "applied", method: "extension", extensionDays: 15, newPeriodEnd: "2026-11-16T00:00:00.000Z" })
 
     await qualifyReferral(scope, "sel_d", deps)
     expect(readReferral(sellers.sel_c.metadata).rewards?.[0]).toMatchObject({ status: "pending", role: "referrer" })
@@ -215,7 +219,7 @@ describe("qualifying a referral", () => {
     // C subscribes later: the pending month becomes a Stripe credit.
     sellers.sel_c.metadata.vitrinaki_subscription = { status: "active", planId: "growth", stripeCustomerId: "cus_c", stripeSubscriptionId: "sub_c" }
     expect(await applyPendingReferralRewards(scope, "sel_c", deps)).toEqual({ applied: 1 })
-    expect(readReferral(sellers.sel_c.metadata).rewards?.[0]).toMatchObject({ status: "applied", method: "stripe_credit", amount: 1900 })
+    expect(readReferral(sellers.sel_c.metadata).rewards?.[0]).toMatchObject({ status: "applied", method: "stripe_credit", amount: 950, percent: 50 })
     expect(await applyPendingReferralRewards(scope, "sel_c", deps)).toEqual({ applied: 0 })
   })
 
@@ -228,5 +232,74 @@ describe("qualifying a referral", () => {
     deps.stripe = jest.fn(async () => { throw new Error("Stripe down") }) as any
     await qualifyReferral(scope, "sel_b", deps)
     expect(readReferral(sellers.sel_b.metadata).rewards?.[0]).toMatchObject({ status: "pending", lastError: "Stripe down" })
+  })
+})
+
+describe("referrer discount", () => {
+  it("reads the percent from env: integer 1–100, otherwise 50", () => {
+    expect(referrerPercent({})).toBe(50)
+    expect(referrerPercent({ VITRINAKI_REFERRAL_REFERRER_PERCENT: "30" })).toBe(30)
+    expect(referrerPercent({ VITRINAKI_REFERRAL_REFERRER_PERCENT: " 100 " })).toBe(100)
+    expect(referrerPercent({ VITRINAKI_REFERRAL_REFERRER_PERCENT: "1" })).toBe(1)
+    for (const bad of ["0", "101", "-5", "12.5", "abc", ""]) expect(referrerPercent({ VITRINAKI_REFERRAL_REFERRER_PERCENT: bad })).toBe(50)
+  })
+
+  it("scales the Stripe credit and the promo extension", () => {
+    expect(scaledCredit(1900, 50)).toBe(950)
+    expect(scaledCredit(1999, 50)).toBe(1000)
+    expect(scaledCredit(3900, 100)).toBe(3900)
+    expect(extensionDaysFor(50)).toBe(15)
+    expect(extensionDaysFor(100)).toBe(30)
+    expect(extensionDaysFor(25)).toBe(8)
+    expect(extensionDaysFor(1)).toBe(1) // never an empty reward
+  })
+
+  it("treats rewards earned before percentages as whole months", () => {
+    expect(rewardPercent({})).toBe(100)
+    expect(rewardPercent({ percent: 40 })).toBe(40)
+  })
+
+  it("counts rewards, not months, towards the yearly cap", () => {
+    const rewards = Array.from({ length: REWARD_CAP_PER_YEAR }, (_, i) => ({
+      id: `ref_${i}:referrer`, referralId: `ref_${i}`, role: "referrer" as const, otherSellerId: `s${i}`, earnedAt: "2026-03-01T00:00:00Z", status: "applied" as const, percent: 10,
+    }))
+    const input = { referralId: "ref_new", role: "referrer" as const, otherSellerId: "x", percent: 50 }
+    expect(recordEarnedReward({ rewards }, input, new Date("2026-10-20T00:00:00Z")).reward.status).toBe("capped")
+    expect(recordEarnedReward({ rewards: rewards.slice(1) }, input, new Date("2026-10-20T00:00:00Z")).reward).toMatchObject({ status: "pending", percent: 50 })
+  })
+
+  it("shows the shop's own welcome month in the summary", () => {
+    const state: ReferralState = { rewards: [{ id: "r:referred", referralId: "r", role: "referred", otherSellerId: "a", earnedAt: "2026-05-01T00:00:00Z", status: "pending", percent: 100 }] }
+    expect(referralSummary(state, new Date("2026-10-20T00:00:00Z"))).toMatchObject({ rewardsEarned: 0, rewardsPending: 0, rewardsThisYear: 1, welcomeMonth: "pending" })
+  })
+
+  it("keeps the percent fixed when it was earned, even if the env changes before it is applied", async () => {
+    const sellers: Record<string, any> = {
+      sel_a: { id: "sel_a", name: "A", metadata: { vitrinaki_referral: { code: "AAA" } } },
+      sel_b: { id: "sel_b", name: "B", metadata: { vitrinaki_referral: { referredBy: { sellerId: "sel_a", code: "AAA", at: "" } }, vitrinaki_subscription: { status: "active", planId: "growth", stripeCustomerId: "cus_b", stripeSubscriptionId: "sub_b" } } },
+    }
+    const scope = { resolve: () => ({ graph: async ({ filters }: any) => ({ data: filters?.id ? (sellers[filters.id] ? [JSON.parse(JSON.stringify(sellers[filters.id]))] : []) : Object.values(sellers) }) }) } as any
+    const credits: string[] = []
+    const stripe = jest.fn(async (_m: string, path: string, form?: any) => {
+      if (path.startsWith("/prices/")) return { unit_amount: 2000, currency: "eur", recurring: { interval: "month", interval_count: 1 } }
+      credits.push(`${path.split("/")[2]} ${form.amount}`)
+      return { id: "cbtxn" }
+    })
+    const deps: any = {
+      stripe,
+      now: () => new Date("2026-10-20T12:00:00Z"),
+      env: { STRIPE_SECRET_KEY: "sk_test_x", STRIPE_PRICE_GROWTH_MONTHLY: "price_g", VITRINAKI_REFERRAL_REFERRER_PERCENT: "30" },
+      writeMetadata: async (id: string, metadata: any) => { sellers[id] = { ...sellers[id], metadata: JSON.parse(JSON.stringify(metadata)) } },
+    }
+    await qualifyReferral(scope, "sel_b", deps)
+    // A had no subscription: its 30% discount waits. B (the new shop) got a whole month.
+    expect(readReferral(sellers.sel_a.metadata).rewards?.[0]).toMatchObject({ status: "pending", percent: 30 })
+    expect(credits).toEqual(["cus_b -2000"])
+
+    deps.env = { ...deps.env, VITRINAKI_REFERRAL_REFERRER_PERCENT: "80" }
+    sellers.sel_a.metadata.vitrinaki_subscription = { status: "active", planId: "growth", stripeCustomerId: "cus_a", stripeSubscriptionId: "sub_a" }
+    await applyPendingReferralRewards(scope, "sel_a", deps)
+    expect(credits).toEqual(["cus_b -2000", "cus_a -600"])
+    expect(readReferral(sellers.sel_a.metadata).rewards?.[0]).toMatchObject({ status: "applied", amount: 600, percent: 30 })
   })
 })

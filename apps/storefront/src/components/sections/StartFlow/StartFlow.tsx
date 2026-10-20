@@ -686,7 +686,7 @@ export function StartFlow({
               referralState.status === "ok" ? (
                 <span className="font-medium text-[#2E6B45]">
                   {referralState.shopName ? `${tr("Σε σύστησε:")} ${referralState.shopName}. ` : ""}
-                  {tr("Μόλις πληρώσεις την πρώτη σου συνδρομή, παίρνετε κι οι δύο έναν μήνα δωρεάν.")}
+                  {tr("Μόλις πληρώσεις την πρώτη σου συνδρομή, παίρνεις έναν μήνα δωρεάν.")}
                 </span>
               ) : referralState.status === "unknown" ? (
                 tr("Δεν βρήκαμε αυτόν τον κωδικό σύστασης. Μπορείς να συνεχίσεις και χωρίς.")

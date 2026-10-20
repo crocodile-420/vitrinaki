@@ -6,8 +6,8 @@ import { getAuthHeaders } from "@mercurjs/vendor"
 declare const __BACKEND_URL__: string
 
 // «Σύστασε έναν συνάδελφο»: the shop's referral code and link. When a business
-// signs up with it and pays its first subscription, both shops get a free
-// month (see packages/api/src/lib/vitrinaki-referral.ts).
+// signs up with it and pays its first subscription, it gets a free month and
+// this shop a discount on one month (see packages/api/src/lib/vitrinaki-referral.ts).
 
 export const config: RouteConfig = {
   label: "vitrinakiReferral.nav",
@@ -20,11 +20,14 @@ type Referral = {
   url: string
   referredCount: number
   qualifiedCount: number
-  monthsEarned: number
-  monthsPending: number
-  monthsThisYear: number
+  rewardsEarned: number
+  rewardsPending: number
+  rewardsThisYear: number
+  welcomeMonth: "applied" | "pending" | null
   cap: number
-  referrals: { name: string; at: string; qualified: boolean }[]
+  referrerPercent: number
+  referrerExtensionDays: number
+  referrals: { name: string; at: string; qualified: boolean; percent: number | null }[]
 }
 
 const backend = () => __BACKEND_URL__.replace(/\/+$/, "")
@@ -87,7 +90,7 @@ export default function VitrinakiReferralPage() {
       <header className="rounded-2xl border border-ui-border-base bg-ui-bg-base p-6 sm:p-8">
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-ui-fg-subtle">{t("vitrinakiReferral.eyebrow")}</p>
         <h1 className="mt-2 font-semibold text-ui-fg-base" style={{ fontSize: 26, lineHeight: "34px" }}>{t("vitrinakiReferral.title")}</h1>
-        <p className="mt-2 text-sm leading-6 text-ui-fg-subtle">{t("vitrinakiReferral.intro")}</p>
+        {data ? <p className="mt-2 text-sm leading-6 text-ui-fg-subtle">{t("vitrinakiReferral.intro", { percent: data.referrerPercent })}</p> : null}
       </header>
 
       {error ? <div role="alert" className="rounded-xl border border-ui-tag-red-border bg-ui-tag-red-bg p-4 text-sm text-ui-tag-red-text">{error}</div> : null}
@@ -112,15 +115,15 @@ export default function VitrinakiReferralPage() {
             <div className="rounded-xl bg-ui-bg-subtle p-4 text-sm leading-6 text-ui-fg-base" style={stack(6)}>
               <p className="font-semibold">{t("vitrinakiReferral.howTitle")}</p>
               <p>1. {t("vitrinakiReferral.how1")}</p>
-              <p>2. {t("vitrinakiReferral.how2")}</p>
+              <p>2. {t("vitrinakiReferral.how2", { percent: data.referrerPercent, days: data.referrerExtensionDays })}</p>
             </div>
           </section>
 
           <section className="grid rounded-2xl border border-ui-border-base bg-ui-bg-base p-6" style={{ gap: 12, gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))" }}>
             {([
               ["referred", data.referredCount],
-              ["earned", data.monthsEarned],
-              ["pending", data.monthsPending],
+              ["earned", data.rewardsEarned],
+              ["pending", data.rewardsPending],
             ] as const).map(([key, value]) => (
               <div key={key} className="rounded-xl bg-ui-bg-subtle p-4">
                 <p className="font-semibold text-ui-fg-base" style={{ fontSize: 28, lineHeight: "34px" }} data-testid={`referral-${key}`}>{value}</p>
@@ -128,10 +131,16 @@ export default function VitrinakiReferralPage() {
               </div>
             ))}
             <p className="text-xs leading-5 text-ui-fg-subtle" style={{ gridColumn: "1 / -1" }}>
-              {data.monthsPending > 0 ? `${t("vitrinakiReferral.pendingNote")} ` : ""}
-              {t("vitrinakiReferral.cap", { count: data.cap, used: data.monthsThisYear })}
+              {data.rewardsPending > 0 ? `${t("vitrinakiReferral.pendingNote")} ` : ""}
+              {t("vitrinakiReferral.cap", { count: data.cap, used: data.rewardsThisYear })}
             </p>
           </section>
+
+          {data.welcomeMonth ? (
+            <p className="rounded-xl bg-ui-tag-green-bg p-4 text-sm leading-6 text-ui-tag-green-text" data-testid="referral-welcome">
+              {t(`vitrinakiReferral.welcome.${data.welcomeMonth}`)}
+            </p>
+          ) : null}
 
           {data.referrals.length ? (
             <section className="rounded-2xl border border-ui-border-base bg-ui-bg-base p-6" style={stack(10)}>
@@ -144,7 +153,7 @@ export default function VitrinakiReferralPage() {
                       <p className="text-xs text-ui-fg-subtle">{t("vitrinakiReferral.joined", { date: date(entry.at) })}</p>
                     </div>
                     <span className={`rounded-full px-3 py-1 text-xs font-semibold ${entry.qualified ? "bg-ui-tag-green-bg text-ui-tag-green-text" : "bg-ui-bg-subtle text-ui-fg-subtle"}`}>
-                      {entry.qualified ? t("vitrinakiReferral.status.qualified") : t("vitrinakiReferral.status.signedUp")}
+                      {entry.qualified ? t("vitrinakiReferral.status.qualified", { percent: entry.percent ?? data.referrerPercent }) : t("vitrinakiReferral.status.signedUp")}
                     </span>
                   </li>
                 ))}
