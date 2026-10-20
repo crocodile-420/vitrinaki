@@ -143,6 +143,7 @@ export function StartFlow({
   resume,
   intro,
   benefits,
+  referralCode = "",
 }: {
   shopHref: string
   resetPasswordUrl: string
@@ -151,6 +152,8 @@ export function StartFlow({
   resume?: Created | null
   intro: ReactNode
   benefits: ReactNode
+  /** From a colleague's share link (?ref=CODE). */
+  referralCode?: string
 }) {
   const { lang, tr } = useTranslator()
   const uid = useId()
@@ -201,6 +204,31 @@ export function StartFlow({
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState<Set<OptionalStep>>(new Set((resume?.saved || []).filter((s): s is OptionalStep => (OPTIONAL_STEPS as readonly string[]).includes(s))))
   const [copied, setCopied] = useState(false)
+
+  // Optional referral code: filled in from a colleague's link, or typed.
+  const [referral, setReferral] = useState(referralCode)
+  const [showReferral, setShowReferral] = useState(Boolean(referralCode))
+  const [referralState, setReferralState] = useState<{ status: "idle" | "checking" | "ok" | "unknown"; shopName?: string }>({ status: "idle" })
+  useEffect(() => {
+    const code = referral.trim()
+    if (!code || created) return setReferralState({ status: "idle" })
+    setReferralState({ status: "checking" })
+    const controller = new AbortController()
+    const timer = window.setTimeout(async () => {
+      try {
+        const response = await fetch(`${API}/referral?${new URLSearchParams({ code })}`, { signal: controller.signal })
+        const body = await response.json()
+        if (body.unknown) return setReferralState({ status: "idle" })
+        setReferralState(body.valid ? { status: "ok", shopName: body.shopName } : { status: "unknown" })
+      } catch (error) {
+        if ((error as Error).name !== "AbortError") setReferralState({ status: "idle" })
+      }
+    }, 450)
+    return () => {
+      controller.abort()
+      window.clearTimeout(timer)
+    }
+  }, [referral, created])
 
   const headingRef = useRef<HTMLHeadingElement>(null)
   const cardRef = useRef<HTMLDivElement>(null)
@@ -302,7 +330,7 @@ export function StartFlow({
       const response = await fetch(API, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ storeName: storeName.trim(), handle, email: email.trim(), password, terms, lang }),
+        body: JSON.stringify({ storeName: storeName.trim(), handle, email: email.trim(), password, terms, lang, referralCode: referralState.status === "unknown" ? "" : referral.trim() }),
       })
       const body = (await response.json().catch(() => ({ ok: false, code: "server", message: tr("Κάτι πήγε στραβά. Δοκίμασε ξανά.") }))) as StartResponse
       if (body.ok) {
@@ -648,6 +676,53 @@ export function StartFlow({
             ))}
           </div>
         </Field>
+
+        {showReferral ? (
+          <Field
+            id={`${uid}-referral`}
+            label={tr("Κωδικός σύστασης")}
+            optional={tr("(προαιρετικό)")}
+            hint={
+              referralState.status === "ok" ? (
+                <span className="font-medium text-[#2E6B45]">
+                  {referralState.shopName ? `${tr("Σε σύστησε:")} ${referralState.shopName}. ` : ""}
+                  {tr("Μόλις πληρώσεις την πρώτη σου συνδρομή, παίρνετε κι οι δύο έναν μήνα δωρεάν.")}
+                </span>
+              ) : referralState.status === "unknown" ? (
+                tr("Δεν βρήκαμε αυτόν τον κωδικό σύστασης. Μπορείς να συνεχίσεις και χωρίς.")
+              ) : referralState.status === "checking" ? (
+                tr("Ελέγχουμε…")
+              ) : (
+                tr("Αν σε σύστησε άλλη επιχείρηση, γράψε τον κωδικό της.")
+              )
+            }
+          >
+            <input
+              id={`${uid}-referral`}
+              name="referral-code"
+              autoComplete="off"
+              autoCapitalize="characters"
+              spellCheck={false}
+              maxLength={40}
+              value={referral}
+              onChange={(e) => setReferral(e.target.value)}
+              placeholder={tr("π.χ. FOURNOS")}
+              aria-describedby={`${uid}-referral-hint`}
+              className={`${inputCls()} uppercase`}
+            />
+          </Field>
+        ) : (
+          <button
+            type="button"
+            onClick={() => {
+              setShowReferral(true)
+              window.setTimeout(() => document.getElementById(`${uid}-referral`)?.focus(), 0)
+            }}
+            className="-mt-1 text-[13.5px] font-semibold text-[#265E8E] underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#265E8E]/30"
+          >
+            {tr("Έχεις κωδικό σύστασης;")}
+          </button>
+        )}
 
         <div>
           <label htmlFor={ids.terms} className="flex cursor-pointer items-start gap-3 text-[14px] leading-6 text-[#1F3628]/85">

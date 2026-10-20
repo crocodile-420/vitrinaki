@@ -65,8 +65,17 @@ function OliveSprig({ className = "" }: { className?: string }) {
   )
 }
 
-export default async function StartPage({ params }: { params: Promise<{ locale: string }> }) {
+export default async function StartPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ locale: string }>
+  searchParams: Promise<{ ref?: string | string[] }>
+}) {
   const { locale } = await params
+  // A colleague's share link: /<locale>/start?ref=CODE fills in «Κωδικός σύστασης».
+  const ref = (await searchParams).ref
+  const referralCode = (Array.isArray(ref) ? ref[0] : ref || "").replace(/[^A-Za-z0-9]/g, "").slice(0, 16)
   const { tr } = await getTranslator()
   const session = await readStartSession()
 
@@ -119,6 +128,7 @@ export default async function StartPage({ params }: { params: Promise<{ locale: 
             resume={session ? { name: session.name, handle: session.handle, email: session.email, saved: session.saved || [] } : null}
             intro={intro}
             benefits={benefits}
+            referralCode={referralCode}
           />
         </div>
       </section>
