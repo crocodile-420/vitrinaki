@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 import { translator, type Lang } from "@/lib/i18n/vitrinaki"
 
@@ -38,7 +38,7 @@ const initialsOf = (value: string) =>
 
 /* ---------- small building blocks ---------- */
 
-function Browser({ url, children, className = "", dark = false }: { url: string; children: React.ReactNode; className?: string; dark?: boolean }) {
+function Browser({ url, children, className = "", dark = false }: { url: React.ReactNode; children: React.ReactNode; className?: string; dark?: boolean }) {
   return (
     <div className={`overflow-hidden rounded-xl bg-white shadow-[0_24px_50px_-24px_rgba(31,54,40,0.45),0_2px_6px_rgba(31,54,40,0.06)] ring-1 ring-[#2E4A37]/10 ${className}`}>
       <div className={`flex items-center gap-1.5 px-2.5 py-1.5 ${dark ? "bg-[#1F3628]" : "bg-[#F4F1EA]"}`}>
@@ -167,114 +167,259 @@ export function StudioTable({ lang, className = "" }: { lang: Lang; className?: 
 
 /* ---------- The hero story: Greek tradition → the world → your own e-shop ---------- */
 
-const shopProducts = [
-  { name: "Κεραμικό βάζο", price: "32 €", img: "/home/p-vase.webp" },
-  { name: "Παιώνιες σε βάζο", price: "24 €", img: "/home/p-peony.webp" },
-  { name: "Αρωματικό κερί", price: "18 €", img: "/home/p-candle.webp" },
+/* Example shops the stage-3 mockups rotate through: different kinds of business, each with
+   its own name, address and colours. They are examples, not customers. */
+type Example = {
+  key: string
+  kind: string
+  name: string
+  slug: string
+  palette: Palette
+  hero: { title: string; text: string; cta: string; img: string; pos?: string }
+  products: { name: string; price: string; img?: string; meta?: string }[]
+  phone: { img: string; pos?: string; picks: string[]; cta: string }
+  studio: { label: string; rows: { name: string; value: string; s: Status; tag?: string }[] }
+  order: { no: number; item: string; price: string }
+}
+
+const rose: Palette = { key: "rose", label: "Ρόδι", page: "#FBF4F2", ink: "#4A2430", accent: "#A8475A", soft: "#F2DDE0" }
+
+const examples: Example[] = [
+  {
+    key: "mano",
+    kind: "Χειροποίητα",
+    name: "Mano Χειροποίητα",
+    slug: "mano",
+    palette: palettes[0],
+    hero: { title: "Νέα", text: "Φυσική ομορφιά για καθημερινές στιγμές", cta: "Ανακάλυψε", img: "/home/p-desk-plant.webp", pos: "object-[45%_center]" },
+    products: [
+      { name: "Κεραμικό βάζο", price: "32 €", img: "/home/p-vase.webp" },
+      { name: "Παιώνιες σε βάζο", price: "24 €", img: "/home/p-peony.webp" },
+      { name: "Αρωματικό κερί", price: "18 €", img: "/home/p-candle.webp" },
+    ],
+    phone: { img: "/home/p-aloe.webp", picks: ["/home/p-tulips.webp", "/home/p-succulents.webp"], cta: "Στο καλάθι" },
+    studio: {
+      label: "Προϊόντα",
+      rows: [
+        { name: "Κεραμικό βάζο", value: "12", s: "in" },
+        { name: "Αρωματικό κερί", value: "4", s: "low" },
+        { name: "Σετ δώρου", value: "0", s: "out" },
+      ],
+    },
+    order: { no: 1024, item: "Αρωματικό κερί", price: "18,00 €" },
+  },
+  {
+    key: "plants",
+    kind: "Φυτά & ανθοπωλείο",
+    name: "Πράσινη Γωνιά",
+    slug: "prasini-gonia",
+    palette: palettes[1],
+    hero: { title: "Φυτά για κάθε γωνιά", text: "Φροντισμένα φυτά, έτοιμα για το σπίτι σου", cta: "Δες τα φυτά", img: "/home/t-home.webp", pos: "object-[center_70%]" },
+    products: [
+      { name: "Κάκτος σε πήλινη γλάστρα", price: "14 €", img: "/home/p-cactus.webp" },
+      { name: "Παχύφυτα σε γλάστρα", price: "22 €", img: "/home/p-succulents.webp" },
+      { name: "Τουλίπες εποχής", price: "16 €", img: "/home/p-tulips.webp" },
+    ],
+    phone: { img: "/home/p-succulents.webp", picks: ["/home/p-aloe.webp", "/home/p-cactus.webp"], cta: "Στο καλάθι" },
+    studio: {
+      label: "Προϊόντα",
+      rows: [
+        { name: "Κάκτος σε πήλινη γλάστρα", value: "18", s: "in" },
+        { name: "Παχύφυτα σε γλάστρα", value: "3", s: "low" },
+        { name: "Τουλίπες εποχής", value: "0", s: "out" },
+      ],
+    },
+    order: { no: 1025, item: "Παχύφυτα σε γλάστρα", price: "22,00 €" },
+  },
+  {
+    key: "beauty",
+    kind: "Ομορφιά",
+    name: "Ρόδι Natural Care",
+    slug: "rodi-natural",
+    palette: rose,
+    hero: { title: "Φροντίδα από τη φύση", text: "Έλαια και κεριά με ελληνικά βότανα", cta: "Ανακάλυψε", img: "/home/p-oil.webp", pos: "object-[center_40%]" },
+    products: [
+      { name: "Ορός προσώπου", price: "24 €", img: "/home/p-bottles.webp" },
+      { name: "Κερί σόγιας", price: "16 €", img: "/home/p-candle.webp" },
+      { name: "Κεραμικός διαχυτής", price: "28 €", img: "/home/p-vase.webp" },
+    ],
+    phone: { img: "/home/t-fashion.webp", pos: "object-[center_20%]", picks: ["/home/p-bottles.webp", "/home/p-candle.webp"], cta: "Στο καλάθι" },
+    studio: {
+      label: "Προϊόντα",
+      rows: [
+        { name: "Ορός προσώπου", value: "9", s: "in" },
+        { name: "Κερί σόγιας", value: "2", s: "low" },
+        { name: "Κεραμικός διαχυτής", value: "0", s: "out" },
+      ],
+    },
+    order: { no: 1026, item: "Ορός προσώπου", price: "24,00 €" },
+  },
+  {
+    key: "services",
+    kind: "Υπηρεσίες",
+    name: "Studio Κίνηση",
+    slug: "studio-kinisi",
+    palette: palettes[2],
+    hero: { title: "Yoga & pilates", text: "Μικρά τμήματα, στον ρυθμό σου", cta: "Δες το πρόγραμμα", img: "/home/t-services.webp", pos: "object-[center_35%]" },
+    products: [
+      { name: "Yoga αρχαρίων", price: "12 €", meta: "60′" },
+      { name: "Pilates mat", price: "14 €", meta: "50′" },
+      { name: "Πακέτο 8 μαθημάτων", price: "80 €", meta: "×8" },
+    ],
+    phone: { img: "/home/t-services.webp", pos: "object-[center_35%]", picks: ["/home/t-home.webp", "/home/t-portfolio.webp"], cta: "Επικοινωνία" },
+    studio: {
+      label: "Υπηρεσίες",
+      rows: [
+        { name: "Yoga αρχαρίων", value: "12 €", s: "in", tag: "Ενεργή" },
+        { name: "Pilates mat", value: "14 €", s: "in", tag: "Ενεργή" },
+        { name: "Πακέτο 8 μαθημάτων", value: "80 €", s: "in", tag: "Ενεργή" },
+      ],
+    },
+    order: { no: 1027, item: "Πακέτο 8 μαθημάτων", price: "80,00 €" },
+  },
 ]
 
 function Photo({ src, className = "", alt = "" }: { src: string; className?: string; alt?: string }) {
   return <img src={src} alt={alt} loading="lazy" decoding="async" className={`block h-full w-full object-cover ${className}`} />
 }
 
-type ShopProps = { lang: Lang; p: Palette; shopName: string; slug: string; className?: string }
+/* All examples share one grid cell and crossfade, so the box keeps the tallest one's size:
+   no layout shift while rotating. Only the active layer is exposed to assistive tech. */
+function Stack({ items, active, render, className = "" }: { items: Example[]; active: number; render: (ex: Example) => React.ReactNode; className?: string }) {
+  return (
+    <div className={`grid ${className}`}>
+      {items.map((ex, i) => (
+        <div
+          key={ex.key}
+          aria-hidden={i === active ? undefined : true}
+          className={`col-start-1 row-start-1 min-w-0 transition-opacity duration-700 ease-out motion-reduce:transition-none ${i === active ? "opacity-100" : "pointer-events-none opacity-0"}`}
+        >
+          {render(ex)}
+        </div>
+      ))}
+    </div>
+  )
+}
 
-function ShopBrowser({ lang, p, shopName, slug, className = "" }: ShopProps) {
+type ShopProps = { lang: Lang; shops: Example[]; active: number; className?: string }
+
+function ShopBrowser({ lang, shops, active, controls, className = "" }: ShopProps & { controls?: React.ReactNode }) {
   const tr = translator(lang)
   return (
-    <Browser url={`vitrinaki.gr/${slug}`} className={className}>
-      <div className="p-2.5 transition-colors duration-500 sm:p-3" style={{ background: p.page, color: p.ink }} aria-live="polite">
-        <div className="flex items-center justify-between gap-2">
-          <span className="flex min-w-0 items-center gap-1.5 text-[10px] font-extrabold">
-            <span className="grid h-5 w-5 shrink-0 place-items-center rounded text-[7px] text-white transition-colors duration-500" style={{ background: p.accent }}>{initialsOf(shopName)}</span>
-            <span className="truncate">{shopName}</span>
-          </span>
-          <span className="flex shrink-0 gap-2 text-[7px] font-semibold opacity-60">
-            <span>{tr("Αρχική")}</span><span>{tr("Συλλογή")}</span>
-          </span>
-        </div>
-        <div className="mt-2 grid grid-cols-[1fr_1fr] overflow-hidden rounded-lg transition-colors duration-500" style={{ background: p.soft }}>
-          <div className="flex flex-col justify-center p-2.5">
-            <p className="font-serif text-[15px] leading-tight sm:text-[17px]">{tr("Νέα")}</p>
-            <p className="text-[7px] opacity-70 sm:text-[7.5px]">{tr("Φυσική ομορφιά για καθημερινές στιγμές")}</p>
-            <span className="mt-1.5 w-fit rounded px-1.5 py-0.5 text-[7px] font-bold text-white transition-colors duration-500" style={{ background: p.accent }}>{tr("Ανακάλυψε")}</span>
-          </div>
-          <div className="aspect-[4/3]"><Photo src="/home/p-desk-plant.webp" className="object-[45%_center]" /></div>
-        </div>
-        <div className="mt-2 grid grid-cols-3 gap-1.5">
-          {shopProducts.map((item) => (
-            <div key={item.img} className="rounded-md bg-white p-1">
-              <div className="aspect-square overflow-hidden rounded"><Photo src={item.img} /></div>
-              <p className="mt-1 truncate text-[6.5px] font-semibold sm:text-[7px]">{tr(item.name)}</p>
-              <p className="text-[6.5px] font-bold transition-colors duration-500 sm:text-[7px]" style={{ color: p.accent }}>{item.price}</p>
+    <Browser url={<Stack items={shops} active={active} render={(ex) => <span className="block truncate">vitrinaki.gr/{ex.slug}</span>} />} className={className}>
+      <div className="relative">
+        {/* carousel-style controls on the banner photo's corner (same spot in every example) */}
+        {controls ? <div className="absolute right-[18px] top-[46px] z-10">{controls}</div> : null}
+        <Stack
+          items={shops}
+          active={active}
+          render={({ palette: p, ...ex }) => (
+            <div className="h-full p-2.5 sm:p-3" style={{ background: p.page, color: p.ink }}>
+              <div className="flex items-center justify-between gap-2">
+                <span className="flex min-w-0 items-center gap-1.5 text-[10px] font-extrabold">
+                  <span className="grid h-5 w-5 shrink-0 place-items-center rounded text-[7px] text-white" style={{ background: p.accent }}>{initialsOf(ex.name)}</span>
+                  <span className="truncate">{ex.name}</span>
+                </span>
+                <span className="flex shrink-0 gap-2 text-[7px] font-semibold opacity-60">
+                  <span>{tr("Αρχική")}</span><span>{tr(ex.key === "services" ? "Πρόγραμμα" : "Συλλογή")}</span>
+                </span>
+              </div>
+              <div className="mt-2 grid grid-cols-[1fr_1fr] overflow-hidden rounded-lg" style={{ background: p.soft }}>
+                <div className="flex flex-col justify-center p-2.5">
+                  <p className="font-serif text-[15px] leading-tight sm:text-[17px]">{tr(ex.hero.title)}</p>
+                  <p className="mt-0.5 text-[7px] opacity-70 sm:text-[7.5px]">{tr(ex.hero.text)}</p>
+                  <span className="mt-1.5 w-fit rounded px-1.5 py-0.5 text-[7px] font-bold text-white" style={{ background: p.accent }}>{tr(ex.hero.cta)}</span>
+                </div>
+                <div className="aspect-[4/3]"><Photo src={ex.hero.img} className={ex.hero.pos} /></div>
+              </div>
+              <div className="mt-2 grid grid-cols-3 gap-1.5">
+                {ex.products.map((item) => (
+                  <div key={item.name} className="rounded-md bg-white p-1">
+                    <div className="aspect-square overflow-hidden rounded">
+                      {item.img ? (
+                        <Photo src={item.img} />
+                      ) : (
+                        <span className="grid h-full w-full place-items-center font-serif text-[15px] sm:text-[17px]" style={{ background: p.soft, color: p.accent }}>{item.meta}</span>
+                      )}
+                    </div>
+                    <p className="mt-1 truncate text-[6.5px] font-semibold sm:text-[7px]">{tr(item.name)}</p>
+                    <p className="text-[6.5px] font-bold sm:text-[7px]" style={{ color: p.accent }}>{item.price}</p>
+                  </div>
+                ))}
+              </div>
             </div>
-          ))}
-        </div>
+          )}
+        />
       </div>
     </Browser>
   )
 }
 
-function OrderToast({ lang, className = "" }: { lang: Lang; className?: string }) {
+/* The toast frame stays mounted (its notification animation keeps looping); only the
+   text fades to the current example. */
+function OrderToast({ lang, ex, className = "" }: { lang: Lang; ex: Example; className?: string }) {
   const tr = translator(lang)
   return (
     <div className={`vk-toast vk-toast-loop flex items-center gap-2 rounded-xl bg-white/95 px-2.5 py-2 text-left shadow-[0_14px_30px_-12px_rgba(31,54,40,0.55)] ring-1 ring-[#2E4A37]/10 backdrop-blur ${className}`}>
       <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-[#2E4A37] text-[#F7F2E8]">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" /></svg>
       </span>
-      <span className="min-w-0 leading-tight">
-        <span className="block truncate text-[11px] font-bold text-[#1F3628]">{tr("Νέα παραγγελία")} #1024</span>
-        <span className="block truncate text-[10px] font-semibold text-[#2E4A37]/70">{tr("Αρωματικό κερί")} · 18,00 €</span>
+      <span key={ex.key} className="vk-fade min-w-0 leading-tight">
+        <span className="block truncate text-[11px] font-bold text-[#1F3628]">{tr("Νέα παραγγελία")} #{ex.order.no}</span>
+        <span className="block truncate text-[10px] font-semibold text-[#2E4A37]/70">{tr(ex.order.item)} · {ex.order.price}</span>
       </span>
     </div>
   )
 }
 
-function PhoneShop({ lang, p, shopName, className = "" }: Omit<ShopProps, "slug">) {
+function PhoneShop({ lang, shops, active, className = "" }: ShopProps) {
   const tr = translator(lang)
   return (
     <div className={`rounded-[1.4rem] bg-[#0F1C14] p-1.5 shadow-[0_30px_60px_-20px_rgba(15,28,20,0.7)] ring-1 ring-black/10 ${className}`}>
-      <div className="overflow-hidden rounded-[1.1rem] transition-colors duration-500" style={{ background: p.page, color: p.ink }}>
-        <div className="mx-auto mt-1 h-1.5 w-10 rounded-full bg-[#0F1C14]" />
-        <div className="p-2">
-          <p className="truncate text-[8px] font-extrabold">{shopName}</p>
-          <div className="mt-1 rounded bg-white px-1.5 py-0.5 text-[6px] opacity-60">{tr("Αναζήτηση προϊόντων…")}</div>
-          <div className="mt-1.5 aspect-[4/3] overflow-hidden rounded-md"><Photo src="/home/p-aloe.webp" /></div>
-          <p className="mt-1 text-[7px] font-semibold">{tr("Προτεινόμενα")}</p>
-          <div className="mt-1 grid grid-cols-2 gap-1">
-            {["/home/p-tulips.webp", "/home/p-succulents.webp"].map((src) => (
-              <div key={src} className="aspect-square overflow-hidden rounded bg-white"><Photo src={src} /></div>
-            ))}
-          </div>
-          <div className="mt-1.5 rounded py-1 text-center text-[6.5px] font-bold text-white transition-colors duration-500" style={{ background: p.accent }}>{tr("Στο καλάθι")}</div>
-        </div>
+      <div className="overflow-hidden rounded-[1.1rem]">
+        <Stack
+          items={shops}
+          active={active}
+          render={({ palette: p, ...ex }) => (
+            <div className="h-full" style={{ background: p.page, color: p.ink }}>
+              <div className="mx-auto mt-1 h-1.5 w-10 rounded-full bg-[#0F1C14]" />
+              <div className="p-2">
+                <p className="truncate text-[8px] font-extrabold">{ex.name}</p>
+                <div className="mt-1 rounded bg-white px-1.5 py-0.5 text-[6px] opacity-60">{tr("Αναζήτηση προϊόντων…")}</div>
+                <div className="mt-1.5 aspect-[4/3] overflow-hidden rounded-md"><Photo src={ex.phone.img} className={ex.phone.pos} /></div>
+                <p className="mt-1 text-[7px] font-semibold">{tr("Προτεινόμενα")}</p>
+                <div className="mt-1 grid grid-cols-2 gap-1">
+                  {ex.phone.picks.map((src) => (
+                    <div key={src} className="aspect-square overflow-hidden rounded bg-white"><Photo src={src} /></div>
+                  ))}
+                </div>
+                <div className="mt-1.5 rounded py-1 text-center text-[6.5px] font-bold text-white" style={{ background: p.accent }}>{tr(ex.phone.cta)}</div>
+              </div>
+            </div>
+          )}
+        />
       </div>
     </div>
   )
 }
 
 /* "You manage it from here": a small, static glimpse of the Studio (the full,
-   interactive table sits right under the hero). */
-function StudioMini({ lang, className = "" }: { lang: Lang; className?: string }) {
+   interactive table sits right under the hero), showing the current example's items. */
+function StudioMini({ lang, ex, className = "" }: { lang: Lang; ex: Example; className?: string }) {
   const tr = translator(lang)
-  const rows = [
-    { name: "Κεραμικό βάζο", stock: 12, s: "in" as Status },
-    { name: "Αρωματικό κερί", stock: 4, s: "low" as Status },
-    { name: "Σετ δώρου", stock: 0, s: "out" as Status },
-  ]
   return (
     <div className={`overflow-hidden rounded-xl bg-white shadow-[0_24px_50px_-24px_rgba(31,54,40,0.45),0_2px_6px_rgba(31,54,40,0.06)] ring-1 ring-[#2E4A37]/10 ${className}`}>
       <div className="flex items-center justify-between bg-[#2E4A37] px-2.5 py-1.5 text-[#F7F2E8]">
         <span className="text-[10px] font-extrabold tracking-tight">vitrinaki<span className="text-[#E8A493]">.</span> <span className="font-semibold uppercase tracking-[0.18em] text-[#F7F2E8]/60">Studio</span></span>
-        <span className="text-[8.5px] font-semibold text-[#F7F2E8]/75">{tr("Προϊόντα")}</span>
+        <span key={ex.key} className="vk-fade text-[8.5px] font-semibold text-[#F7F2E8]/75">{tr(ex.studio.label)}</span>
       </div>
-      <ul className="px-2.5 py-1.5 text-[9.5px] text-[#1F3628]">
-        {rows.map((r) => (
+      <ul key={ex.key} className="vk-fade px-2.5 py-1.5 text-[9.5px] text-[#1F3628]">
+        {ex.studio.rows.map((r) => (
           <li key={r.name} className="flex items-center justify-between gap-2 border-t border-[#2E4A37]/[0.07] py-1 first:border-t-0">
             <span className="truncate font-medium">{tr(r.name)}</span>
             <span className="flex shrink-0 items-center gap-1.5">
-              <span className="tabular-nums text-[#2E4A37]/60">{r.stock}</span>
-              <span className={`rounded-full px-1.5 py-0.5 text-[8px] font-semibold ${statusMeta[r.s].cls}`}>{tr(statusMeta[r.s].label)}</span>
+              <span className="tabular-nums text-[#2E4A37]/60">{r.value}</span>
+              <span className={`rounded-full px-1.5 py-0.5 text-[8px] font-semibold ${statusMeta[r.s].cls}`}>{tr(r.tag ?? statusMeta[r.s].label)}</span>
             </span>
           </li>
         ))}
@@ -282,6 +427,73 @@ function StudioMini({ lang, className = "" }: { lang: Lang; className?: string }
     </div>
   )
 }
+
+/* Which example is showing: clickable dots plus a pause / play control (WCAG 2.2.2).
+   `compact` fits it into the shop window's address bar (desktop stage). */
+function ExampleSwitcher({ lang, shops, active, onPick, playing, onToggle, showToggle, compact = false, className = "" }: {
+  lang: Lang
+  shops: Example[]
+  active: number
+  onPick: (i: number) => void
+  playing: boolean
+  onToggle: () => void
+  showToggle: boolean
+  compact?: boolean
+  className?: string
+}) {
+  const tr = translator(lang)
+  return (
+    <div
+      className={`inline-flex shrink-0 items-center text-[#1F3628] ${compact ? "gap-0.5 rounded-full bg-white/85 py-0.5 pl-1 pr-0.5 shadow-[0_4px_10px_-4px_rgba(15,28,20,0.5)] backdrop-blur" : "gap-2 rounded-full bg-[#F7F2E8]/95 py-1 pl-2.5 pr-1 shadow-[0_6px_18px_-8px_rgba(31,54,40,0.45)] ring-1 ring-[#2E4A37]/10 backdrop-blur"} ${className}`}
+    >
+      {compact ? null : (
+        <span className="whitespace-nowrap text-[10.5px] font-semibold">
+          <span className="text-[#2E4A37]/60">{tr("Παράδειγμα")}:</span>{" "}
+          {/* every label shares one cell so the pill keeps its width */}
+          <span className="inline-grid align-bottom">
+            {shops.map((ex, i) => (
+              <span key={i === active ? `${ex.key}-on` : ex.key} aria-hidden={i === active ? undefined : true} className={`col-start-1 row-start-1 ${i === active ? "vk-fade" : "invisible"}`}>{tr(ex.kind)}</span>
+            ))}
+          </span>
+        </span>
+      )}
+      <span className="flex items-center">
+        {shops.map((ex, i) => (
+          <button
+            key={ex.key}
+            type="button"
+            aria-pressed={i === active}
+            aria-label={`${tr("Παράδειγμα")}: ${tr(ex.kind)}`}
+            title={tr(ex.kind)}
+            onClick={() => onPick(i)}
+            className={`grid place-items-center rounded-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#2E4A37] ${compact ? "h-4 w-3.5" : "h-6 w-5"}`}
+          >
+            <span
+              className={`block rounded-full transition-all duration-300 motion-reduce:transition-none ${compact ? "h-1" : "h-1.5"} ${i === active ? (compact ? "w-3" : "w-4") : `${compact ? "w-1" : "w-1.5"} bg-[#2E4A37]/25 hover:bg-[#2E4A37]/50`}`}
+              style={i === active ? { background: ex.palette.accent } : undefined}
+            />
+          </button>
+        ))}
+      </span>
+      {showToggle ? (
+        <button
+          type="button"
+          onClick={onToggle}
+          aria-label={tr(playing ? "Παύση εναλλαγής" : "Συνέχιση εναλλαγής")}
+          title={tr(playing ? "Παύση εναλλαγής" : "Συνέχιση εναλλαγής")}
+          className={`grid shrink-0 place-items-center rounded-full bg-[#2E4A37] text-[#F7F2E8] transition hover:bg-[#1F3628] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2E4A37] ${compact ? "ml-0.5 h-4 w-4" : "h-6 w-6"}`}
+        >
+          <svg width={compact ? 6 : 9} height={compact ? 6 : 9} viewBox="0 0 10 10" fill="currentColor" aria-hidden="true">
+            {playing ? <><rect x="1.5" y="1" width="2.5" height="8" rx=".6" /><rect x="6" y="1" width="2.5" height="8" rx=".6" /></> : <path d="M2.5 1.2v7.6L9 5z" />}
+          </svg>
+        </button>
+      ) : null}
+    </div>
+  )
+}
+
+const rotationCss = `.vk-fade{animation:vkFade .6s ease both}@media (prefers-reduced-motion:reduce){.vk-fade{animation:none}}@keyframes vkFade{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:none}}`
+const ROTATE_MS = 4500
 
 /* soft cypress / terracotta hills under the globe and the shop (stage units, 1440×650) */
 function Hills({ className = "" }: { className?: string }) {
@@ -297,15 +509,65 @@ function Hills({ className = "" }: { className?: string }) {
 export function HeroDemo({ lang, intro }: { lang: Lang; intro: React.ReactNode }) {
   const tr = translator(lang)
   const [name, setName] = useState("")
-  const [paletteKey, setPaletteKey] = useState(palettes[0].key)
-  const p = palettes.find((x) => x.key === paletteKey) || palettes[0]
-  const shopName = name.trim() || tr("Mano Χειροποίητα")
-  const slug = slugify(name) || "mano"
-  const shop = { lang, p, shopName, slug }
+  const [paletteKey, setPaletteKey] = useState<string | null>(null)
+  const [index, setIndex] = useState(0)
+  const [playing, setPlaying] = useState(true)
+  const [hovered, setHovered] = useState(false)
+  const [focused, setFocused] = useState(false)
+
+  // Typing a name or picking colours turns the current example into "your" shop and
+  // holds it still; clearing them lets the examples rotate again.
+  const custom = name.trim() !== "" || paletteKey !== null
+  const chosen = palettes.find((x) => x.key === paletteKey)
+  const shops = examples.map((ex, i) =>
+    custom && i === index
+      ? { ...ex, name: name.trim() || tr(ex.name), slug: slugify(name) || ex.slug, palette: chosen ?? ex.palette }
+      : { ...ex, name: tr(ex.name) },
+  )
+  const current = shops[index]
+  const rotating = playing && !hovered && !focused && !custom
+
+  // no auto-rotation for people who ask for reduced motion (they can still press play)
+  useEffect(() => {
+    const query = window.matchMedia("(prefers-reduced-motion: reduce)")
+    if (query.matches) setPlaying(false)
+    const onChange = (e: MediaQueryListEvent) => e.matches && setPlaying(false)
+    query.addEventListener("change", onChange)
+    return () => query.removeEventListener("change", onChange)
+  }, [])
+
+  useEffect(() => {
+    if (!rotating) return
+    const timer = window.setTimeout(() => setIndex((i) => (i + 1) % examples.length), ROTATE_MS)
+    return () => window.clearTimeout(timer)
+  }, [rotating, index])
+
+  // pause while the visitor points at or tabs into the shop mockups
+  const hold = {
+    onMouseEnter: () => setHovered(true),
+    onMouseLeave: () => setHovered(false),
+    onFocus: () => setFocused(true),
+    onBlur: (e: React.FocusEvent<HTMLElement>) => {
+      if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setFocused(false)
+    },
+  }
+  const shop = { lang, shops, active: index }
+  const switcher = (compact = false) => (
+    <ExampleSwitcher
+      compact={compact}
+      lang={lang}
+      shops={shops}
+      active={index}
+      onPick={setIndex}
+      playing={playing}
+      onToggle={() => setPlaying((v) => !v)}
+      showToggle={!custom}
+    />
+  )
 
   return (
     <>
-      <style>{storyCss}</style>
+      <style>{storyCss + rotationCss}</style>
       <div className="relative isolate overflow-hidden bg-[#F5EEE1] text-[#1F3628]">
         {/* watercolour washes */}
         <div aria-hidden="true" className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_40%_45%_at_58%_30%,rgba(46,74,55,0.10),transparent_70%),radial-gradient(ellipse_30%_40%_at_92%_8%,rgba(38,94,142,0.08),transparent_70%),radial-gradient(ellipse_45%_40%_at_10%_0%,rgba(192,80,60,0.06),transparent_70%)]" />
@@ -328,18 +590,18 @@ export function HeroDemo({ lang, intro }: { lang: Lang; intro: React.ReactNode }
             {/* Part 3, the seller's e-shop: the shop is the main piece with the phone beside it,
                 the Studio a small "you manage it from here" card, the order a notification. */}
             <div className="absolute left-[67.5%] top-[13%] z-30 w-[14.5%]"><StoryChip n={3} title={tr("Το δικό σου e-shop")} text={tr("Εσύ το διαχειρίζεσαι, οι πελάτες παραγγέλνουν")} /></div>
-            <div className="absolute left-[67.5%] top-[31%] z-20 w-[21.5%]">
-              <ShopBrowser {...shop} />
+            <div className="absolute left-[67.5%] top-[31%] z-20 w-[21.5%]" {...hold}>
+              <ShopBrowser {...shop} controls={switcher(true)} />
               <Callout icon="shop" className="mt-2 whitespace-nowrap">{tr("Οι πελάτες σου: vitrinaki.gr/το-όνομά-σου")}</Callout>
             </div>
             {/* the seller's side: Studio and order notifications */}
-            <div className="absolute right-[1.6%] top-[4%] z-20 flex w-[15.5%] flex-col items-end">
+            <div className="absolute right-[1.6%] top-[4%] z-20 flex w-[15.5%] flex-col items-end" {...hold}>
               <Callout icon="studio" className="mb-1.5 whitespace-nowrap">{tr("Εσύ: προϊόντα & απόθεμα στο Studio")}</Callout>
-              <StudioMini lang={lang} className="w-full" />
-              <OrderToast lang={lang} className="mt-3 w-full" />
+              <StudioMini lang={lang} ex={current} className="w-full" />
+              <OrderToast lang={lang} ex={current} className="mt-3 w-full" />
               <Callout icon="bell" className="mt-1.5 whitespace-nowrap">{tr("Σε ειδοποιεί για κάθε παραγγελία")}</Callout>
             </div>
-            <div className="absolute right-[2.4%] top-[49%] z-30 flex w-[7.8%] flex-col items-end">
+            <div className="absolute right-[2.4%] top-[49%] z-30 flex w-[7.8%] flex-col items-end" {...hold}>
               <PhoneShop {...shop} className="w-full" />
               <Callout icon="phone" className="mt-2 whitespace-nowrap">{tr("Έτοιμο για κινητά")}</Callout>
             </div>
@@ -364,11 +626,14 @@ export function HeroDemo({ lang, intro }: { lang: Lang; intro: React.ReactNode }
               <StoryDrop />
               <div className="relative">
                 <StoryChip n={3} title={tr("Το δικό σου e-shop")} text={tr("Εσύ το διαχειρίζεσαι, οι πελάτες παραγγέλνουν")} className="mb-3" />
-                <div className="relative pb-[6%] pr-[22%]" aria-label={tr("Προεπισκόπηση καταστήματος")}>
-                  <ShopBrowser {...shop} className="w-full" />
-                  <div className="absolute bottom-0 right-0 w-[30%]">
-                    <PhoneShop {...shop} />
+                <div {...hold}>
+                  <div className="relative pb-[6%] pr-[22%]" aria-label={tr("Προεπισκόπηση καταστήματος")}>
+                    <ShopBrowser {...shop} className="w-full" />
+                    <div className="absolute bottom-0 right-0 w-[30%]">
+                      <PhoneShop {...shop} />
+                    </div>
                   </div>
+                  <div className="mt-3 flex justify-center">{switcher()}</div>
                 </div>
                 <ul className="mt-4 grid gap-2 sm:grid-cols-2">
                   <li><Callout icon="shop">{tr("Οι πελάτες σου: vitrinaki.gr/το-όνομά-σου")}</Callout></li>
@@ -376,7 +641,7 @@ export function HeroDemo({ lang, intro }: { lang: Lang; intro: React.ReactNode }
                   <li><Callout icon="studio">{tr("Εσύ: προϊόντα & απόθεμα στο Studio")}</Callout></li>
                   <li><Callout icon="bell">{tr("Σε ειδοποιεί για κάθε παραγγελία")}</Callout></li>
                 </ul>
-                <OrderToast lang={lang} className="mt-2 w-[200px]" />
+                <OrderToast lang={lang} ex={current} className="mt-2 w-[220px]" />
               </div>
               <StoryCaption lang={lang} tone="dark" className="mt-8" />
             </div>
@@ -408,18 +673,18 @@ export function HeroDemo({ lang, intro }: { lang: Lang; intro: React.ReactNode }
                   key={x.key}
                   type="button"
                   role="radio"
-                  aria-checked={x.key === paletteKey}
+                  aria-checked={x.key === current.palette.key}
                   aria-label={tr(x.label)}
                   title={tr(x.label)}
                   onClick={() => setPaletteKey(x.key)}
-                  className={`h-7 w-7 rounded-full border-2 border-[#F7F2E8]/70 ring-offset-2 ring-offset-[#2E4A37] transition hover:scale-110 ${x.key === paletteKey ? "ring-2 ring-[#F7F2E8]" : ""}`}
+                  className={`h-7 w-7 rounded-full border-2 border-[#F7F2E8]/70 ring-offset-2 ring-offset-[#2E4A37] transition hover:scale-110 ${x.key === current.palette.key ? "ring-2 ring-[#F7F2E8]" : ""}`}
                   style={{ background: x.accent }}
                 />
               ))}
             </div>
           </div>
           <p className="truncate text-[13px] text-[#F7F2E8]/80">
-            {tr("Η διεύθυνσή σου:")} vitrinaki.gr/<span className="font-semibold text-[#F7F2E8] underline decoration-[#C0503C] decoration-2 underline-offset-4">{slug}</span>
+            {tr("Η διεύθυνσή σου:")} vitrinaki.gr/<span className="font-semibold text-[#F7F2E8] underline decoration-[#C0503C] decoration-2 underline-offset-4">{current.slug}</span>
           </p>
         </div>
       </div>
