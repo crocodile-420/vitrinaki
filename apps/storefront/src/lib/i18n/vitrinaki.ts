@@ -297,6 +297,7 @@ const en: Record<string, string> = {
   "Δεν χρειάζεται να ξέρεις από design, προγραμματισμό ή διαφημίσεις για να μεγαλώσεις την επιχείρησή σου. Και ποτέ δεν είναι αργά για το επόμενο βήμα.": "You don't need to know design, coding or advertising to grow your business. And it's never too late for the next step.",
   "Η βιτρίνα": "The showcase",
   "Επιχειρήσεις που άνοιξαν το e-shop τους.": "Businesses that opened their e-shop.",
+  "Προτεινόμενο": "Featured",
   "Κάθε κατάστημα έχει το δικό του όνομα, ύφος και χρώματα. Άνοιξε ένα και δες το όπως θα το έβλεπε ένας πελάτης.": "Every shop has its own name, style and colours. Open one and see it the way a customer would.",
   "Άνοιξε το κατάστημα": "Open the shop",
   "Το πρώτο κατάστημα μπορεί να είναι το δικό σου.": "The first shop could be yours.",

@@ -2,12 +2,13 @@ import type { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
 import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 
 // Public directory of published Vitrinaki websites, used by the homepage.
-// Same visibility rules as /store/vitrinaki/storefronts/:handle.
+// Same visibility rules as /store/vitrinaki/storefronts/:handle. Shops the
+// operator marks «Προτεινόμενο» (seller.is_premium) in the admin come first.
 export async function GET(req: MedusaRequest, res: MedusaResponse) {
   const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
   const { data } = await query.graph({
     entity: "seller",
-    fields: ["id", "name", "handle", "description", "logo", "banner", "metadata"],
+    fields: ["id", "name", "handle", "description", "logo", "banner", "is_premium", "metadata"],
   })
 
   const now = Date.now()
@@ -37,9 +38,14 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
         banner: seller.banner || null,
         customDomain: storefront.domainStatus === "verified" ? storefront.customDomain || "" : "",
         publishedAt: storefront.publishedAt || null,
+        isFeatured: Boolean(seller.is_premium),
       }
     })
-    .sort((a, b) => String(b.publishedAt || "").localeCompare(String(a.publishedAt || "")))
+    .sort(
+      (a, b) =>
+        Number(b.isFeatured) - Number(a.isFeatured) ||
+        String(b.publishedAt || "").localeCompare(String(a.publishedAt || ""))
+    )
 
   return res.json({ storefronts })
 }
