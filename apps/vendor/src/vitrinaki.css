@@ -1,0 +1,5 @@
+/* Native controls (select dropdowns, date pickers, scrollbars) follow the
+   panel's theme; without this they open white on the dark theme. */
+.dark {
+  color-scheme: dark;
+}

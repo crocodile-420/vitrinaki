@@ -1,6 +1,7 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "@mercurjs/vendor/index.css";
+import "./vitrinaki.css";
 import App from "@mercurjs/vendor";
 
 // Vitrinaki sellers are Greek: default the panel to Greek unless the seller
