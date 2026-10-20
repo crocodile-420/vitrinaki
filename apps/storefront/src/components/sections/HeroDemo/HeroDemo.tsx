@@ -493,7 +493,7 @@ function ExampleSwitcher({ lang, shops, active, onPick, playing, onToggle, showT
 }
 
 const rotationCss = `.vk-fade{animation:vkFade .6s ease both}@media (prefers-reduced-motion:reduce){.vk-fade{animation:none}}@keyframes vkFade{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:none}}`
-const ROTATE_MS = 4500
+const ROTATE_MS = 2000
 
 /* soft cypress / terracotta hills under the globe and the shop (stage units, 1440×650) */
 function Hills({ className = "" }: { className?: string }) {
@@ -649,14 +649,21 @@ export function HeroDemo({ lang, intro }: { lang: Lang; intro: React.ReactNode }
         </div>
       </div>
 
-      {/* Try it: compact name & colour strip */}
-      <div className="border-b border-[#F7F2E8]/10 bg-[#2E4A37] text-[#F7F2E8]">
-        <div className="mx-auto flex max-w-[1280px] flex-col gap-3 px-5 py-4 sm:px-8 md:flex-row md:items-center md:gap-5 lg:px-12">
-          <label htmlFor="vk-demo-name" className="flex shrink-0 items-center gap-2 text-[12px] font-bold uppercase tracking-[0.16em] text-[#F7F2E8]">
-            <span className="h-1.5 w-1.5 rounded-full bg-[#C0503C]" />
-            {tr("Δοκίμασέ το με το όνομά σου")}
-          </label>
-          <div className="flex min-w-0 flex-1 items-center gap-2 md:max-w-[460px]">
+      {/* Try it: name & colour, big enough to invite a click */}
+      <div className="relative overflow-hidden border-b border-[#F7F2E8]/10 bg-[#2E4A37] text-[#F7F2E8]">
+        <div aria-hidden="true" className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-[#C0503C]/25 blur-3xl" />
+        <div aria-hidden="true" className="pointer-events-none absolute -bottom-28 left-1/4 h-64 w-64 rounded-full bg-[#265E8E]/25 blur-3xl" />
+        <div className="relative mx-auto grid max-w-[1280px] gap-6 px-5 py-10 sm:px-8 md:py-12 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:items-center lg:gap-12 lg:px-12">
+          <div>
+            <p className="flex items-center gap-2 text-[12px] font-bold tracking-[0.16em] text-[#F2B8A8]">
+              <span className="h-2 w-2 animate-pulse rounded-full bg-[#C0503C] motion-reduce:animate-none" />
+              {tr("Δοκίμασέ το τώρα")}
+            </p>
+            <label htmlFor="vk-demo-name" className="mt-3 block text-[1.75rem] font-extrabold leading-tight tracking-[-0.02em] text-[#F7F2E8] sm:text-[2.1rem]">
+              {tr("Γράψε το όνομα της επιχείρησής σου και δες τη βιτρίνα σου να ζωντανεύει.")}
+            </label>
+          </div>
+          <div className="rounded-2xl border border-[#F7F2E8]/15 bg-[#F7F2E8]/[0.06] p-4 shadow-[0_30px_60px_-40px_rgba(0,0,0,0.8)] backdrop-blur sm:p-5">
             <input
               id="vk-demo-name"
               type="text"
@@ -665,27 +672,35 @@ export function HeroDemo({ lang, intro }: { lang: Lang; intro: React.ReactNode }
               autoComplete="off"
               placeholder={tr("Το όνομα της επιχείρησής σου")}
               onChange={(e) => setName(e.target.value)}
-              className="min-w-0 flex-1 rounded-lg border border-[#F7F2E8]/30 bg-[#F7F2E8] px-3 py-2 text-[14px] text-[#1F3628] outline-none transition placeholder:text-[#2E4A37]/70 focus:border-[#F7F2E8] focus:ring-2 focus:ring-[#F7F2E8]/40"
+              className="w-full rounded-xl border-2 border-transparent bg-[#F7F2E8] px-5 py-4 text-[18px] font-semibold text-[#1F3628] outline-none transition placeholder:font-normal placeholder:text-[#2E4A37]/60 focus:border-[#C0503C] focus:ring-4 focus:ring-[#C0503C]/25 sm:text-[20px]"
             />
-            <div role="radiogroup" aria-label={tr("Χρώματα")} className="flex shrink-0 gap-1.5">
-              {palettes.map((x) => (
-                <button
-                  key={x.key}
-                  type="button"
-                  role="radio"
-                  aria-checked={x.key === current.palette.key}
-                  aria-label={tr(x.label)}
-                  title={tr(x.label)}
-                  onClick={() => setPaletteKey(x.key)}
-                  className={`h-7 w-7 rounded-full border-2 border-[#F7F2E8]/70 ring-offset-2 ring-offset-[#2E4A37] transition hover:scale-110 ${x.key === current.palette.key ? "ring-2 ring-[#F7F2E8]" : ""}`}
-                  style={{ background: x.accent }}
-                />
-              ))}
+            <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <div role="radiogroup" aria-label={tr("Χρώματα")} className="flex flex-wrap gap-2">
+                {palettes.map((x) => {
+                  const on = x.key === current.palette.key
+                  return (
+                    <button
+                      key={x.key}
+                      type="button"
+                      role="radio"
+                      aria-checked={on}
+                      onClick={() => setPaletteKey(x.key)}
+                      className={`flex items-center gap-2 rounded-full border px-3 py-1.5 text-[13px] font-semibold transition hover:-translate-y-0.5 motion-reduce:hover:translate-y-0 ${on ? "border-[#F7F2E8] bg-[#F7F2E8] text-[#1F3628]" : "border-[#F7F2E8]/30 text-[#F7F2E8] hover:border-[#F7F2E8]/70"}`}
+                    >
+                      <span className="h-4 w-4 rounded-full ring-2 ring-[#F7F2E8]" style={{ background: x.accent }} />
+                      {tr(x.label)}
+                    </button>
+                  )
+                })}
+              </div>
+              <p className="flex min-w-0 items-center gap-2 rounded-full bg-[#1F3628] px-4 py-2 text-[14px] text-[#F7F2E8]/80">
+                <span aria-hidden="true" className="h-2 w-2 shrink-0 rounded-full bg-[#7FC28F]" />
+                <span className="truncate">
+                  <span className="sr-only">{tr("Η διεύθυνσή σου:")} </span>vitrinaki.gr/<span className="font-bold text-[#F7F2E8]">{current.slug}</span>
+                </span>
+              </p>
             </div>
           </div>
-          <p className="truncate text-[13px] text-[#F7F2E8]/80">
-            {tr("Η διεύθυνσή σου:")} vitrinaki.gr/<span className="font-semibold text-[#F7F2E8] underline decoration-[#C0503C] decoration-2 underline-offset-4">{current.slug}</span>
-          </p>
         </div>
       </div>
 
