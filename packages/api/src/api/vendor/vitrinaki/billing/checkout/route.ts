@@ -2,12 +2,9 @@ import type { AuthenticatedMedusaRequest, MedusaResponse } from "@medusajs/frame
 import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 import { updateSellersWorkflow } from "@mercurjs/core/workflows"
 
+import { isPlanId, PLAN_PRICE_ENV } from "../../../../../lib/vitrinaki-plans"
+
 type SellerRequest = AuthenticatedMedusaRequest & { seller_context?: { seller_id?: string } }
-const prices: Record<string, Record<string, string>> = {
-  starter: { month: "STRIPE_PRICE_STARTER_MONTHLY", year: "STRIPE_PRICE_STARTER_YEARLY" },
-  growth: { month: "STRIPE_PRICE_GROWTH_MONTHLY", year: "STRIPE_PRICE_GROWTH_YEARLY" },
-  pro: { month: "STRIPE_PRICE_PRO_MONTHLY", year: "STRIPE_PRICE_PRO_YEARLY" },
-}
 
 export async function POST(req: SellerRequest, res: MedusaResponse) {
   const sellerId = req.seller_context?.seller_id
@@ -19,10 +16,10 @@ export async function POST(req: SellerRequest, res: MedusaResponse) {
   const body = (req.body || {}) as { planId?: string; interval?: string }
   const planId = String(body.planId || "")
   const interval = String(body.interval || "")
-  if (!prices[planId] || !["month", "year"].includes(interval)) {
+  if (!isPlanId(planId) || (interval !== "month" && interval !== "year")) {
     return res.status(400).json({ message: "Διάλεξε έγκυρο πλάνο και περίοδο χρέωσης." })
   }
-  const priceId = process.env[prices[planId][interval]]
+  const priceId = process.env[PLAN_PRICE_ENV[planId][interval]]
   if (!priceId) return res.status(503).json({ message: "Το συγκεκριμένο πλάνο δεν έχει ρυθμιστεί στο Stripe. Δεν έγινε καμία χρέωση." })
 
   const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)

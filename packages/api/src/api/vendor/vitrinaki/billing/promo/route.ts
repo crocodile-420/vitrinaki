@@ -2,12 +2,16 @@ import type { AuthenticatedMedusaRequest, MedusaResponse } from "@medusajs/frame
 import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 import { updateSellersWorkflow } from "@mercurjs/core/workflows"
 
+import { isPlanId, type PlanId } from "../../../../../lib/vitrinaki-plans"
+
 type SellerRequest = AuthenticatedMedusaRequest & { seller_context?: { seller_id?: string } }
 
 // Promo codes activate a subscription without Stripe (testing, early
 // customers). Codes live in VITRINAKI_PROMO_CODES as "CODE:plan:days",
-// comma separated; days is optional and omitted means no expiry.
-type PromoCode = { code: string; planId: string; days: number | null }
+// comma separated; plan is one of PLAN_IDS (starter, growth, pro, business),
+// defaults to starter; days is optional and omitted means no expiry. A code
+// naming an unknown plan is ignored rather than granting a plan that has no limits.
+type PromoCode = { code: string; planId: PlanId; days: number | null }
 
 function configuredCodes(): PromoCode[] {
   return (process.env.VITRINAKI_PROMO_CODES || "")
@@ -19,10 +23,11 @@ function configuredCodes(): PromoCode[] {
       const parsedDays = Number(days)
       return {
         code: code.trim().toUpperCase(),
-        planId: planId.trim() || "starter",
+        planId: planId.trim().toLowerCase() || "starter",
         days: Number.isFinite(parsedDays) && parsedDays > 0 ? parsedDays : null,
       }
     })
+    .filter((entry): entry is PromoCode => isPlanId(entry.planId))
 }
 
 export async function POST(req: SellerRequest, res: MedusaResponse) {

@@ -3,6 +3,8 @@ import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 import { updateSellersWorkflow } from "@mercurjs/core/workflows"
 import { randomBytes } from "node:crypto"
 
+import { availablePlanIntervals } from "../../../../lib/vitrinaki-plans"
+
 type SellerRequest = AuthenticatedMedusaRequest & {
   seller_context?: { seller_id?: string }
 }
@@ -128,6 +130,7 @@ export async function GET(req: SellerRequest, res: MedusaResponse) {
       cancelAtPeriodEnd: Boolean(subscription.cancelAtPeriodEnd || subscription.cancel_at_period_end),
     } : null,
     billingConfigured: Boolean(process.env.STRIPE_SECRET_KEY && process.env.STRIPE_WEBHOOK_SECRET),
+    availablePlans: availablePlanIntervals(),
     setupServicesConfigured: Boolean(process.env.STRIPE_PRICE_SETUP_ASSISTED && process.env.STRIPE_PRICE_SETUP_DONE_FOR_YOU),
   })
 }

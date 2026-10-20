@@ -1,12 +1,9 @@
 import type { AuthenticatedMedusaRequest, MedusaResponse } from "@medusajs/framework/http"
 import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 
+import { availablePlanIntervals, PLAN_IDS, PLAN_MEMBER_LIMITS } from "../../../../lib/vitrinaki-plans"
+
 type SellerRequest = AuthenticatedMedusaRequest & { seller_context?: { seller_id?: string } }
-const planPrices = {
-  starter: { month: "STRIPE_PRICE_STARTER_MONTHLY", year: "STRIPE_PRICE_STARTER_YEARLY" },
-  growth: { month: "STRIPE_PRICE_GROWTH_MONTHLY", year: "STRIPE_PRICE_GROWTH_YEARLY" },
-  pro: { month: "STRIPE_PRICE_PRO_MONTHLY", year: "STRIPE_PRICE_PRO_YEARLY" },
-} as const
 
 export async function GET(req: SellerRequest, res: MedusaResponse) {
   const sellerId = req.seller_context?.seller_id
@@ -19,13 +16,13 @@ export async function GET(req: SellerRequest, res: MedusaResponse) {
   })
   const seller = data?.[0] as any
   const subscription = seller?.metadata?.vitrinaki_subscription || null
+  const intervals = availablePlanIntervals()
   return res.json({
     billingConfigured: Boolean(process.env.STRIPE_SECRET_KEY && process.env.STRIPE_WEBHOOK_SECRET),
-    plans: Object.entries(planPrices).map(([id, values]) => ({
+    plans: PLAN_IDS.map((id) => ({
       id,
-      availableIntervals: (Object.entries(values) as [keyof typeof values, string][])
-        .filter(([, key]) => Boolean(process.env[key]))
-        .map(([interval]) => interval),
+      memberLimit: PLAN_MEMBER_LIMITS[id],
+      availableIntervals: intervals[id],
     })),
     setupServices: {
       assisted: Boolean(process.env.STRIPE_PRICE_SETUP_ASSISTED),

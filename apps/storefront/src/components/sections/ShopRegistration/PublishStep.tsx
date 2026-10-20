@@ -10,10 +10,13 @@ import { Field, Icon, Notice, Spinner, darkBtn, inputCls, primaryBtn, secondaryB
 type Subscription = { planId?: string; status?: string; currentPeriodEnd?: string | null } | null
 type Billing = { subscription: Subscription; isPublished: boolean; handle: string }
 
+// Team sizes match PLAN_MEMBER_LIMITS in packages/api/src/lib/vitrinaki-plans.ts.
+// Prices come from the Stripe Price IDs the owner configures, so none here.
 const PLANS = [
-  { id: "starter", label: "Starter", text: "Η βιτρίνα σου με τα βασικά." },
-  { id: "growth", label: "Growth", text: "Για καταστήματα που μεγαλώνουν." },
-  { id: "pro", label: "Pro", text: "Όλα, για απαιτητικές επιχειρήσεις." },
+  { id: "starter", label: "Starter", text: "1 άτομο · η βιτρίνα σου με τα βασικά" },
+  { id: "growth", label: "Growth", text: "έως 3 άτομα · για καταστήματα που μεγαλώνουν" },
+  { id: "pro", label: "Pro", text: "έως 5 άτομα · ρόλους για την ομάδα" },
+  { id: "business", label: "Επιχείρηση", text: "έως 15 άτομα με ρόλους · πολλά καταστήματα από έναν λογαριασμό · δωρεάν στήσιμο από την ομάδα μας · προτεραιότητα στην υποστήριξη" },
 ] as const
 
 // «Ενεργοποίηση & δημοσίευση»: activate the plan (a promo code for now; paid
@@ -98,7 +101,8 @@ export function PublishStep({ locale, onExpired }: { locale: string; onExpired: 
 
   const sub = billing?.subscription
   const active = Boolean(sub && ["active", "trialing"].includes(String(sub.status)))
-  const planLabel = PLANS.find((p) => p.id === sub?.planId)?.label || sub?.planId || ""
+  const planFound = PLANS.find((p) => p.id === sub?.planId)
+  const planLabel = planFound ? tr(planFound.label) : sub?.planId || ""
   const path = `/${locale}/store/${billing?.handle || ""}`
   const origin = typeof window !== "undefined" ? window.location.origin : ""
 
@@ -139,14 +143,14 @@ export function PublishStep({ locale, onExpired }: { locale: string; onExpired: 
           </div>
         ) : null}
 
-        <div className="mt-5 grid gap-2.5 sm:grid-cols-3">
+        <div className="mt-5 grid gap-2.5 sm:grid-cols-2">
           {PLANS.map((plan) => {
             const current = active && sub?.planId === plan.id
             return (
-              <div key={plan.id} className={`relative rounded-xl border bg-white p-3.5 ${current ? "border-[#2E4A37] ring-2 ring-[#2E4A37]/15" : "border-[#2E4A37]/12"}`}>
-                <p className="text-[15px] font-bold text-[#1F3628]">{plan.label}</p>
+              <div key={plan.id} className={`relative flex flex-col rounded-xl border bg-white p-3.5 ${current ? "border-[#2E4A37] ring-2 ring-[#2E4A37]/15" : "border-[#2E4A37]/12"}`}>
+                <p className="text-[15px] font-bold text-[#1F3628]">{tr(plan.label)}</p>
                 <p className="mt-0.5 text-[12.5px] leading-5 text-[#2E4A37]/65">{tr(plan.text)}</p>
-                <p className="mt-2.5">
+                <p className="mt-auto pt-2.5">
                   {current ? (
                     <span className="text-[12.5px] font-semibold text-[#2E4A37]">✓ {tr("Το πακέτο σου")}</span>
                   ) : (
