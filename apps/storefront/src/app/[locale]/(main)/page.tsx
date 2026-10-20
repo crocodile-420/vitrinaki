@@ -2,7 +2,7 @@ import Link from "next/link"
 import type { Metadata } from "next"
 import { headers } from "next/headers"
 import Script from "next/script"
-import { SitePreview } from "@/components/sections/SitePreview/SitePreview"
+import { LiveSitePreview } from "@/components/sections/SitePreview/LiveSitePreview"
 import { HeroDemo } from "@/components/sections/HeroDemo/HeroDemo"
 import { Reveal } from "@/components/atoms/Reveal/Reveal"
 import { listPublishedStorefronts, paletteColors, templateLabels, type DirectoryStorefront } from "@/lib/data/vitrinaki-storefronts"
@@ -416,7 +416,7 @@ export default async function Home({
                     <Link href={`/${locale}/store/${site.handle}`} className="group flex h-full flex-col overflow-hidden rounded-2xl border border-[#F7F2E8]/20 bg-[#F7F2E8] text-[#1F3628] shadow-[0_22px_50px_-32px_rgba(0,0,0,0.65)] transition duration-300 hover:-translate-y-1.5 hover:shadow-[0_34px_64px_-34px_rgba(0,0,0,0.75)]">
                       <div className="px-4 pt-4" style={{ background: c.soft }}>
                         <div className="translate-y-2 transition duration-500 group-hover:translate-y-0" aria-hidden="true">
-                          <SitePreview lang={lang} site={site} address={siteAddress(site)} className="rounded-b-none shadow-xl" />
+                          <LiveSitePreview lang={lang} site={site} src={`/${locale}/store/${site.handle}`} address={siteAddress(site)} className="rounded-b-none shadow-xl" />
                         </div>
                       </div>
                       <div className="flex flex-1 flex-col p-5">
