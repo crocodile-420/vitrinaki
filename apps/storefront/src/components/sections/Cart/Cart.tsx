@@ -3,6 +3,7 @@
 import { Button } from '@/components/atoms';
 import LocalizedClientLink from '@/components/molecules/LocalizedLink/LocalizedLink';
 import { CartEmpty, CartItems, CartSummary } from '@/components/organisms';
+import { LoyaltyBox } from '@/components/organisms/LoyaltyBox/LoyaltyBox';
 import { OtherShopCarts } from '@/components/organisms/OtherShopCarts/OtherShopCarts';
 import { PromoCode } from '@/components/organisms/PromoCode/PromoCode';
 import { useCartContext } from '@/components/providers';
@@ -31,6 +32,9 @@ export const Cart = () => {
       <div className="col-span-12 lg:col-span-4">
         <div className="mb-4">
           <PromoCode cart={cart} />
+        </div>
+        <div className="mb-4">
+          <LoyaltyBox cart={cart} />
         </div>
         <div className="h-fit rounded-sm border p-4">
           <CartSummary

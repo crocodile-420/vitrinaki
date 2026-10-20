@@ -17,6 +17,10 @@ import { teamSeats } from "../lib/vitrinaki-team-limit"
 // Vendor routes need no entry here: Mercur's /vendor/* middleware already
 // authenticates the member and sets req.seller_context from x-seller-id.
 const adminAuth = authenticate("user", ["session", "bearer", "api-key"])
+// Loyalty points (src/api/store/vitrinaki/loyalty): the customer's own
+// balances. The cart box also answers guests, inviting them to log in.
+const customerAuth = authenticate("customer", ["session", "bearer"])
+const optionalCustomerAuth = authenticate("customer", ["session", "bearer"], { allowUnauthenticated: true })
 
 // Public store routes that can embed a seller: strip what shoppers must not see
 // (see src/lib/public-seller-scrub.ts).
@@ -110,6 +114,9 @@ export default defineMiddlewares({
     { matcher: "/store/sellers*", methods: ["GET"], middlewares: [scrubPublicSellers] },
     { matcher: "/store/offers*", methods: ["GET"], middlewares: [scrubPublicSellers] },
     { matcher: "/store/products*", methods: ["GET"], middlewares: [scrubPublicSellers] },
+    { matcher: "/store/vitrinaki/loyalty", methods: ["GET"], middlewares: [customerAuth] },
+    { matcher: "/store/vitrinaki/loyalty/redeem", methods: ["POST"], middlewares: [customerAuth] },
+    { matcher: "/store/vitrinaki/loyalty/carts/:id", methods: ["GET"], middlewares: [optionalCustomerAuth] },
     { matcher: "/store/payment-collections/:id/payment-sessions", methods: ["POST"], middlewares: [guardCardPaymentSession] },
     {
       matcher: "/webhooks/stripe",
