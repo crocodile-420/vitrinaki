@@ -29,7 +29,8 @@ export async function POST(req: SellerRequest, res: MedusaResponse) {
   const sellerId = req.seller_context?.seller_id
   if (!sellerId) return res.status(401).json({ message: "Συνδέσου στον λογαριασμό της επιχείρησής σου." })
 
-  const code = String((req.body as { code?: string } | undefined)?.code || "").trim().toUpperCase()
+  // Only the code part counts, so "VITRINAKI-TEST:pro" copied from the .env works too.
+  const code = String((req.body as { code?: string } | undefined)?.code || "").split(":")[0].trim().toUpperCase()
   const promo = configuredCodes().find((entry) => entry.code === code)
   if (!code || !promo) return res.status(400).json({ message: "Ο κωδικός δεν είναι έγκυρος." })
 
