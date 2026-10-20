@@ -79,6 +79,43 @@ export const setCartId = async (cartId: string) => {
   });
 };
 
+// One open cart per shop: each Vitrinaki shop is its own e-shop with its own
+// checkout and its own Stripe account. `_medusa_cart_id` stays the cart the
+// shopper is looking at; this cookie remembers the other shops' carts.
+const SHOP_CARTS_COOKIE = '_vk_shop_carts';
+
+export const getShopCartIds = async (): Promise<Record<string, string>> => {
+  const cookies = await nextCookies();
+  const raw = cookies.get(SHOP_CARTS_COOKIE)?.value;
+  if (!raw) return {};
+  try {
+    const parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return {};
+    return Object.fromEntries(
+      Object.entries(parsed).filter(
+        (entry): entry is [string, string] =>
+          typeof entry[1] === 'string' && entry[1].startsWith('cart_')
+      )
+    );
+  } catch {
+    return {};
+  }
+};
+
+export const setShopCartIds = async (carts: Record<string, string>) => {
+  const cookies = await nextCookies();
+  if (!Object.keys(carts).length) {
+    cookies.set(SHOP_CARTS_COOKIE, '', { maxAge: -1 });
+    return;
+  }
+  cookies.set(SHOP_CARTS_COOKIE, JSON.stringify(carts), {
+    maxAge: 60 * 60 * 24 * 7,
+    httpOnly: true,
+    sameSite: 'strict',
+    secure: process.env.NODE_ENV === 'production',
+  });
+};
+
 export const removeCartId = async () => {
   const cookies = await nextCookies();
   cookies.set('_medusa_cart_id', '', {
