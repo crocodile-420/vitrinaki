@@ -3,6 +3,8 @@ import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 import { updateSellersWorkflow } from "@mercurjs/core/workflows"
 import { createHmac, timingSafeEqual } from "node:crypto"
 
+import { isPlanId } from "../../../lib/vitrinaki-plans"
+
 type StripeEvent = { id: string; type: string; data: { object: Record<string, any> } }
 
 function verifySignature(rawBody: string, header: string, secret: string) {
@@ -103,7 +105,7 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
   const nextSubscription = {
     ...subscription,
     status,
-    planId: ["starter", "growth", "pro"].includes(String(subscriptionMetadata.plan_id)) ? subscriptionMetadata.plan_id : subscription.planId,
+    planId: isPlanId(subscriptionMetadata.plan_id) ? subscriptionMetadata.plan_id : subscription.planId,
     interval: ["month", "year"].includes(String(subscriptionMetadata.billing_interval)) ? subscriptionMetadata.billing_interval : subscription.interval,
     stripeCustomerId: customerId || subscription.stripeCustomerId || null,
     stripeSubscriptionId: subscriptionId || subscription.stripeSubscriptionId || null,
