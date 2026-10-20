@@ -1,15 +1,15 @@
 import type { Metadata } from "next"
 
-import { Reveal } from "@/components/atoms/Reveal/Reveal"
 import { StartFlow } from "@/components/sections/StartFlow/StartFlow"
 import { readStartSession } from "@/lib/data/vitrinaki-start"
 import { getTranslator } from "@/lib/i18n/server"
 import { privacyUrl, studioLoginUrl, termsUrl } from "@/lib/vitrinaki-links"
 import { caps } from "@/lib/vitrinaki-start"
 
-// «Άνοιξε τη βιτρίνα σου»: the product page and the sign-up in one. The form
-// creates a real shop (see /api/vitrinaki/start) and then offers a few optional
-// first steps before handing the new seller over to the Studio.
+// «Άνοιξε τη βιτρίνα σου»: the sign-up as a short question flow. The first step
+// creates a real shop (see /api/vitrinaki/start), the next ones are optional and
+// fill the live preview, then the new seller is handed over to the Studio. The
+// pitch lives on the homepage, so this page carries only the flow.
 
 export const dynamic = "force-dynamic"
 
@@ -22,40 +22,6 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 const WRAP = "mx-auto max-w-[1280px] px-4 sm:px-8 lg:px-12"
-
-const features = [
-  { icon: "spark", color: "#C0503C", title: "Δημιουργία website σε λίγα λεπτά", text: "Διαλέγεις template, βάζεις όνομα, λογότυπο και χρώματα και το site σου είναι έτοιμο." },
-  { icon: "cart", color: "#2E4A37", title: "Online κατάστημα με πλήρη διαχείριση", text: "Προϊόντα, παραλλαγές, απόθεμα, καλάθι και παραγγελίες, όλα σε ένα σημείο." },
-  { icon: "globe", color: "#265E8E", title: "Το δικό σου domain", text: "Ξεκινάς στο vitrinaki.gr/το-όνομά-σου ή συνδέεις το δικό σου domain." },
-  { icon: "box", color: "#2E4A37", title: "Διαχείριση αποθέματος από το Studio", text: "Βλέπεις τι τελειώνει και ενημερώνεις ποσότητες με ένα κλικ." },
-  { icon: "lang", color: "#265E8E", title: "Ελληνικά & Αγγλικά", text: "Το κατάστημά σου μιλά τη γλώσσα των πελατών σου, στην Ελλάδα και στο εξωτερικό." },
-  { icon: "heart", color: "#C0503C", title: "Υποστήριξη που σε νοιάζεται", text: "Άνθρωποι δίπλα σου, με οδηγούς και πραγματική βοήθεια όταν τη χρειαστείς." },
-] as const
-
-const soon = [
-  { icon: "card", title: "Πληρωμές με κάρτα" },
-  { icon: "calendar", title: "Κρατήσεις online" },
-  { icon: "doc", title: "Τιμολόγια myDATA" },
-] as const
-
-const steps = [
-  { title: "Ανοίγεις τη βιτρίνα σου", text: "Όνομα, email και κωδικός. Παίρνεις αμέσως τη δική σου διεύθυνση στο vitrinaki.gr." },
-  { title: "Τη στήνεις στο Studio", text: "Προϊόντα ή υπηρεσίες, φωτογραφίες, χρώματα και η ιστορία σου, με τον δικό σου ρυθμό." },
-  { title: "Τη δημοσιεύεις", text: "Όταν είσαι έτοιμος, ανοίγεις στους πελάτες και μοιράζεσαι το link. Πριν δημοσιεύσεις, ξέρεις ακριβώς τι πληρώνεις." },
-] as const
-
-const notAsked = [
-  { title: "Κάρτα", text: "Δεν χρειάζεται για να φτιάξεις τη βιτρίνα σου." },
-  { title: "ΑΦΜ & νομικά στοιχεία", text: "Τα συμπληρώνεις αργότερα, από το Studio." },
-  { title: "Τεχνικές γνώσεις", text: "Αν ξέρεις να στέλνεις email, ξέρεις αρκετά." },
-] as const
-
-const faqs = [
-  { q: "Πόσο κοστίζει;", a: "Οι τιμές οριστικοποιούνται. Η δέσμευσή μας είναι απλή: πριν ξεκινήσεις θα ξέρεις ακριβώς τι πληρώνεις, τι περιλαμβάνεται και τι όχι." },
-  { q: "Πότε θα βλέπουν οι πελάτες τη σελίδα μου;", a: "Όταν τη δημοσιεύσεις από το Studio. Μέχρι τότε τη στήνεις με την ησυχία σου και τη βλέπεις μόνο εσύ." },
-  { q: "Μπορώ να αλλάξω όνομα, χρώματα ή κείμενα αργότερα;", a: "Ναι. Όλα όσα συμπληρώνεις εδώ αλλάζουν όποτε θέλεις από το Studio." },
-  { q: "Κι αν δεν θέλω να το στήσω μόνος μου;", a: "Δεν χρειάζεται. Μπορείς να ξεκινήσεις μόνος σου, με καθοδήγηση, ή να μας ζητήσεις βοήθεια στο αρχικό στήσιμο." },
-] as const
 
 const iconPaths: Record<string, React.ReactNode> = {
   spark: <><rect x="3" y="4" width="18" height="14" rx="2" /><path d="M3 8h18M8 21h8M12 18v3" /></>,
@@ -117,7 +83,7 @@ export default async function StartPage() {
         </span>
       </h1>
       <p className="mt-5 max-w-xl text-[16px] leading-7 text-[#1F3628]/75">
-        {tr("Γράψε πώς λέγεται η επιχείρησή σου και δες τη σελίδα σου να παίρνει μορφή. Προϊόντα, χρώματα και την ιστορία σου τα προσθέτεις όποτε είσαι έτοιμος.")}
+        {tr("Λίγες σύντομες ερωτήσεις και η σελίδα σου παίρνει μορφή, εδώ δίπλα. Υποχρεωτικό είναι μόνο το πρώτο βήμα, τα υπόλοιπα τα συμπληρώνεις τώρα ή αργότερα.")}
       </p>
     </div>
   )
@@ -143,7 +109,7 @@ export default async function StartPage() {
       <section className="relative isolate">
         <OliveSprig className="pointer-events-none absolute -left-14 top-6 -z-10 w-44 -rotate-12 text-[#2E4A37]/15 sm:w-56" />
         <div aria-hidden="true" className="absolute -right-40 -top-40 -z-10 h-[34rem] w-[34rem] rounded-full bg-[#C0503C]/[0.07] blur-3xl" />
-        <div className={`${WRAP} pb-14 pt-8 sm:pt-12 lg:pb-20 lg:pt-14`}>
+        <div className={`${WRAP} flex min-h-[calc(100svh-5rem)] flex-col justify-center pb-14 pt-8 sm:pt-10 lg:pb-16`}>
           <StartFlow
             studioLoginUrl={studioLoginUrl}
             termsUrl={termsUrl || undefined}
@@ -155,107 +121,6 @@ export default async function StartPage() {
         </div>
       </section>
 
-      {/* What you get */}
-      <section aria-labelledby="start-included" className="bg-[#2E4A37] text-[#F7F2E8]">
-        <div className={`${WRAP} py-14 lg:py-20`}>
-          <Reveal className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
-            <h2 id="start-included" className="max-w-xl text-[1.8rem] font-extrabold leading-tight tracking-[-0.02em] sm:text-[2.2rem]">{tr("Τι παίρνεις από την πρώτη μέρα")}</h2>
-            <p className="max-w-md text-[15px] leading-7 text-[#F7F2E8]/80">{tr("Ένα ολοκληρωμένο e-shop με τη δική σου ταυτότητα, όχι μια θέση σε κατάλογο.")}</p>
-          </Reveal>
-          <div className="mt-9 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {features.map((f, i) => (
-              <Reveal key={f.title} delay={(i % 3) * 70} className="h-full">
-                <div className="flex h-full gap-4 rounded-2xl bg-[#F7F2E8] p-5 text-[#1F3628] shadow-[0_18px_40px_-28px_rgba(0,0,0,0.6)]">
-                  <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full" style={{ background: `${f.color}17`, color: f.color }}>
-                    <FeatureIcon name={f.icon} />
-                  </span>
-                  <div>
-                    <h3 className="text-[15.5px] font-bold leading-snug">{tr(f.title)}</h3>
-                    <p className="mt-1 text-[14px] leading-6 text-[#2E4A37]/70">{tr(f.text)}</p>
-                  </div>
-                </div>
-              </Reveal>
-            ))}
-          </div>
-          <Reveal className="mt-5 flex flex-wrap items-center gap-2.5 text-[14px]">
-            <span className="mr-1 font-semibold text-[#F7F2E8]/80">{tr("Έρχονται σύντομα:")}</span>
-            {soon.map((s) => (
-              <span key={s.title} className="inline-flex items-center gap-2 rounded-full border border-[#F7F2E8]/25 px-3.5 py-1.5 text-[#F7F2E8]/90">
-                <FeatureIcon name={s.icon} size={16} />
-                {tr(s.title)}
-              </span>
-            ))}
-          </Reveal>
-        </div>
-      </section>
-
-      {/* How it works */}
-      <section aria-labelledby="start-how" className="relative">
-        <div className={`${WRAP} py-14 lg:py-20`}>
-          <Reveal className="max-w-2xl">
-            <h2 id="start-how" className="text-[1.8rem] font-extrabold leading-tight tracking-[-0.02em] text-[#1F3628] sm:text-[2.2rem]">{tr("Πώς δουλεύει")}</h2>
-            <p className="mt-3 text-[15px] leading-7 text-[#2E4A37]/70">{tr("Τρία βήματα. Το πρώτο το κάνεις εδώ, τώρα.")}</p>
-          </Reveal>
-          <ol className="mt-10 grid gap-5 md:grid-cols-3">
-            {steps.map((step, i) => (
-              <Reveal as="li" key={step.title} delay={i * 100} className="relative rounded-2xl border border-[#2E4A37]/10 bg-white p-6">
-                <span className="grid h-11 w-11 place-items-center rounded-full bg-[#F7F2E8] text-[18px] font-extrabold text-[#C0503C] ring-1 ring-[#2E4A37]/10">{i + 1}</span>
-                <h3 className="mt-4 text-[18px] font-bold text-[#1F3628]">{tr(step.title)}</h3>
-                <p className="mt-1.5 text-[14.5px] leading-6 text-[#2E4A37]/70">{tr(step.text)}</p>
-              </Reveal>
-            ))}
-          </ol>
-
-          <Reveal className="mt-10 rounded-2xl bg-[#E6ECE3] p-6 sm:p-8">
-            <h3 className="text-[1.25rem] font-extrabold tracking-[-0.01em] text-[#1F3628]">{tr("Τι δεν θα σε ρωτήσουμε για να ξεκινήσεις")}</h3>
-            <ul className="mt-5 grid gap-4 sm:grid-cols-3">
-              {notAsked.map((item) => (
-                <li key={item.title} className="flex items-start gap-3">
-                  <span className="mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-full bg-white text-[#C0503C]"><FeatureIcon name="minus" size={14} /></span>
-                  <span>
-                    <span className="block text-[15px] font-bold text-[#1F3628]">{tr(item.title)}</span>
-                    <span className="block text-[14px] leading-6 text-[#2E4A37]/70">{tr(item.text)}</span>
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </Reveal>
-        </div>
-      </section>
-
-      {/* FAQ */}
-      <section aria-labelledby="start-faq" className="bg-[#2E4A37] text-[#F7F2E8]">
-        <div className={`${WRAP} grid gap-10 py-14 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16 lg:py-20`}>
-          <Reveal>
-            <h2 id="start-faq" className="text-[1.8rem] font-extrabold leading-tight tracking-[-0.02em] sm:text-[2.2rem]">{tr("Πριν ξεκινήσεις")}</h2>
-            <p className="mt-3 max-w-sm text-[15px] leading-7 text-[#F7F2E8]/75">{tr("Ό,τι ρωτούν συνήθως όσοι ανοίγουν τη βιτρίνα τους.")}</p>
-          </Reveal>
-          <div className="space-y-3">
-            {faqs.map((item) => (
-              <details key={item.q} className="group rounded-2xl bg-[#F7F2E8] px-5 py-4 text-[#1F3628] sm:px-6">
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-6 text-[16px] font-bold [&::-webkit-details-marker]:hidden">
-                  {tr(item.q)}
-                  <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-[#2E4A37]/[0.07] text-xl font-light transition duration-300 group-open:rotate-45 group-open:bg-[#C0503C] group-open:text-white" aria-hidden="true">+</span>
-                </summary>
-                <p className="mt-3 max-w-2xl text-[15px] leading-7 text-[#2E4A37]/75">{tr(item.a)}</p>
-              </details>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Closing CTA */}
-      <section className="px-4 py-14 sm:px-6 lg:py-20">
-        <Reveal className="relative isolate mx-auto max-w-[1180px] overflow-hidden rounded-[2rem] bg-[#1a2e21] px-6 py-14 text-center text-[#F7F2E8] sm:px-12 lg:py-20">
-          <div aria-hidden="true" className="absolute -left-20 -top-32 -z-10 h-96 w-96 rounded-full bg-[#C0503C]/30 blur-[100px]" />
-          <div aria-hidden="true" className="absolute -bottom-40 -right-20 -z-10 h-96 w-96 rounded-full bg-[#265E8E]/35 blur-[100px]" />
-          <h2 className="mx-auto max-w-3xl text-[2rem] font-extrabold leading-[1.1] tracking-[-0.02em] sm:text-[2.8rem]">{tr("Ποτέ δεν είναι αργά για να ανοίξεις τη βιτρίνα σου.")}</h2>
-          <p className="mx-auto mt-4 max-w-lg text-[16px] leading-7 text-[#F7F2E8]/70">{tr("Ένα όνομα, ένα email, ένας κωδικός. Τα υπόλοιπα, μαζί.")}</p>
-          <a href="#signup" className="mt-8 inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-[#C0503C] px-7 py-3 text-[15px] font-semibold text-white shadow-[0_10px_30px_-10px_rgba(192,80,60,0.8)] transition hover:bg-[#ad4633]">
-            {tr("Ξεκίνα τώρα")} <span aria-hidden="true">→</span>
-          </a>
-        </Reveal>
-      </section>
     </main>
   )
 }

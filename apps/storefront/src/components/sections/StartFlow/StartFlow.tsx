@@ -121,6 +121,20 @@ const secondaryBtn =
 
 // ---------- the flow ----------
 
+const TOTAL_STEPS = OPTIONAL_STEPS.length + 1
+
+// One bar for the whole flow: step 1 (the account) is required, the rest optional.
+function StepBar({ current, done = () => true }: { current: number; done?: (index: number) => boolean }) {
+  const { tr } = useTranslator()
+  return (
+    <div className="mt-2.5 grid gap-1.5" style={{ gridTemplateColumns: `repeat(${TOTAL_STEPS}, minmax(0, 1fr))` }} role="progressbar" aria-valuemin={1} aria-valuemax={TOTAL_STEPS} aria-valuenow={current + 1} aria-label={tr("Πρόοδος")}>
+      {Array.from({ length: TOTAL_STEPS }, (_, i) => (
+        <span key={i} className={`h-1.5 rounded-full transition-colors duration-300 ${i < current ? (done(i) ? "bg-[#2E4A37]" : "bg-[#2E4A37]/35") : i === current ? "bg-[#C0503C]" : "bg-[#2E4A37]/10"}`} />
+      ))}
+    </div>
+  )
+}
+
 export function StartFlow({
   studioLoginUrl,
   termsUrl,
@@ -437,7 +451,8 @@ export function StartFlow({
 
   const accountStep = (
     <form noValidate onSubmit={submitAccount} aria-labelledby={`${uid}-h`}>
-      <p className="text-[12px] font-semibold tracking-[0.16em] text-[#C0503C]">{caps(tr("Ένα λεπτό, τρία πεδία"))}</p>
+      <p className="text-[12px] font-semibold tracking-[0.16em] text-[#C0503C]">{caps(`${tr("Βήμα")} 1/${TOTAL_STEPS}`)}</p>
+      <StepBar current={0} />
       <h2 id={`${uid}-h`} ref={headingRef} tabIndex={-1} className="mt-2 text-[1.65rem] font-extrabold leading-tight tracking-[-0.02em] text-[#1F3628] outline-none">
         {tr("Άνοιξε τη βιτρίνα σου")}
       </h2>
@@ -906,17 +921,13 @@ export function StartFlow({
 
         <div className="flex items-center justify-between gap-3">
           <p className="text-[12px] font-semibold tracking-[0.16em] text-[#C0503C]">
-            {caps(tr("Προαιρετικό"))} · {stepIndex + 1}/{OPTIONAL_STEPS.length}
+            {caps(`${tr("Βήμα")} ${stepIndex + 2}/${TOTAL_STEPS}`)} · {caps(tr("Προαιρετικό"))}
           </p>
           <button type="button" onClick={() => setPhase("done")} className="text-[13px] font-semibold text-[#2E4A37]/70 underline-offset-2 hover:text-[#2E4A37] hover:underline">
             {tr("Παράλειψη όλων")}
           </button>
         </div>
-        <div className="mt-2.5 grid grid-cols-5 gap-1.5" role="progressbar" aria-valuemin={1} aria-valuemax={OPTIONAL_STEPS.length} aria-valuenow={stepIndex + 1} aria-label={tr("Πρόοδος προαιρετικών βημάτων")}>
-          {OPTIONAL_STEPS.map((s, i) => (
-            <span key={s} className={`h-1.5 rounded-full transition-colors duration-300 ${i < stepIndex ? (saved.has(s) ? "bg-[#2E4A37]" : "bg-[#2E4A37]/35") : i === stepIndex ? "bg-[#C0503C]" : "bg-[#2E4A37]/10"}`} />
-          ))}
-        </div>
+        <StepBar current={stepIndex + 1} done={(i) => i === 0 || saved.has(OPTIONAL_STEPS[i - 1])} />
 
         <h2 id={`${uid}-h`} ref={headingRef} tabIndex={-1} className="mt-5 text-[1.5rem] font-extrabold leading-tight tracking-[-0.02em] text-[#1F3628] outline-none">
           {stepMeta[phase as OptionalStep].title}
