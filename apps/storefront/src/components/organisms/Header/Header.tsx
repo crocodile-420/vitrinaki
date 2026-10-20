@@ -2,14 +2,15 @@ import LocalizedClientLink from "@/components/molecules/LocalizedLink/LocalizedL
 
 import { LanguageSwitcher } from "@/components/molecules/LanguageSwitcher/LanguageSwitcher"
 import { HeaderShell } from "./HeaderShell"
+import { FeaturesMenu, MobileMenu } from "./MegaMenu"
 import { readStartSession } from "@/lib/data/vitrinaki-start"
 import { getTranslator } from "@/lib/i18n/server"
 import { shopRegistrationHref, startHref } from "@/lib/vitrinaki-links"
 
+// «Τι παίρνεις» lives inside the «Δυνατότητες» menu now.
 const navigation = [
   { label: "Για ποιον", href: "/#for-whom" },
   { label: "Καταστήματα", href: "/#vitrina" },
-  { label: "Τι παίρνεις", href: "/#included" },
   { label: "Πώς ξεκινάς", href: "/#how-it-works" },
   { label: "Ερωτήσεις", href: "/#faq" },
 ]
@@ -30,6 +31,7 @@ export const Header = async ({ locale }: { locale: string }) => {
         </LocalizedClientLink>
 
         <nav className="hidden items-center gap-6 lg:flex" aria-label={tr("Κεντρική πλοήγηση")}>
+          <FeaturesMenu locale={locale} />
           {navigation.map((item) => (
             <LocalizedClientLink
               key={item.label}
@@ -48,10 +50,15 @@ export const Header = async ({ locale }: { locale: string }) => {
           </a>
           <a
             href={startHref(locale)}
-            className="inline-flex min-h-10 items-center justify-center whitespace-nowrap rounded-full bg-[#2E4A37] px-3 py-2 text-[13px] sm:text-sm font-semibold text-[#F7F2E8] transition hover:bg-[#1f3527] sm:px-5"
+            className="hidden min-h-10 items-center justify-center whitespace-nowrap rounded-full bg-[#2E4A37] px-3 py-2 text-[13px] sm:text-sm font-semibold text-[#F7F2E8] transition hover:bg-[#1f3527] sm:inline-flex sm:px-5"
           >
             {tr("Άνοιξε τη βιτρίνα σου")}
           </a>
+          <MobileMenu
+            locale={locale}
+            links={navigation}
+            sellerLink={{ label: signedIn ? "Η βιτρίνα μου" : "Σύνδεση", href: shopRegistrationHref(locale) }}
+          />
         </div>
       </div>
     </HeaderShell>
