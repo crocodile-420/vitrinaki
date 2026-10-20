@@ -5,6 +5,8 @@ import Script from "next/script"
 import { SitePreview } from "@/components/sections/SitePreview/SitePreview"
 import { HeroDemo } from "@/components/sections/HeroDemo/HeroDemo"
 import { Reveal } from "@/components/atoms/Reveal/Reveal"
+import { HowItWorksScroll } from "@/components/sections/HowItWorksScroll/HowItWorksScroll"
+import { TryShop } from "@/components/sections/TryShop/TryShop"
 import { listPublishedStorefronts, paletteColors, templateLabels, type DirectoryStorefront } from "@/lib/data/vitrinaki-storefronts"
 import { listRegions } from "@/lib/data/regions"
 import { getTranslator } from "@/lib/i18n/server"
@@ -23,12 +25,6 @@ const audiences = [
   { icon: "laptop", title: "Freelancers & υπηρεσίες", text: "Graphic designer, online δάσκαλος, φωτογράφος. Δείξε τη δουλειά σου και δέξου κρατήσεις." },
   { icon: "sprout", title: "Νέες επιχειρήσεις", text: "Ξεκίνα από εκεί που βρίσκεσαι σήμερα και μεγάλωσε τη βιτρίνα σου μαζί με την επιχείρηση." },
 ] as const
-
-const steps = [
-  { number: "01", title: "Μας λες ποιος είσαι", text: "Όνομα, λογότυπο, χρώματα, τι πουλάς ή τι προσφέρεις. Αυτό που ήδη ξέρεις για τη δουλειά σου, χωρίς τεχνικούς όρους." },
-  { number: "02", title: "Στήνεται η βιτρίνα σου", text: "Ένα ολοκληρωμένο e-shop με τα δικά σου χαρακτηριστικά. Το φτιάχνεις μόνος σου βήμα βήμα, ή το στήνουμε μαζί." },
-  { number: "03", title: "Ανοίγεις στο ψηφιακό εμπόριο", text: "Συνδέεις τη διεύθυνσή σου, μοιράζεσαι το link και δέχεσαι παραγγελίες. Από εκεί και πέρα, μεγαλώνεις με τον δικό σου ρυθμό." },
-]
 
 const faqs = [
   { q: "Χρειάζομαι τεχνικές γνώσεις;", a: "Όχι. Αν ξέρεις να στέλνεις email και να ανεβάζεις φωτογραφίες, ξέρεις αρκετά. Ό,τι άλλο χρειαστεί, σου το εξηγούμε." },
@@ -235,8 +231,9 @@ export default async function Home({
   const businessUrl = startHref(locale)
   const published = await listPublishedStorefronts()
 
+  // overflow-x-clip, not overflow-hidden: a scroll container would break the sticky "how it works"
   return (
-    <main className="overflow-hidden bg-[#F7F2E8] text-[#2E4A37]">
+    <main className="overflow-x-clip bg-[#F7F2E8] text-[#2E4A37]">
       <Script
         id="ld-org"
         type="application/ld+json"
@@ -400,6 +397,28 @@ export default async function Home({
         </div>
       </section>
 
+      {/* Try it: the visitor changes a sample shop live */}
+      <section id="try" aria-labelledby="try-title" className="scroll-mt-20 border-t border-[#2E4A37]/10 bg-[#EFE7D8]">
+        <div className={`${WRAP} py-14 lg:py-20`}>
+          <Reveal className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+            <div>
+              <Eyebrow>{tr("Δοκίμασέ το")}</Eyebrow>
+              <h2 id="try-title" className="mt-4 max-w-xl text-[1.9rem] font-extrabold leading-tight tracking-[-0.02em] text-[#1F3628] sm:text-4xl">{tr("Φτιάξε μια βιτρίνα, εδώ, τώρα.")}</h2>
+            </div>
+            <p className={`max-w-md text-[15px] leading-7 ${MUTED}`}>{tr("Άλλαξε χρώματα, template και όνομα και δες το κατάστημα να αλλάζει αμέσως. Δεν αποθηκεύεται τίποτα.")}</p>
+          </Reveal>
+          <div className="mt-10">
+            <TryShop
+              cta={
+                <a href={businessUrl} className={`${primaryBtn} shrink-0`}>
+                  {tr("Άνοιξε τη βιτρίνα σου")} <Arrow />
+                </a>
+              }
+            />
+          </div>
+        </div>
+      </section>
+
       {/* Live shops */}
       <section id="vitrina" className="scroll-mt-20 bg-[#2E4A37] text-[#F7F2E8]">
         <div className={`${WRAP} py-14 lg:py-20`}>
@@ -467,27 +486,18 @@ export default async function Home({
         </div>
       </section>
 
-      {/* How it works */}
+      {/* How it works: steps scroll, the shop mockup stays pinned and follows them */}
       <section id="how-it-works" className="scroll-mt-20">
-        <div className={`${WRAP} py-14 lg:py-20`}>
-          <Reveal className="max-w-3xl">
-            <Eyebrow>{tr("Πώς ξεκινάς")}</Eyebrow>
-            <H2>{tr("Τρία βήματα. Και κάποιος δίπλα σου σε κάθε ένα.")}</H2>
-          </Reveal>
-          <ol className="relative mt-16 grid gap-12 md:grid-cols-3 md:gap-10">
-            <span aria-hidden="true" className="absolute left-[2.1rem] top-4 h-[calc(100%-2rem)] w-px bg-gradient-to-b from-[#C0503C] via-[#2E4A37]/30 to-transparent md:left-0 md:top-[2.1rem] md:h-px md:w-full md:bg-gradient-to-r" />
-            {steps.map((step, i) => (
-              <Reveal as="li" key={step.number} delay={i * 120} className="relative grid grid-cols-[4.2rem_1fr] gap-5 md:block">
-                <span className="relative grid h-[4.2rem] w-[4.2rem] place-items-center rounded-full border border-[#2E4A37]/15 bg-[#F7F2E8] font-serif text-3xl font-medium italic text-[#C0503C] shadow-[0_10px_30px_-15px_rgba(46,74,55,0.5)]">
-                  {i + 1}
-                </span>
-                <div>
-                  <h3 className="font-serif text-2xl font-medium md:mt-8">{tr(step.title)}</h3>
-                  <p className={`mt-3 text-[15px] leading-7 ${MUTED}`}>{tr(step.text)}</p>
-                </div>
+        <div className={`${WRAP} py-14 lg:py-12`}>
+          <HowItWorksScroll
+            intro={
+              <Reveal className="max-w-xl lg:pt-8">
+                <Eyebrow>{tr("Πώς ξεκινάς")}</Eyebrow>
+                <H2>{tr("Από το template στην πρώτη παραγγελία.")}</H2>
+                <p className={`mt-5 max-w-md text-[16px] leading-7 ${MUTED}`}>{tr("Τέσσερα βήματα, με τον δικό σου ρυθμό. Και άνθρωποι δίπλα σου σε κάθε ένα.")}</p>
               </Reveal>
-            ))}
-          </ol>
+            }
+          />
         </div>
       </section>
 
