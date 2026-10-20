@@ -15,7 +15,7 @@ export const dynamic = "force-dynamic"
 // Name, address and email are unique on the seller, so they are checked first;
 // otherwise a taken name would leave a login without a shop.
 
-type Body = { storeName?: unknown; handle?: unknown; email?: unknown; password?: unknown; terms?: unknown; lang?: unknown }
+type Body = { storeName?: unknown; handle?: unknown; email?: unknown; password?: unknown; terms?: unknown; lang?: unknown; referralCode?: unknown }
 
 const jwtPayload = (token: string): Record<string, any> => {
   try {
@@ -35,6 +35,7 @@ export async function POST(request: NextRequest) {
   const handle = typeof raw.handle === "string" ? raw.handle.trim().toLowerCase() : ""
   const email = typeof raw.email === "string" ? raw.email.trim().toLowerCase() : ""
   const password = typeof raw.password === "string" ? raw.password : ""
+  const referralCode = typeof raw.referralCode === "string" ? raw.referralCode.trim().slice(0, 300) : ""
 
   const fields: Record<string, string> = {}
   if (storeName.length < 2) fields.storeName = tr("Γράψε το όνομα του καταστήματός σου.")
@@ -127,7 +128,25 @@ export async function POST(request: NextRequest) {
     }
 
     await writeStartSession({ token: session.body.token, sellerId: seller.id, handle: seller.handle, name: seller.name, email })
-    return NextResponse.json({ ok: true, seller: { name: seller.name, handle: seller.handle }, email } satisfies StartResponse)
+
+    // ---- 4. optional referral code («Κωδικός σύστασης»), never blocks sign-up ----
+    let referral: Extract<StartResponse, { ok: true }>["referral"]
+    if (referralCode) {
+      try {
+        const claimed = await backend<{ applied?: boolean; referrer?: { name?: string } }>("/vendor/vitrinaki/referral/claim", {
+          token: session.body.token,
+          sellerId: seller.id,
+          body: { code: referralCode },
+        })
+        referral = claimed.ok
+          ? { applied: true, referrerName: claimed.body.referrer?.name || "" }
+          : { applied: false, message: tr(String(claimed.body.message || "Δεν βρήκαμε αυτόν τον κωδικό σύστασης. Μπορείς να συνεχίσεις και χωρίς.")) }
+      } catch (error) {
+        console.error("[vitrinaki/start] referral claim failed", error)
+        referral = { applied: false }
+      }
+    }
+    return NextResponse.json({ ok: true, seller: { name: seller.name, handle: seller.handle }, email, ...(referral ? { referral } : {}) } satisfies StartResponse)
   } catch (error) {
     console.error("[vitrinaki/start] unexpected error", error)
     return fail(502, { ok: false, code: "server", message: tr("Δεν μπορέσαμε να επικοινωνήσουμε με τον server. Δοκίμασε ξανά σε λίγο.") })

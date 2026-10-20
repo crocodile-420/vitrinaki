@@ -51,6 +51,40 @@
       "body": "Live courier rates, voucher printing and Box Now locker choice at checkout. For now the price is flat and you create the voucher with the courier."
     }
   },
+  "vitrinakiReferral": {
+    "nav": "Refer a colleague",
+    "eyebrow": "Referral programme",
+    "title": "Refer a colleague",
+    "intro": "Know a business that wants its own e-shop? Send them your code. You get {{percent}}% off one month of your subscription and your colleague gets a month free.",
+    "loading": "Loading…",
+    "loadError": "Could not load your referral code.",
+    "codeLabel": "Your code",
+    "linkLabel": "Link to share",
+    "copyCode": "Copy code",
+    "copyLink": "Copy link",
+    "copied": "Copied",
+    "howTitle": "How it works",
+    "how1": "Your colleague opens their shop from your link, or types your code when signing up.",
+    "how2": "Once they pay their first subscription, they get a month free and you get {{percent}}% off one month: taken off your next bill or, if your subscription is on a promo code, {{days}} extra days.",
+    "stats": {
+      "referred": "Shops you referred",
+      "earned": "Discounts received",
+      "pending": "Discounts waiting"
+    },
+    "pendingNote": "Waiting discounts are added as soon as you start a subscription.",
+    "cap": "Up to {{count}} referral rewards a year (this year: {{used}}).",
+    "welcome": {
+      "applied": "You signed up with a referral code: your free month has been added.",
+      "pending": "You signed up with a referral code: your free month is added once your subscription starts."
+    },
+    "listTitle": "Your referrals",
+    "joined": "Joined {{date}}",
+    "status": {
+      "signedUp": "Signed up",
+      "qualified": "Paid · you earned {{percent}}% off"
+    },
+    "empty": "You haven't referred any shops yet."
+  },
   "vitrinakiPayments": {
     "eyebrow": "Vitrinaki Studio",
     "title": "Card payments",

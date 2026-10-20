@@ -131,7 +131,7 @@ export type StartErrorCode =
   | "server"
 
 export type StartResponse =
-  | { ok: true; seller: { name: string; handle: string }; email: string }
+  | { ok: true; seller: { name: string; handle: string }; email: string; referral?: { applied: boolean; message?: string; referrerName?: string } }
   | { ok: false; code: StartErrorCode; message: string; fields?: Record<string, string>; suggestion?: string }
 
 // Greek capitals carry no accents; CSS `uppercase` keeps them in Chromium, so

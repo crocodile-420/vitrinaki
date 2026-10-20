@@ -10,6 +10,8 @@ import { cardPaymentForCart } from "../lib/card-payments"
 import { scrubNested } from "../lib/public-seller-scrub"
 import { cardPaymentMessage, isStripeProviderId, SELLER_DATA_KEY, STRIPE_ACCOUNT_DATA_KEY } from "../lib/stripe-connect"
 import { memberLimitMessage } from "../lib/vitrinaki-plans"
+import { keepServerOwnedMetadata } from "../lib/server-metadata"
+import { loadSeller } from "../lib/vitrinaki-referral-rewards"
 import { teamSeats } from "../lib/vitrinaki-team-limit"
 
 // Vendor routes need no entry here: Mercur's /vendor/* middleware already
@@ -79,12 +81,36 @@ async function guardCardPaymentSession(req: MedusaRequest, res: MedusaResponse, 
   }
 }
 
+// Server-owned seller.metadata keys (subscription, Stripe Connect account,
+// referral programme; see src/lib/server-metadata.ts) are written only by the
+// backend. Mercur's vendor seller routes accept any metadata, so here the
+// client's copy of those keys is replaced by the stored one (or dropped when
+// there is none, e.g. on create).
+async function keepServerOwnedSellerMetadata(req: MedusaRequest, _res: MedusaResponse, next: MedusaNextFunction) {
+  try {
+    const bodies = [(req as any).body, (req as any).validatedBody].filter((body) => body?.metadata && typeof body.metadata === "object")
+    if (!bodies.length) return next()
+    // POST /vendor/sellers creates a shop: nothing stored, forged keys dropped.
+    const isMe = /\/vendor\/sellers\/me\/?$/.test(String(req.originalUrl || req.url || "").split("?")[0]) || req.params?.id === "me"
+    const sellerId = isMe ? (req as any).seller_context?.seller_id : req.params?.id
+    const stored = sellerId ? (await loadSeller(req.scope, sellerId))?.metadata : null
+    for (const body of bodies) body.metadata = keepServerOwnedMetadata(body.metadata, stored)
+    return next()
+  } catch (error) {
+    return next(error)
+  }
+}
+
 export default defineMiddlewares({
   routes: [
     { matcher: "/admin/vitrinaki/overview", middlewares: [adminAuth] },
     { matcher: "/vendor/sellers/:id/members", methods: ["POST"], middlewares: [enforceTeamLimit] },
     { matcher: "/admin/sellers/:id/members", methods: ["POST"], middlewares: [enforceTeamLimit] },
     { matcher: "/admin/sellers/:id/members/invite", methods: ["POST"], middlewares: [enforceTeamLimit] },
+    { matcher: "/vendor/sellers", methods: ["POST"], middlewares: [keepServerOwnedSellerMetadata] },
+    { matcher: "/vendor/sellers/:id", methods: ["POST"], middlewares: [keepServerOwnedSellerMetadata] },
+    // Its own static route, which the :id matcher above does not reach.
+    { matcher: "/vendor/sellers/me", methods: ["POST"], middlewares: [keepServerOwnedSellerMetadata] },
     { matcher: "/store/sellers*", methods: ["GET"], middlewares: [scrubPublicSellers] },
     { matcher: "/store/offers*", methods: ["GET"], middlewares: [scrubPublicSellers] },
     { matcher: "/store/products*", methods: ["GET"], middlewares: [scrubPublicSellers] },

@@ -3,6 +3,8 @@ import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 import { updateSellersWorkflow } from "@mercurjs/core/workflows"
 
 import { isPlanId, type PlanId } from "../../../../../lib/vitrinaki-plans"
+import { laterPeriodEnd } from "../../../../../lib/vitrinaki-referral"
+import { applyPendingReferralRewards, loadSeller } from "../../../../../lib/vitrinaki-referral-rewards"
 
 type SellerRequest = AuthenticatedMedusaRequest & { seller_context?: { seller_id?: string } }
 
@@ -49,9 +51,11 @@ export async function POST(req: SellerRequest, res: MedusaResponse) {
     return res.status(409).json({ message: "Υπάρχει ήδη συνδρομή μέσω Stripe. Δεν χρειάζεται κωδικός." })
   }
 
-  const currentPeriodEnd = promo.days
-    ? new Date(Date.now() + promo.days * 24 * 60 * 60 * 1000).toISOString()
-    : null
+  // A later end already on the subscription (e.g. a referral extension) is kept.
+  const currentPeriodEnd = laterPeriodEnd(
+    promo.days ? new Date(Date.now() + promo.days * 24 * 60 * 60 * 1000).toISOString() : null,
+    current?.currentPeriodEnd
+  )
   const metadata = {
     ...(seller.metadata || {}),
     vitrinaki_subscription: {
@@ -66,5 +70,12 @@ export async function POST(req: SellerRequest, res: MedusaResponse) {
     },
   }
   await updateSellersWorkflow(req.scope).run({ input: { selector: { id: sellerId }, update: { metadata } } })
-  return res.json({ status: "active", planId: promo.planId, currentPeriodEnd })
+
+  // Free months from referrals that were waiting for a subscription extend the promo.
+  let end = currentPeriodEnd
+  if (currentPeriodEnd) {
+    const { applied } = await applyPendingReferralRewards(req.scope, sellerId).catch(() => ({ applied: 0 }))
+    if (applied) end = (await loadSeller(req.scope, sellerId))?.metadata?.vitrinaki_subscription?.currentPeriodEnd || end
+  }
+  return res.json({ status: "active", planId: promo.planId, currentPeriodEnd: end })
 }

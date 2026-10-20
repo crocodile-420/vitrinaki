@@ -3,6 +3,8 @@ import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 import { updateSellersWorkflow } from "@mercurjs/core/workflows"
 import { verifyStripeSignature as verifySignature } from "../../../lib/stripe-connect"
 import { isPlanId } from "../../../lib/vitrinaki-plans"
+import { isQualifyingPayment } from "../../../lib/vitrinaki-referral"
+import { applyPendingReferralRewards, qualifyReferral } from "../../../lib/vitrinaki-referral-rewards"
 
 type StripeEvent = { id: string; type: string; data: { object: Record<string, any> } }
 
@@ -118,5 +120,19 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
   }
 
   await updateSellersWorkflow(req.scope).run({ input: { selector: { id: sellerId }, update: { metadata } } })
-  return res.json({ received: true, subscriptionStatus: status })
+
+  // «Σύστασε έναν συνάδελφο»: a referred shop's first real paid invoice earns
+  // it a free month and its referrer a discount on one month; any paid invoice
+  // also applies this shop's pending rewards. Never fails the webhook (the
+  // subscription is already saved).
+  let referral: Record<string, unknown> | undefined
+  if (event.type === "invoice.paid") {
+    try {
+      const qualified = isQualifyingPayment(event.type, object) ? await qualifyReferral(req.scope, sellerId) : null
+      referral = qualified?.qualified ? qualified : await applyPendingReferralRewards(req.scope, sellerId)
+    } catch (error) {
+      req.scope.resolve(ContainerRegistrationKeys.LOGGER).error(`[vitrinaki/referral] ${sellerId}: ${error instanceof Error ? error.message : String(error)}`)
+    }
+  }
+  return res.json({ received: true, subscriptionStatus: status, ...(referral ? { referral } : {}) })
 }
