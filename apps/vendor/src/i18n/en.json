@@ -3,5 +3,52 @@
     "title": "Custom Fields",
     "description": "Manage your custom fields and configurations",
     "noFields": "No custom fields configured yet"
+  },
+  "vitrinakiCouriers": {
+    "nav": "Couriers",
+    "title": "Couriers",
+    "subtitle": "The courier shipping methods your customers see at checkout. Use your own contract with the courier.",
+    "loading": "Loading…",
+    "loadError": "Could not load your shipping options.",
+    "saveError": "Could not save.",
+    "retry": "Try again",
+    "empty": "You have not added a courier yet.",
+    "freeOverShort": "free from {{amount}}",
+    "delete": "Delete",
+    "deleted": "Shipping option deleted.",
+    "confirmDelete": "Delete the shipping option \"{{name}}\"?",
+    "created": "Added: {{name}}",
+    "form": {
+      "title": "New courier shipping option",
+      "hint": "Pick a courier, give it a name and a price. The price is flat per order.",
+      "courier": "Courier",
+      "trackingLink": "Tracking link for the customer",
+      "trackingNumberOnly": "Customer sees the tracking number (no link)",
+      "name": "Name at checkout",
+      "nameHint": "Customers see this, e.g. \"ACS – παράδοση σε 1–3 εργάσιμες\".",
+      "price": "Price (€)",
+      "freeOver": "Free shipping from (€, optional)",
+      "freeOverHint": "When the cart's products reach this amount, shipping is free.",
+      "zone": "Shipping zone",
+      "profile": "Shipping profile",
+      "save": "Add"
+    },
+    "errors": {
+      "name": "Enter a name.",
+      "price": "Enter a price, e.g. 3.50 (0 for free).",
+      "freeOver": "Enter an amount above 0 or leave it empty.",
+      "zone": "A shipping zone is required.",
+      "profile": "No shipping profile found."
+    },
+    "noZone": {
+      "title": "First, a shipping zone",
+      "body": "To add a courier you need a location with a shipping zone (e.g. \"Greece\").",
+      "link": "Settings → Locations"
+    },
+    "soon": {
+      "badge": "Soon",
+      "title": "Courier integrations",
+      "body": "Live courier rates, voucher printing and Box Now locker choice at checkout. For now the price is flat and you create the voucher with the courier."
+    }
   }
 }
