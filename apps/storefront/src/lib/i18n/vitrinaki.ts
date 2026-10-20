@@ -595,6 +595,8 @@ const en: Record<string, string> = {
   "Δάσκαλος γιόγκα": "Yoga teacher",
   "Διαθέσιμες ώρες": "Available times",
   "Δοκίμασέ το με το όνομά σου": "Try it with your name",
+  "Δοκίμασέ το τώρα": "Try it now",
+  "Γράψε το όνομα της επιχείρησής σου και δες τη βιτρίνα σου να ζωντανεύει.": "Type your business name and watch your shop come to life.",
   "Ελαιόλαδο": "Olive oil",
   "Ελαιόλαδο 1L": "Olive oil 1L",
   "Επαγγέλματα": "Professions",
