@@ -121,12 +121,33 @@ export function StoryCaption({ lang, className = "", tone = "light" }: { lang: L
   )
 }
 
-/** Small numbered label for each part of the story. */
-export function StoryChip({ n, children, className = "" }: { n: number; children: React.ReactNode; className?: string }) {
+/** Numbered label for each part of the story: a title and one line saying what it shows. */
+export function StoryChip({ n, title, text, className = "" }: { n: number; title: React.ReactNode; text?: React.ReactNode; className?: string }) {
   return (
-    <span className={`inline-flex items-center gap-2 rounded-full bg-[#F7F2E8]/95 py-1 pl-1 pr-3 text-[12px] font-semibold text-[#1F3628] shadow-[0_6px_18px_-8px_rgba(31,54,40,0.45)] ring-1 ring-[#2E4A37]/10 ${className}`}>
-      <span className="grid h-5 w-5 place-items-center rounded-full bg-[#2E4A37] text-[10.5px] font-bold text-[#F7F2E8]">{n}</span>
-      {children}
+    <span className={`inline-flex max-w-[285px] items-start gap-2 rounded-2xl bg-[#F7F2E8]/95 py-1.5 pl-1.5 pr-3.5 text-left text-[#1F3628] shadow-[0_6px_18px_-8px_rgba(31,54,40,0.45)] ring-1 ring-[#2E4A37]/10 backdrop-blur ${className}`}>
+      <span className="mt-px grid h-5 w-5 shrink-0 place-items-center rounded-full bg-[#2E4A37] text-[10.5px] font-bold text-[#F7F2E8]">{n}</span>
+      <span className="min-w-0 leading-tight">
+        <span className="block text-[12.5px] font-bold">{title}</span>
+        {text ? <span className="mt-0.5 block text-[11px] font-medium text-[#2E4A37]/75">{text}</span> : null}
+      </span>
+    </span>
+  )
+}
+
+/** A short callout naming one mockup of the e-shop part ("you", "your customers", …). */
+export function Callout({ icon, children, className = "" }: { icon: "studio" | "shop" | "phone" | "bell"; children: React.ReactNode; className?: string }) {
+  const paths: Record<string, React.ReactNode> = {
+    studio: <><rect x="3" y="4" width="18" height="16" rx="2" /><path d="M9 4v16M12.5 9h5M12.5 13h5" /></>,
+    shop: <><path d="M4 9.5 5.5 4h13L20 9.5" /><path d="M4 9.5c0 1.4 1.1 2.5 2.7 2.5s2.6-1.1 2.6-2.5c0 1.4 1.1 2.5 2.7 2.5s2.7-1.1 2.7-2.5c0 1.4 1 2.5 2.6 2.5S20 10.9 20 9.5M5.5 12v8h13v-8" /></>,
+    phone: <><rect x="7" y="2.5" width="10" height="19" rx="2.2" /><path d="M11 18.5h2" /></>,
+    bell: <><path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.5 1.5h-15z" /><path d="M10 20.5a2 2 0 0 0 4 0" /></>,
+  }
+  return (
+    <span className={`inline-flex items-center gap-1.5 rounded-full bg-[#1F3628] py-1 pl-1 pr-2.5 text-[11px] font-semibold leading-tight text-[#F7F2E8] shadow-[0_8px_20px_-10px_rgba(15,28,20,0.7)] ${className}`}>
+      <span className="grid h-5 w-5 shrink-0 place-items-center rounded-full bg-[#C0503C]">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{paths[icon]}</svg>
+      </span>
+      <span>{children}</span>
     </span>
   )
 }
