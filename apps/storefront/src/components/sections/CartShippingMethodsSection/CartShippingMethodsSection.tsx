@@ -14,9 +14,11 @@ import { Button } from '@/components/atoms';
 import ErrorMessage from '@/components/molecules/ErrorMessage/ErrorMessage';
 import { removeShippingMethod, setShippingMethod } from '@/lib/data/cart';
 import { calculatePriceForShippingOption } from '@/lib/data/fulfillment';
+import { courierName, freeShippingOver } from '@/lib/helpers/couriers';
 import { convertToLocale } from '@/lib/helpers/money';
 
 import { CartShippingMethodRow } from './CartShippingMethodRow';
+import { CourierBadge } from './CourierBadge';
 
 type ExtendedStoreProduct = HttpTypes.StoreProduct & {
   seller?: {
@@ -181,6 +183,16 @@ const CartShippingMethodsSection: FC<ShippingProps> = ({ cart, availableShipping
     (_shippingMethods ?? []).map((option: any) => [option.id, option.seller_name])
   );
 
+  // Courier (ACS, ΕΛΤΑ Courier, …) of each option, from the option's metadata.
+  const courierByOptionId = new Map<string, string | null>(
+    (_shippingMethods ?? []).map((option: any) => [option.id, courierName(option)])
+  );
+
+  const formatPrice = (amount: number) =>
+    amount === 0
+      ? tr('Δωρεάν')
+      : convertToLocale({ amount, currency_code: cart?.currency_code });
+
   return (
     <div className="bg-ui-bg-interactive rounded-sm border p-4">
       <div className="mb-6 flex flex-row items-center justify-between">
@@ -237,8 +249,15 @@ const CartShippingMethodsSection: FC<ShippingProps> = ({ cart, availableShipping
                             >
                               {({ open }) => (
                                 <>
-                                  <span className="block truncate">
-                                    {selectedMethod?.name ?? tr('Επίλεξε τρόπο αποστολής')}
+                                  <span className="flex min-w-0 items-center truncate">
+                                    {selectedMethod?.shipping_option_id ? (
+                                      <CourierBadge
+                                        name={courierByOptionId.get(selectedMethod.shipping_option_id)}
+                                      />
+                                    ) : null}
+                                    <span className="truncate">
+                                      {selectedMethod?.name ?? tr('Επίλεξε τρόπο αποστολής')}
+                                    </span>
                                   </span>
                                   <ChevronUpDown
                                     className={clx('transition-rotate duration-200', {
@@ -263,24 +282,34 @@ const CartShippingMethodsSection: FC<ShippingProps> = ({ cart, availableShipping
                                     className="relative cursor-pointer select-none border-b py-4 pl-6 pr-10 hover:bg-gray-50"
                                     value={option.id}
                                     key={option.id}
+                                    data-testid="shipping-option"
                                   >
-                                    {option.name}
-                                    {' - '}
-                                    {option.price_type === 'flat' ? (
-                                      convertToLocale({
-                                        amount: option.amount!,
-                                        currency_code: cart?.currency_code
-                                      })
-                                    ) : calculatedPricesMap[option.id] ? (
-                                      convertToLocale({
-                                        amount: calculatedPricesMap[option.id],
-                                        currency_code: cart?.currency_code
-                                      })
-                                    ) : isLoadingPrices ? (
-                                      <Loader />
-                                    ) : (
-                                      '-'
-                                    )}
+                                    <span className="flex items-center justify-between gap-3">
+                                      <span className="flex min-w-0 items-center">
+                                        <CourierBadge name={courierByOptionId.get(option.id)} />
+                                        <span className="truncate">{option.name}</span>
+                                      </span>
+                                      <span className="shrink-0 font-semibold">
+                                        {option.price_type === 'flat' ? (
+                                          formatPrice(Number(option.amount))
+                                        ) : calculatedPricesMap[option.id] !== undefined ? (
+                                          formatPrice(calculatedPricesMap[option.id])
+                                        ) : isLoadingPrices ? (
+                                          <Loader />
+                                        ) : (
+                                          '-'
+                                        )}
+                                      </span>
+                                    </span>
+                                    {freeShippingOver(option) !== null && Number(option.amount) > 0 ? (
+                                      <span className="mt-1 block text-xs text-ui-fg-subtle">
+                                        {tr('Δωρεάν αποστολή για παραγγελίες από')}{' '}
+                                        {convertToLocale({
+                                          amount: freeShippingOver(option)!,
+                                          currency_code: cart?.currency_code
+                                        })}
+                                      </span>
+                                    ) : null}
                                   </Listbox.Option>
                                 ))}
                               </Listbox.Options>
@@ -299,6 +328,11 @@ const CartShippingMethodsSection: FC<ShippingProps> = ({ cart, availableShipping
                         sellerName={
                           method.shipping_option_id
                             ? sellerNameByOptionId.get(method.shipping_option_id)
+                            : undefined
+                        }
+                        courier={
+                          method.shipping_option_id
+                            ? courierByOptionId.get(method.shipping_option_id)
                             : undefined
                         }
                         currency_code={cart.currency_code}
@@ -336,12 +370,12 @@ const CartShippingMethodsSection: FC<ShippingProps> = ({ cart, availableShipping
                     className="mb-4 rounded-md border p-4"
                   >
                     <Text className="txt-medium-plus text-ui-fg-base mb-1">{tr("Τρόπος αποστολής")}</Text>
-                    <Text className="txt-medium text-ui-fg-subtle">
+                    <Text className="txt-medium text-ui-fg-subtle flex flex-wrap items-center">
+                      {method.shipping_option_id ? (
+                        <CourierBadge name={courierByOptionId.get(method.shipping_option_id)} />
+                      ) : null}
                       {method.name}{' '}
-                      {convertToLocale({
-                        amount: method.amount!,
-                        currency_code: cart?.currency_code
-                      })}
+                      {formatPrice(Number(method.amount))}
                     </Text>
                   </div>
                 ))}

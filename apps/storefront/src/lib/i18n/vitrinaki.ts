@@ -398,6 +398,11 @@ const en: Record<string, string> = {
   "Κάτι πήγε στραβά": "An error occurred",
   "Συνέχεια στην πληρωμή": "Continue to payment",
   "Τρόπος αποστολής": "Method",
+  // Greek couriers at checkout and on the order page
+  "Δωρεάν αποστολή για παραγγελίες από": "Free shipping on orders from",
+  "Παρακολούθηση αποστολής": "Shipment tracking",
+  "Αριθμός αποστολής": "Tracking number",
+  "Παρακολούθηση στη μεταφορική": "Track with the courier",
   "Επίλεξε τρόπο πληρωμής": "Select a payment method",
   "Ολοκλήρωση αγοράς": "Place order",
   "Πιστωτική κάρτα": "Credit card",
