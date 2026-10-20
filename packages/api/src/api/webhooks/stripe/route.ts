@@ -1,26 +1,10 @@
 import type { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
 import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 import { updateSellersWorkflow } from "@mercurjs/core/workflows"
-import { createHmac, timingSafeEqual } from "node:crypto"
-
+import { verifyStripeSignature as verifySignature } from "../../../lib/stripe-connect"
 import { isPlanId } from "../../../lib/vitrinaki-plans"
 
 type StripeEvent = { id: string; type: string; data: { object: Record<string, any> } }
-
-function verifySignature(rawBody: string, header: string, secret: string) {
-  const parts = header.split(",").map(value => value.trim().split("="))
-  const timestamp = parts.find(([key]) => key === "t")?.[1]
-  const signatures = parts.filter(([key]) => key === "v1").map(([, value]) => value)
-  if (!timestamp || !signatures.length || !/^\d+$/.test(timestamp)) return false
-  const seconds = Number(timestamp)
-  if (!Number.isFinite(seconds) || Math.abs(Date.now() / 1000 - seconds) > 300) return false
-  const expected = createHmac("sha256", secret).update(`${timestamp}.${rawBody}`, "utf8").digest()
-  return signatures.some(value => {
-    if (!/^[a-f0-9]{64}$/i.test(value)) return false
-    const actual = Buffer.from(value, "hex")
-    return actual.length === expected.length && timingSafeEqual(actual, expected)
-  })
-}
 
 const fromUnix = (value: unknown) => {
   const seconds = typeof value === "number" ? value : Number(value)

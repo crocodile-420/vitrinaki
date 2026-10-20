@@ -406,6 +406,7 @@ const en: Record<string, string> = {
   "Επίλεξε τρόπο πληρωμής": "Select a payment method",
   "Ολοκλήρωση αγοράς": "Place order",
   "Πιστωτική κάρτα": "Credit card",
+  "Η πληρωμή με κάρτα γίνεται για ένα κατάστημα τη φορά. Ολοκλήρωσε χωριστά την παραγγελία κάθε καταστήματος.": "Card payment works for one shop at a time. Complete the order for each shop separately.",
   "Χειροκίνητη πληρωμή": "Manual payment",
   "Συμπλήρωσε τα στοιχεία της κάρτας σου:": "Enter your card details:",
   "Προσοχή:": "Attention:",

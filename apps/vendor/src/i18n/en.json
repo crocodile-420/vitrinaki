@@ -50,5 +50,39 @@
       "title": "Courier integrations",
       "body": "Live courier rates, voucher printing and Box Now locker choice at checkout. For now the price is flat and you create the voucher with the courier."
     }
+  },
+  "vitrinakiPayments": {
+    "eyebrow": "Vitrinaki Studio",
+    "title": "Card payments",
+    "intro": "Your customers pay by card and the money goes straight to your own Stripe account. You are the seller: you issue receipts, handle VAT, refunds and disputes. Vitrinaki never holds your money.",
+    "loading": "Loading…",
+    "loadError": "Could not load your payment status.",
+    "connectError": "Could not connect to Stripe.",
+    "statusLabel": "Status",
+    "status": {
+      "not_connected": "Not connected",
+      "pending": "Pending",
+      "active": "Active"
+    },
+    "notConfigured": "Card payments are not enabled on Vitrinaki yet. You can connect your account as soon as they are.",
+    "notConnected": {
+      "text": "Connect a Stripe account to accept cards in your shop. If you already use Stripe, sign in with it. Otherwise you create an account in a few minutes (you'll need your tax ID, IBAN and ID).",
+      "button": "Connect Stripe account",
+      "hidden": "Until then, card payment is not shown at your shop's checkout."
+    },
+    "pending": {
+      "text": "Your Stripe account cannot accept payments yet. Continue the setup on Stripe, or wait for the review to finish.",
+      "requirements_one": "Stripe still needs {{count}} item.",
+      "requirements_other": "Stripe still needs {{count}} items.",
+      "button": "Continue setup on Stripe",
+      "refresh": "Check again"
+    },
+    "active": {
+      "text": "Your shop accepts card payments. The money for each order goes into your Stripe account.",
+      "payoutsPending": "Stripe has not enabled payouts to your bank yet. The money stays in your balance until you finish your details on Stripe.",
+      "dashboard": "Open Stripe Dashboard",
+      "refunds": "Refunds: from the order page here in the Studio. The amount is refunded from your Stripe balance."
+    },
+    "account": "Account"
   }
 }
