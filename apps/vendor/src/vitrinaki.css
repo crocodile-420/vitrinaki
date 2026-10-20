@@ -1,5 +1,307 @@
+/* Vitrinaki Studio theme.
+   Mercur ships no theming hooks besides name/logo, so the panel is restyled
+   by overriding the Medusa UI design tokens (CSS variables) and a few stable
+   selectors (data-testid, data-state, role). Nothing in @mercurjs is patched.
+
+   Palette: κυπαρισσί #2E4A37 / #1F3628, κεραμιδί #C0503C, μπλε #265E8E,
+   cream #F7F2E8. The theme provider puts .light or .dark on <html>, so light
+   overrides are scoped to html:not(.dark) to keep them off the dark theme. */
+
 /* Native controls (select dropdowns, date pickers, scrollbars) follow the
    panel's theme; without this they open white on the dark theme. */
 .dark {
   color-scheme: dark;
+}
+
+/* ---------- Light theme tokens ---------- */
+html:not(.dark) {
+  --bg-subtle: #f7f2e8;
+  --bg-subtle-hover: #efe7d8;
+  --bg-subtle-pressed: #e6dcc9;
+  --bg-base: #ffffff;
+  --bg-base-hover: #faf6ee;
+  --bg-base-pressed: #f1eadc;
+  --bg-component: #faf6ee;
+  --bg-component-hover: #f1eadc;
+  --bg-component-pressed: #e6dcc9;
+  --bg-field: #fbf8f2;
+  --bg-field-hover: #f4eee2;
+  --bg-field-component: #ffffff;
+  --bg-field-component-hover: #fbf8f2;
+  --bg-disabled: #f1ece2;
+  --bg-highlight: #eef3ee;
+  --bg-highlight-hover: #e1ebe2;
+  --bg-interactive: #2e4a37;
+  --bg-switch-off: #e3dccd;
+  --bg-switch-off-hover: #d6cdba;
+
+  --fg-base: #1e2a22;
+  --fg-subtle: #4d584f;
+  --fg-muted: #857f72;
+  --fg-disabled: #b3ab9c;
+  --fg-interactive: #2e4a37;
+  --fg-interactive-hover: #c0503c;
+
+  --border-base: #e9e1d2;
+  --border-strong: #d8cdb9;
+  --border-interactive: #2e4a37;
+  --border-menu-top: #e9e1d2;
+
+  --button-inverted: #2e4a37;
+  --button-inverted-hover: #1f3628;
+  --button-inverted-pressed: #18291f;
+  --button-neutral-hover: #f7f2e8;
+  --button-neutral-pressed: #efe7d8;
+  --button-transparent-hover: #f1eadc;
+  --button-transparent-pressed: #e6dcc9;
+
+  --contrast-bg-base: #1f3628;
+  --contrast-bg-subtle: #2e4a37;
+  --contrast-bg-base-hover: #2e4a37;
+  --contrast-bg-base-pressed: #3a5a44;
+  --contrast-border-top: #1f3628;
+
+  --tag-green-bg: #e3eee4;
+  --tag-green-bg-hover: #d2e4d4;
+  --tag-green-border: #c5dbc8;
+  --tag-green-text: #2e4a37;
+  --tag-green-icon: #3f7a52;
+  --tag-blue-bg: #e2ecf5;
+  --tag-blue-bg-hover: #d2e1ef;
+  --tag-blue-border: #c3d6e9;
+  --tag-blue-text: #265e8e;
+  --tag-blue-icon: #3a78ad;
+  --tag-red-bg: #f7e3de;
+  --tag-red-bg-hover: #f1d1c9;
+  --tag-red-border: #ecc6bc;
+  --tag-red-text: #a3402e;
+  --tag-red-icon: #c0503c;
+  --tag-orange-bg: #f8ead6;
+  --tag-orange-bg-hover: #f2dcbd;
+  --tag-orange-border: #ecd2ae;
+  --tag-orange-text: #8a5216;
+  --tag-orange-icon: #d48a2c;
+  --tag-neutral-bg: #f3eee4;
+  --tag-neutral-bg-hover: #e9e1d2;
+  --tag-neutral-border: #e2d9c8;
+  --tag-neutral-text: #4d584f;
+  --tag-neutral-icon: #a39a88;
+
+  --borders-focus: 0px 0px 0px 1px #ffffff, 0px 0px 0px 3px rgba(46, 74, 55, 0.45);
+  --buttons-neutral-focus:
+    0px 1px 2px 0px rgba(31, 54, 40, 0.12),
+    0px 0px 0px 1px rgba(31, 54, 40, 0.1),
+    0px 0px 0px 2px #ffffff,
+    0px 0px 0px 4px rgba(46, 74, 55, 0.45);
+  --buttons-inverted-focus:
+    0px 0.75px 0px 0px rgba(255, 255, 255, 0.2) inset,
+    0px 1px 2px 0px rgba(0, 0, 0, 0.3),
+    0px 0px 0px 1px #1f3628,
+    0px 0px 0px 2px #ffffff,
+    0px 0px 0px 4px rgba(46, 74, 55, 0.45);
+  --elevation-card-rest:
+    0px 0px 0px 1px rgba(64, 52, 30, 0.07),
+    0px 1px 2px -1px rgba(64, 52, 30, 0.06),
+    0px 4px 14px 0px rgba(64, 52, 30, 0.05);
+  --elevation-card-hover:
+    0px 0px 0px 1px rgba(64, 52, 30, 0.09),
+    0px 1px 2px -1px rgba(64, 52, 30, 0.08),
+    0px 6px 18px 0px rgba(64, 52, 30, 0.08);
+}
+
+/* ---------- Dark theme tokens ----------
+   Kept close to Medusa's dark palette for readability; only the accents and
+   a green tint on the neutrals change. */
+html.dark {
+  --bg-subtle: #151c17;
+  --bg-base: #1b241e;
+  --bg-base-hover: #222d25;
+  --bg-component: #222d25;
+  --bg-component-hover: #2a372e;
+  --bg-field: #222d25;
+  --bg-field-hover: #2a372e;
+  --bg-interactive: #7fb08f;
+  --fg-interactive: #9cc6a8;
+  --fg-interactive-hover: #e08a76;
+  --border-interactive: #7fb08f;
+  --button-inverted: #3f6a4d;
+  --button-inverted-hover: #4b7a5a;
+  --button-inverted-pressed: #335a40;
+  --tag-green-icon: #6fbf86;
+  --tag-red-icon: #e07a64;
+  --tag-blue-icon: #6ea6d6;
+  --borders-focus: 0px 0px 0px 1px #1b241e, 0px 0px 0px 3px rgba(127, 176, 143, 0.55);
+}
+
+/* ---------- Sidebar ----------
+   Dark κυπαρισσί rail with cream items. The tokens are re-pointed inside the
+   rail only, so every Medusa class in it (bg-ui-bg-subtle, text-ui-fg-subtle,
+   the active item's bg-ui-bg-base pill) picks up the new colours. Menus open
+   in portals outside the rail and keep the normal panel colours. */
+html [class*="group/sidebar"] {
+  --rail: #2e4a37;
+  --bg-subtle: var(--rail);
+  --bg-subtle-hover: rgba(247, 242, 232, 0.09);
+  --bg-subtle-pressed: rgba(247, 242, 232, 0.14);
+  --bg-base: rgba(247, 242, 232, 0.16);
+  --bg-base-hover: rgba(247, 242, 232, 0.2);
+  --bg-component-hover: rgba(247, 242, 232, 0.16);
+  --fg-base: #fffaf0;
+  --fg-subtle: #e6dfcf;
+  --fg-muted: #a9b8ab;
+  --border-base: rgba(247, 242, 232, 0.12);
+  --border-strong: rgba(247, 242, 232, 0.18);
+  --elevation-card-rest: 0px 0px 0px 1px rgba(247, 242, 232, 0.06);
+  --borders-base: 0px 0px 0px 1px rgba(247, 242, 232, 0.14);
+  --button-transparent-hover: rgba(247, 242, 232, 0.09);
+  background: var(--rail);
+  border-color: #1f3628;
+  color: #e6dfcf;
+}
+html.dark [class*="group/sidebar"] {
+  --rail: #1f3628;
+}
+
+/* Wordmark «vitrinaki. STUDIO» above the store switcher. */
+[class*="group/sidebar"] aside > div > div:first-child > div:first-child:has(> button[aria-haspopup="menu"])::before {
+  content: "vitrinaki.";
+  display: block;
+  padding: 10px 6px 0;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  color: #fffaf0;
+}
+[class*="group/sidebar"] aside > div > div:first-child > div:first-child:has(> button[aria-haspopup="menu"]) {
+  display: flex;
+  flex-direction: column;
+}
+[class*="group/sidebar"] aside > div > div:first-child > div:first-child:has(> button[aria-haspopup="menu"])::after {
+  content: "STUDIO";
+  display: block;
+  padding: 0 6px 14px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  color: #c9b98f;
+}
+[class*="group/sidebar"] aside > div > div:first-child > div:first-child:has(> button[aria-haspopup="menu"]) > button {
+  order: 1;
+}
+[class*="group/sidebar"][data-state="collapsed"] aside > div > div:first-child > div:first-child:has(> button[aria-haspopup="menu"])::before,
+[class*="group/sidebar"][data-state="collapsed"] aside > div > div:first-child > div:first-child:has(> button[aria-haspopup="menu"])::after {
+  display: none;
+}
+
+/* Rounded pill items with a little more air, like the mockup. */
+[class*="group/sidebar"] nav a,
+[class*="group/sidebar"] nav button {
+  border-radius: 9px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+[class*="group/sidebar"] a[aria-current="page"],
+[class*="group/sidebar"] a[aria-current="page"] svg {
+  box-shadow: none;
+  color: #ffffff;
+}
+
+/* ---------- Main content ---------- */
+/* Rounder white cards on the cream page. */
+main .shadow-elevation-card-rest.rounded-lg {
+  border-radius: 14px;
+}
+main .shadow-elevation-card-rest.rounded-lg > .rounded-t-lg {
+  border-top-left-radius: 14px;
+  border-top-right-radius: 14px;
+}
+
+/* Page titles in the darker green. */
+html:not(.dark) main h1 {
+  color: #1f3628;
+  letter-spacing: -0.01em;
+}
+
+/* Primary buttons: rounded κυπαρισσί. */
+.bg-ui-button-inverted {
+  border-radius: 9px;
+}
+html:not(.dark) .shadow-buttons-inverted {
+  box-shadow:
+    0px 0.75px 0px 0px rgba(255, 255, 255, 0.18) inset,
+    0px 1px 2px 0px rgba(31, 54, 40, 0.35),
+    0px 0px 0px 1px #1f3628;
+}
+
+/* The list pages' main action («Δημιουργία») is a secondary button in
+   Mercur; in the header row of a page's card it reads as the primary one. */
+main .shadow-elevation-card-rest > div:first-child a.bg-ui-button-neutral[href$="/create"] {
+  background: var(--button-inverted);
+  color: #fffaf0;
+  padding: 6px 12px;
+  border-radius: 9px;
+  box-shadow:
+    0px 0.75px 0px 0px rgba(255, 255, 255, 0.18) inset,
+    0px 1px 2px 0px rgba(31, 54, 40, 0.35),
+    0px 0px 0px 1px var(--button-inverted-pressed);
+}
+main .shadow-elevation-card-rest > div:first-child a.bg-ui-button-neutral[href$="/create"]::after {
+  display: none;
+}
+main .shadow-elevation-card-rest > div:first-child a.bg-ui-button-neutral[href$="/create"]::before {
+  content: "+";
+  font-size: 15px;
+  line-height: 1;
+}
+main .shadow-elevation-card-rest > div:first-child a.bg-ui-button-neutral[href$="/create"]:hover {
+  background: var(--button-inverted-hover);
+}
+
+/* Table headers: small, muted, uppercase. */
+main thead th {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+}
+main thead tr,
+main thead th {
+  background: var(--bg-base) !important;
+}
+
+/* Thumbnails: rounded tiles on a cream ground. */
+main tbody td img {
+  border-radius: 6px;
+  background: var(--bg-subtle);
+}
+
+/* Tabs: underline in κεραμιδί instead of Medusa's raised pill. */
+[role="tablist"] [role="tab"] {
+  border-radius: 0;
+  box-shadow: none !important;
+  background: transparent !important;
+}
+[role="tablist"] [role="tab"][data-state="active"] {
+  color: var(--fg-base);
+  box-shadow: inset 0 -2px 0 #c0503c !important;
+}
+
+/* Status badges as filled pills. */
+main .rounded-md.border.bg-ui-tag-green-bg,
+main .rounded-md.border.bg-ui-tag-blue-bg,
+main .rounded-md.border.bg-ui-tag-red-bg,
+main .rounded-md.border.bg-ui-tag-orange-bg,
+main .rounded-md.border.bg-ui-tag-neutral-bg {
+  border-radius: 999px;
+  padding-left: 8px;
+  padding-right: 8px;
+}
+
+/* ---------- Login / register ----------
+   The right-hand panel is public/onboarding/illustration.svg, replaced with
+   a Vitrinaki one; the form column sits on cream. */
+html:not(.dark) #root .h-dvh > div.border-r:first-child {
+  background: #fbf8f2;
 }
