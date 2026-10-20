@@ -84,5 +84,54 @@
       "refunds": "Refunds: from the order page here in the Studio. The amount is refunded from your Stripe balance."
     },
     "account": "Account"
+  },
+  "vitrinakiLoyalty": {
+    "nav": "Customer points",
+    "title": "Customer points",
+    "subtitle": "Your customers collect points with every order and trade them for a discount or free shipping, in your shop only.",
+    "on": "On",
+    "off": "Off",
+    "loading": "Loading…",
+    "loadError": "Could not load your points programme.",
+    "saveError": "Saving failed.",
+    "saved": "Settings saved.",
+    "retry": "Try again",
+    "stats": {
+      "members": "Customers with points",
+      "issued": "Points given",
+      "redeemed": "Points redeemed",
+      "rewards": "Rewards taken"
+    },
+    "form": {
+      "enabled": "Points for my customers",
+      "enabledHint": "When off, no new points are given and none can be redeemed. Customers keep the points they already have.",
+      "pointsPerEuro": "Points per €1",
+      "pointsPerEuroHint": "Counts the value of the products in the order, without shipping.",
+      "rewards": "Rewards",
+      "rewardsHint": "What customers get for their points. Up to 6 options.",
+      "noRewards": "You haven't added a reward yet.",
+      "points": "Points",
+      "reward": "Reward",
+      "amountOff": "Discount in €",
+      "freeShipping": "Free shipping",
+      "amount": "Amount (€)",
+      "remove": "Remove",
+      "add": "Add reward",
+      "previewAmount": "{{points}} points → €{{amount}} off. A customer collects them after spending about €{{spend}}.",
+      "previewShipping": "{{points}} points → free shipping on one order.",
+      "save": "Save"
+    },
+    "how": {
+      "title": "How it works",
+      "earn": "Only customers with an account earn points, when they complete an order in your shop.",
+      "redeem": "Customers redeem from their cart and get a single-use code that works only here.",
+      "cancel": "If you cancel an order, the points it gave are taken back."
+    },
+    "errors": {
+      "pointsPerEuro": "Enter a number from 0.1 to 100.",
+      "points": "Points must be a whole number of 1 or more.",
+      "amount": "Enter an amount from €0.01 to €1,000.",
+      "noRewards": "Add at least one reward to turn points on."
+    }
   }
 }

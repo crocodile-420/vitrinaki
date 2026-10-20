@@ -27,6 +27,10 @@ const navigationItems = [
     label: "Διευθύνσεις",
     href: "/user/addresses",
   },
+  {
+    label: "Οι πόντοι μου",
+    href: "/user/points",
+  },
 ]
 
 export const UserNavigation = () => {

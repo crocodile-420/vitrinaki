@@ -1,6 +1,6 @@
 'use client';
 
-import { useId, useState, useTransition } from 'react';
+import { useEffect, useId, useState, useTransition } from 'react';
 
 import { Button, Card, Input } from '@/components/atoms';
 import { useCartContext } from '@/components/providers';
@@ -32,6 +32,10 @@ export const PromoCode = ({ cart, defaultOpen = false }: { cart: any; defaultOpe
     (promotion: any) => promotion?.code
   );
   const [isOpen, setIsOpen] = useState(defaultOpen || applied.length > 0);
+  // A code applied from elsewhere (a loyalty reward) shows up here at once.
+  useEffect(() => {
+    if (applied.length > 0) setIsOpen(true);
+  }, [applied.length]);
   const [promoCode, setPromoCode] = useState('');
   const [error, setError] = useState('');
   const [isPending, startTransition] = useTransition();

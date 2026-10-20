@@ -37,6 +37,10 @@ module.exports = withMercur({
       resolve: './src/modules/vitrinaki-private',
     },
     {
+      // Loyalty points per (shop, customer) and their ledger.
+      resolve: './src/modules/vitrinaki-loyalty',
+    },
+    {
       resolve: '@mercurjs/core/modules/admin-ui',
       options: {
         appDir: dashboardAppDir('admin'),

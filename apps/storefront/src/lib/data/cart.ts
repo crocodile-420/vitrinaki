@@ -19,6 +19,7 @@ import {
   setCartId,
   setShopCartIds
 } from './cookies';
+import { applyPendingLoyaltyCodes } from './loyalty';
 import { getRegion } from './regions';
 
 export async function retrieveCart(cartId?: string) {
@@ -385,6 +386,10 @@ export async function setShippingMethod({
     .mutate({ $id: cartId, option_id: shippingMethodId, fetchOptions: { headers } })
     .then(data => ({ ok: true, error: null, data }))
     .catch(error => ({ ok: false, error, data: null }));
+
+  // A free-shipping reward (loyalty points) taken in the cart applies now
+  // that there is a shipping method to discount.
+  if (res.ok) await applyPendingLoyaltyCodes(cartId);
 
   const cartCacheTag = await getCacheTag('carts');
   revalidateTag(cartCacheTag);
