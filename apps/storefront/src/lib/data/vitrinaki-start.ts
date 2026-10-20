@@ -1,16 +1,17 @@
 import { cookies } from "next/headers"
 
-// Server-side half of the public sign-up page. The browser only ever talks to
-// this storefront's own /api/vitrinaki/start/* route handlers; they call the
-// Medusa/Mercur backend server-to-server (so no CORS changes are needed) and
-// keep the new member's token in an httpOnly cookie until it is handed to the
-// Studio.
+// Server-side half of the public sign-up page (/start) and the shop profile
+// (/shop-registration). The browser only ever talks to this storefront's own
+// /api/vitrinaki/* route handlers; they call the Medusa/Mercur backend
+// server-to-server (so no CORS changes are needed) and keep the member's token
+// in an httpOnly cookie, the seller's Vitrinaki session. The Studio is only
+// reached through the handoff, for products and orders.
 
 export const backendUrl = () => (process.env.MEDUSA_BACKEND_URL || "http://localhost:9100").replace(/\/+$/, "")
 const publishableKey = () => process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY || ""
 
 export const START_COOKIE = "vk_start"
-const START_COOKIE_MAX_AGE = 60 * 60 * 2 // two hours: long enough for the optional steps
+const START_COOKIE_MAX_AGE = 60 * 60 * 24 * 30 // 30 days; the backend token inside may expire sooner, then the page asks to log in again
 
 export type StartSession = { token: string; sellerId: string; handle: string; name: string; email: string; saved?: string[] }
 

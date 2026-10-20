@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
   const tr = translator(isLang(raw.lang) ? raw.lang : "el")
   const session = await readStartSession()
   if (!session) {
-    return NextResponse.json({ message: tr("Η σύνδεση έληξε. Συνέχισε από το Studio.") }, { status: 401 })
+    return NextResponse.json({ message: tr("Η σύνδεση έληξε. Συνδέσου ξανά για να συνεχίσεις.") }, { status: 401 })
   }
   const body = Object.fromEntries(Object.entries(raw).filter(([key]) => ALLOWED.has(key)))
   try {

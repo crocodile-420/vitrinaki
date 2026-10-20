@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
     // ---- uniqueness, before creating anything ----
     const availability = await checkAvailability({ name: storeName, handle, email })
     if (availability.email && !availability.email.available) {
-      return fail(409, { ok: false, code: "account_exists", message: tr("Υπάρχει ήδη κατάστημα με αυτό το email. Συνδέσου στο Studio."), fields: { email: tr("Υπάρχει ήδη κατάστημα με αυτό το email.") } })
+      return fail(409, { ok: false, code: "account_exists", message: tr("Υπάρχει ήδη κατάστημα με αυτό το email. Συνδέσου στη βιτρίνα σου."), fields: { email: tr("Υπάρχει ήδη κατάστημα με αυτό το email.") } })
     }
     if (availability.name && !availability.name.available) {
       return fail(409, { ok: false, code: "name_taken", message: tr("Αυτό το όνομα το έχει ήδη άλλο κατάστημα."), fields: { storeName: tr("Αυτό το όνομα το έχει ήδη άλλο κατάστημα. Πρόσθεσε κάτι, π.χ. την πόλη σου.") } })
@@ -78,7 +78,7 @@ export async function POST(request: NextRequest) {
         return fail(409, { ok: false, code: "email_exists", message: tr("Υπάρχει ήδη λογαριασμός με αυτό το email."), fields: { email: tr("Υπάρχει ήδη λογαριασμός με αυτό το email.") } })
       }
       if (jwtPayload(login.body.token).actor_id) {
-        return fail(409, { ok: false, code: "account_exists", message: tr("Έχεις ήδη λογαριασμό. Συνδέσου στο Studio."), fields: { email: tr("Υπάρχει ήδη λογαριασμός με αυτό το email.") } })
+        return fail(409, { ok: false, code: "account_exists", message: tr("Έχεις ήδη λογαριασμό. Συνδέσου στη βιτρίνα σου."), fields: { email: tr("Υπάρχει ήδη λογαριασμός με αυτό το email.") } })
       }
       registrationToken = login.body.token
     } else {
@@ -123,7 +123,7 @@ export async function POST(request: NextRequest) {
     const session = await backend<{ token?: string }>("/auth/member/emailpass", { body: { email, password } })
     if (!session.ok || !session.body.token) {
       console.error("[vitrinaki/start] login after sign-up failed", session.status, session.body.message)
-      return fail(502, { ok: false, code: "server", message: tr("Το κατάστημα δημιουργήθηκε, αλλά δεν μπορέσαμε να σε συνδέσουμε. Συνδέσου στο Studio με το email σου.") })
+      return fail(502, { ok: false, code: "server", message: tr("Το κατάστημα δημιουργήθηκε, αλλά δεν μπορέσαμε να σε συνδέσουμε. Συνδέσου στη βιτρίνα σου με το email σου.") })
     }
 
     await writeStartSession({ token: session.body.token, sellerId: seller.id, handle: seller.handle, name: seller.name, email })
