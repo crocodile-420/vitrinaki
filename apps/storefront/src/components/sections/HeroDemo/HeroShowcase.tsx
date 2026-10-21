@@ -43,7 +43,7 @@ export function HeroShowcase({ lang, scenes, active, onPick, playing, rotating, 
 
   return (
     <section aria-roledescription="carousel" aria-label={tr("Τι μπορείς να φτιάξεις με το Vitrinaki")} className={className} {...hold}>
-      <div className="relative isolate aspect-[6/5] overflow-hidden rounded-[1.75rem] bg-[#EFE7D8] shadow-[0_40px_80px_-44px_rgba(31,54,40,0.6),0_2px_8px_rgba(31,54,40,0.06)] ring-1 ring-[#2E4A37]/10">
+      <div className="relative isolate aspect-[3/2] overflow-hidden rounded-[1.25rem] bg-white shadow-[0_40px_80px_-40px_rgba(31,54,40,0.6),0_2px_8px_rgba(31,54,40,0.06)]">
         <div aria-live={rotating ? "off" : "polite"} className="absolute inset-0">
           {scenes.map((scene, i) => (
             <div
@@ -68,12 +68,13 @@ export function HeroShowcase({ lang, scenes, active, onPick, playing, rotating, 
           <span className="font-bold text-[#C0503C] tabular-nums">{String(active + 1).padStart(2, "0")}</span>
           <span className="mx-2 text-[#2E4A37]/30" aria-hidden="true">/</span>
           <span key={current.key} className="vk-fade inline">
+            <span className="text-[#2E4A37]/60">{tr("Παράδειγμα")}: </span>
             <span className="font-bold">{tr(current.label)}</span>
-            <span className="hidden text-[#2E4A37]/70 sm:inline">. {tr(current.text)}</span>
+            <span className="text-[#2E4A37]/70"> · {tr(current.text)}</span>
           </span>
         </p>
         <div className="flex shrink-0 items-center gap-1.5">
-          <span className="mr-1 hidden items-center gap-1.5 min-[380px]:flex">
+          <span className="mr-1 hidden items-center gap-1 sm:flex">
             {scenes.map((scene, i) => (
               <button
                 key={scene.key}
@@ -83,7 +84,7 @@ export function HeroShowcase({ lang, scenes, active, onPick, playing, rotating, 
                 onClick={() => onPick(i)}
                 className="grid h-6 place-items-center rounded-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#2E4A37]"
               >
-                <span className={`block h-1 overflow-hidden rounded-full transition-all duration-300 motion-reduce:transition-none ${i === active ? "w-8 bg-[#2E4A37]/15" : "w-3 bg-[#2E4A37]/20 hover:bg-[#2E4A37]/45"}`}>
+                <span className={`block h-1 overflow-hidden rounded-full transition-all duration-300 motion-reduce:transition-none ${i === active ? "w-7 bg-[#2E4A37]/15" : "w-2.5 bg-[#2E4A37]/20 hover:bg-[#2E4A37]/45"}`}>
                   {i === active ? (
                     <span
                       key={`${active}-${rotating}`}

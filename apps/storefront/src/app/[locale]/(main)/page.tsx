@@ -3,7 +3,10 @@ import type { Metadata } from "next"
 import { headers } from "next/headers"
 import Script from "next/script"
 import { LiveSitePreview } from "@/components/sections/SitePreview/LiveSitePreview"
-import { HeroDemo } from "@/components/sections/HeroDemo/HeroDemo"
+import { HeroDemo, StudioTable } from "@/components/sections/HeroDemo/HeroDemo"
+import { SiteGallery } from "@/components/sections/HeroDemo/SiteGallery"
+import { SitePreview } from "@/components/sections/HeroDemo/SitePreview"
+import { sites } from "@/components/sections/HeroDemo/sites"
 import { Reveal } from "@/components/atoms/Reveal/Reveal"
 import { HowItWorksScroll } from "@/components/sections/HowItWorksScroll/HowItWorksScroll"
 import { TryShop } from "@/components/sections/TryShop/TryShop"
@@ -102,32 +105,23 @@ const siteAddress = (site: DirectoryStorefront) =>
   site.customDomain || `vitrinaki.gr/${site.handle || site.storeName.toLowerCase().replace(/\s+/g, "-")}`
 
 
-const features = [
-  { icon: "spark", color: "#C0503C", title: "Δημιουργία website σε λίγα λεπτά", text: "Διαλέγεις template, βάζεις όνομα, λογότυπο και χρώματα και το site σου είναι έτοιμο." },
-  { icon: "cart", color: "#2E4A37", title: "Online κατάστημα με πλήρη διαχείριση", text: "Προϊόντα, παραλλαγές, απόθεμα, καλάθι και παραγγελίες, όλα σε ένα σημείο." },
-  { icon: "globe", color: "#265E8E", title: "Το δικό σου domain", text: "Ξεκινάς στο vitrinaki.gr/το-όνομά-σου ή συνδέεις το δικό σου domain." },
-  { icon: "box", color: "#2E4A37", title: "Διαχείριση αποθέματος από το Studio", text: "Βλέπεις τι τελειώνει και ενημερώνεις ποσότητες με ένα κλικ." },
-  { icon: "lang", color: "#265E8E", title: "Ελληνικά & Αγγλικά", text: "Το κατάστημά σου μιλά τη γλώσσα των πελατών σου, στην Ελλάδα και στο εξωτερικό." },
-  { icon: "heart", color: "#C0503C", title: "Υποστήριξη που σε νοιάζεται", text: "Άνθρωποι δίπλα σου, με οδηγούς και πραγματική βοήθεια όταν τη χρειαστείς." },
-  { icon: "card", color: "#2E4A37", title: "Πληρωμές με κάρτα", text: "Οι πελάτες σου θα πληρώνουν με κάρτα απευθείας στο κατάστημά σου.", soon: true },
-  { icon: "doc", color: "#265E8E", title: "Τιμολόγια myDATA", text: "Έκδοση παραστατικών με διασύνδεση στο myDATA της ΑΑΔΕ.", soon: true },
+// Everything else that comes with a shop, next to the six main tools.
+const extras = [
+  { icon: "globe", title: "Το δικό σου domain", text: "Ξεκινάς στο vitrinaki.gr/το-όνομά-σου ή συνδέεις το δικό σου domain." },
+  { icon: "lang", title: "Ελληνικά & Αγγλικά", text: "Το κατάστημά σου μιλά τη γλώσσα των πελατών σου, στην Ελλάδα και στο εξωτερικό." },
+  { icon: "megaphone", title: "Προβολή στο Vitrinaki", text: "Η κοινή βιτρίνα βοηθά περισσότερους να σε ανακαλύψουν." },
+  { icon: "heart", title: "Υποστήριξη που σε νοιάζεται", text: "Άνθρωποι δίπλα σου, με οδηγούς και πραγματική βοήθεια όταν τη χρειαστείς." },
+  { icon: "calendar", title: "Κρατήσεις online", text: "Ραντεβού και κρατήσεις κατευθείαν από την ιστοσελίδα σου.", soon: true },
+  { icon: "doc", title: "Τιμολόγια myDATA", text: "Έκδοση παραστατικών με διασύνδεση στο myDATA της ΑΑΔΕ.", soon: true },
 ] as const
 
-const bandTiles = [
-  { icon: "layout", title: "Έτοιμα templates", bg: "#E4EBDD", color: "#2E4A37" },
-  { icon: "cart", title: "e-shop με διαχείριση αποθέματος", bg: "#F5DFD7", color: "#C0503C" },
-  { icon: "megaphone", title: "Προβολή στο Vitrinaki", bg: "#DCE7F1", color: "#265E8E" },
-  { icon: "support", title: "Υποστήριξη από ανθρώπους", bg: "#EEE7D6", color: "#2E4A37" },
-  { icon: "calendar", title: "Κρατήσεις online", bg: "#F5DFD7", color: "#C0503C", soon: true },
-] as const
-
-const gallery = [
-  { cat: "Μόδα & Αξεσουάρ", icon: "bag", brand: "Lumière", tag: "Μόδα με χαρακτήρα", img: "/home/t-fashion.webp", pos: "center 30%", dark: false },
-  { cat: "Σπίτι & Διακόσμηση", icon: "home", brand: "Casa di Terra", tag: "Σπίτι με ψυχή", img: "/home/t-home.webp", pos: "center 55%", dark: false },
-  { cat: "Τρόφιμα & Τοπικά προϊόντα", icon: "leaf", brand: "Γεύσεις", tag: "Του τόπου μας", img: "/home/food-dark.webp", pos: "35% center", dark: true },
-  { cat: "Ομορφιά & Ευεξία", icon: "drop", brand: "Νέα", tag: "Φυσική ομορφιά", img: "/home/p-oil.webp", pos: "center 40%", dark: false },
-  { cat: "Υπηρεσίες", icon: "lotus", brand: "Balance", tag: "Ισορροπία σώματος και μυαλού", img: "/home/t-services.webp", pos: "center 35%", dark: false },
-  { cat: "Επαγγελματίες & Portfolio", icon: "brief", brand: "Studio M", tag: "Αρχιτεκτονική & design", img: "/home/t-portfolio.webp", pos: "center", dark: false },
+// Same plans and team sizes as the Studio's «Ενεργοποίηση» step (PLAN_MEMBER_LIMITS in
+// packages/api/src/lib/vitrinaki-plans.ts). Prices live in Stripe and are not shown yet.
+const plans = [
+  { id: "starter", label: "Starter", team: "1 άτομο", text: "Η βιτρίνα σου με όλα τα βασικά." },
+  { id: "growth", label: "Growth", team: "έως 3 άτομα", text: "Για καταστήματα που μεγαλώνουν." },
+  { id: "pro", label: "Pro", team: "έως 5 άτομα", text: "Ρόλους για την ομάδα σου." },
+  { id: "business", label: "Επιχείρηση", team: "έως 15 άτομα", text: "Πολλά καταστήματα από έναν λογαριασμό, δωρεάν στήσιμο από την ομάδα μας και προτεραιότητα στην υποστήριξη." },
 ] as const
 
 const iconPaths: Record<string, React.ReactNode> = {
@@ -149,6 +143,8 @@ const iconPaths: Record<string, React.ReactNode> = {
   drop: <><path d="M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11Z" /></>,
   lotus: <><path d="M12 20c-4 0-8-2.5-9-6 3 0 6 1 9 4 3-3 6-4 9-4-1 3.5-5 6-9 6Z" /><path d="M12 18c-2-2.5-2.5-6 0-11 2.5 5 2 8.5 0 11Z" /></>,
   brief: <><rect x="3" y="7" width="18" height="13" rx="2" /><path d="M9 7V5h6v2M3 12h18" /></>,
+  orders: <><path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3Z" /><path d="M9 8h6M9 12h6" /></>,
+  truck: <><path d="M3 6h11v10H3zM14 10h4l3 3v3h-7" /><circle cx="7" cy="17.5" r="1.8" /><circle cx="17" cy="17.5" r="1.8" /></>,
 }
 
 function FeatureIcon({ name, size = 22 }: { name: string; size?: number }) {
@@ -156,6 +152,21 @@ function FeatureIcon({ name, size = 22 }: { name: string; size?: number }) {
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       {iconPaths[name]}
     </svg>
+  )
+}
+
+function Capability({ icon, color, title, text, tr, className = "", children }: { icon: string; color: string; title: string; text: string; tr: (s: string) => string; className?: string; children: React.ReactNode }) {
+  return (
+    <Reveal className={`h-full ${className}`}>
+      <div className="flex h-full flex-col rounded-2xl bg-[#F7F2E8] p-6 ring-1 ring-[#2E4A37]/10">
+        <span className="grid h-10 w-10 place-items-center rounded-full" style={{ background: `${color}17`, color }}>
+          <FeatureIcon name={icon} size={20} />
+        </span>
+        <h3 className="mt-3 text-[17px] font-bold text-[#1F3628]">{tr(title)}</h3>
+        <p className={`mt-1.5 max-w-xl text-[14px] leading-6 ${MUTED}`}>{tr(text)}</p>
+        <div className="mt-5 flex-1">{children}</div>
+      </div>
+    </Reveal>
   )
 }
 
@@ -261,46 +272,20 @@ export default async function Home({
         }}
       />
 
-      {/* Brand statement band */}
-      <section aria-label={tr("Τι είναι το Vitrinaki")} className="relative isolate overflow-hidden bg-[#F7F2E8]">
-        <OliveSprig className="pointer-events-none absolute -left-16 -top-8 -z-10 w-40 -rotate-12 text-[#2E4A37]/20 sm:w-52" />
-        <div className={`${WRAP} grid items-center gap-4 py-5 sm:gap-6 sm:py-6 lg:grid-cols-[0.9fr_1.1fr] lg:gap-10 lg:py-5`}>
-          <div className="lg:border-l-2 lg:border-[#C0503C]/40 lg:pl-6">
-            <p className="text-[1.6rem] font-extrabold leading-[1.12] tracking-[-0.02em] text-[#1F3628] sm:text-[2rem]">
-              {tr("Η ολοκληρωμένη λύση για")}{" "}
-              <span className="relative inline-block text-[#C0503C]">
-                {tr("μικρές επιχειρήσεις.")}
-                <Swoosh className="absolute -bottom-1.5 left-0 h-2 w-full text-[#C0503C]/35" />
-              </span>
-            </p>
-            <p className="mt-2 max-w-lg text-[14px] leading-6 text-[#2E4A37]/75 sm:mt-3 sm:text-[14.5px]">
-              {tr("Επαγγελματικό e-shop, διαχείριση προϊόντων και αποθέματος, προβολή στο Vitrinaki. Όλα σε μία πλατφόρμα.")}
-            </p>
-          </div>
-          <ul className="-mx-5 flex gap-2.5 overflow-x-auto px-5 pt-2 [scrollbar-width:none] sm:pt-0 sm:mx-0 sm:grid sm:grid-cols-3 sm:overflow-visible sm:px-0 lg:grid-cols-5 [&::-webkit-scrollbar]:hidden">
-            {bandTiles.map((t) => (
-              <li key={t.title} className="relative flex shrink-0 items-center gap-2.5 rounded-2xl py-2 pl-2 pr-3.5 ring-1 ring-black/[0.04] sm:flex-col sm:justify-center sm:px-2 sm:py-3.5 sm:text-center" style={{ background: t.bg }}>
-                {"soon" in t ? <span className="absolute -top-1.5 right-1.5 rounded-full sm:top-1.5 bg-white/80 px-1.5 py-0.5 text-[9.5px] font-bold text-[#265E8E]">{tr("Σύντομα")}</span> : null}
-                <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-white/70 sm:h-11 sm:w-11" style={{ color: t.color }}>
-                  <FeatureIcon name={t.icon} />
-                </span>
-                <span className="whitespace-nowrap text-[12.5px] font-semibold leading-tight text-[#1F3628] sm:mt-2.5 sm:whitespace-normal">{tr(t.title)}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </section>
-
       {/* Hero */}
       <section className="relative">
         <HeroDemo
           lang={lang}
           intro={
             <>
-              <h1 className="text-[2.15rem] font-extrabold leading-[1.05] tracking-[-0.03em] text-[#1F3628] sm:text-[3rem] lg:text-[2.85rem] xl:text-[3.35rem]">
+              <p className="mb-4 inline-flex items-center gap-2 text-[13px] font-semibold text-[#2E4A37]/75">
+                <span className="h-1.5 w-1.5 rounded-full bg-[#C0503C]" />
+                {tr("Για κάθε επιχείρηση, σε όλη την Ελλάδα")}
+              </p>
+              <h1 className="text-[2.15rem] font-extrabold leading-[1.05] tracking-[-0.03em] text-[#1F3628] sm:text-[3rem] lg:text-[2.6rem] xl:text-[3rem]">
                 {tr("Το vitrinaki σου, στο ψηφιακό εμπόριο.")}{" "}
                 <span className="relative inline-block text-[#C0503C]">
-                  {tr("Ποτέ δεν είναι αργά.")}
+                  {tr("Όλη η επιχείρηση σε ένα μέρος.")}
                   <Swoosh className="absolute -bottom-2 left-0 h-2.5 w-full text-[#C0503C]/45" />
                 </span>
               </h1>
@@ -311,7 +296,7 @@ export default async function Home({
                 <a href={businessUrl} className={primaryBtn}>
                   {tr("Άνοιξε τη βιτρίνα σου")} <Arrow />
                 </a>
-                <a href="#vitrina" className="group inline-flex min-h-12 items-center gap-2 rounded-xl border border-[#2E4A37]/30 bg-[#F7F2E8]/60 px-6 text-[15px] font-semibold text-[#1F3628] transition hover:border-[#2E4A37] hover:bg-white">
+                <a href="#examples" className="group inline-flex min-h-12 items-center gap-2 rounded-xl border border-[#2E4A37]/30 bg-[#F7F2E8]/60 px-6 text-[15px] font-semibold text-[#1F3628] transition hover:border-[#2E4A37] hover:bg-white">
                   {tr("Δες παραδείγματα")}
                 </a>
               </div>
@@ -328,80 +313,141 @@ export default async function Home({
         />
       </section>
 
-      {/* Features */}
-      <section id="included" className="scroll-mt-20 bg-[#2E4A37] text-[#F7F2E8]">
+      {/* What you can build: example websites from across Greece */}
+      <section id="examples" aria-labelledby="examples-title" className="scroll-mt-20">
         <div className={`${WRAP} py-14 lg:py-20`}>
           <Reveal className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
-            <h2 className="max-w-xl text-[1.7rem] font-extrabold leading-tight tracking-[-0.02em] text-[#F7F2E8] sm:text-[2rem]">{tr("Ένα ολοκληρωμένο e-shop. Δικό σου.")}</h2>
-            <p className="max-w-md text-[15px] leading-7 text-[#F7F2E8]/80">{tr("Όλα όσα χρειάζεσαι για να πουλάς online, σε ένα σημείο.")}</p>
+            <div>
+              <Eyebrow>{tr("Από όλη την Ελλάδα")}</Eyebrow>
+              <h2 id="examples-title" className="mt-4 max-w-xl text-[1.9rem] font-extrabold leading-tight tracking-[-0.02em] text-[#1F3628] sm:text-4xl">{tr("Τι μπορείς να φτιάξεις με το Vitrinaki;")}</h2>
+            </div>
+            <p className={`max-w-md text-[15px] leading-7 ${MUTED}`}>{tr("Παραγωγοί, καταστήματα, ξενώνες, γραφεία, φροντιστήρια και δημιουργοί. Κάθε επιχείρηση παίρνει τη δική της ιστοσελίδα, με το δικό της ύφος. Τα παραδείγματα είναι ενδεικτικά.")}</p>
           </Reveal>
-          <div className="mt-8 grid grid-cols-1 gap-4 min-[480px]:grid-cols-2 lg:grid-cols-4">
-            {features.map((f, i) => (
-              <Reveal key={f.title} delay={(i % 4) * 60} className="h-full">
-                <div className="group relative h-full rounded-2xl border border-[#F7F2E8]/20 bg-[#F7F2E8] p-5 text-[#1F3628] shadow-[0_18px_40px_-28px_rgba(0,0,0,0.6)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_55px_-30px_rgba(0,0,0,0.7)]">
-                  {"soon" in f ? <span className="absolute right-2.5 top-2.5 rounded-full bg-[#265E8E]/10 px-2 py-0.5 text-[10.5px] font-semibold text-[#265E8E]">{tr("Σύντομα")}</span> : null}
-                  <span className="grid h-10 w-10 place-items-center rounded-full" style={{ background: `${f.color}17`, color: f.color }}>
-                    <FeatureIcon name={f.icon} size={20} />
-                  </span>
-                  <h3 className="mt-3 text-[15.5px] font-bold leading-snug text-[#1F3628]">{tr(f.title)}</h3>
-                  <p className={`mt-1.5 text-[14px] leading-6 ${MUTED}`}>{tr(f.text)}</p>
-                </div>
-              </Reveal>
-            ))}
+          <Reveal className="mt-8">
+            <SiteGallery lang={lang} startHref={businessUrl} />
+          </Reveal>
+        </div>
+      </section>
+
+      {/* All-in-one: the business tools under one roof */}
+      <section id="included" aria-labelledby="included-title" className="scroll-mt-20 border-t border-[#2E4A37]/10 bg-[#EFE7D8]">
+        <div className={`${WRAP} py-14 lg:py-20`}>
+          <Reveal className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+            <div>
+              <Eyebrow>{tr("Όλα σε μία πλατφόρμα")}</Eyebrow>
+              <h2 id="included-title" className="mt-4 max-w-xl text-[1.9rem] font-extrabold leading-tight tracking-[-0.02em] text-[#1F3628] sm:text-4xl">
+                {tr("Η ολοκληρωμένη λύση για")}{" "}
+                <span className="relative inline-block text-[#C0503C]">
+                  {tr("μικρές επιχειρήσεις.")}
+                  <Swoosh className="absolute -bottom-1.5 left-0 h-2 w-full text-[#C0503C]/35" />
+                </span>
+              </h2>
+            </div>
+            <p className={`max-w-md text-[15px] leading-7 ${MUTED}`}>{tr("Ιστοσελίδα, e-shop, απόθεμα, παραγγελίες, πληρωμές και αποστολές. Τα βασικά εργαλεία της επιχείρησής σου, μαζί, σε ένα Studio.")}</p>
+          </Reveal>
+
+          <div className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            <Capability className="md:col-span-2" icon="spark" color="#C0503C" title="Ιστοσελίδα & e-shop" text="Έτοιμα templates με το όνομα, το λογότυπο και τα χρώματά σου, στο vitrinaki.gr/το-όνομά-σου ή στο δικό σου domain, σε Ελληνικά και Αγγλικά." tr={tr}>
+              <div className="grid grid-cols-2 gap-3">
+                <SitePreview site={sites[0]} lang={lang} />
+                <SitePreview site={sites[2]} lang={lang} />
+              </div>
+            </Capability>
+            <Capability icon="card" color="#265E8E" title="Πληρωμές με κάρτα" text="Οι πελάτες πληρώνουν με κάρτα μέσω Stripe και τα χρήματα πηγαίνουν απευθείας στον λογαριασμό του καταστήματός σου." tr={tr}>
+              <div className="rounded-xl bg-white p-4 ring-1 ring-[#2E4A37]/10">
+                <p className="text-[12px] font-semibold text-[#2E4A37]/60">{tr("Πληρωμή με κάρτα")}</p>
+                <p className="mt-2 rounded-lg border border-[#2E4A37]/15 px-3 py-2 font-mono text-[13px] tracking-wider text-[#1F3628]">•••• •••• •••• 4242</p>
+                <span className="mt-3 block rounded-lg bg-[#2E4A37] py-2 text-center text-[13px] font-bold text-white">{tr("Πλήρωσε")} 48,00 €</span>
+                <p className="mt-2 text-center text-[11.5px] text-[#2E4A37]/55">{tr("Ασφαλής πληρωμή μέσω Stripe")}</p>
+              </div>
+            </Capability>
+            <Capability icon="orders" color="#2E4A37" title="Παραγγελίες & πελάτες" text="Κάθε παραγγελία με τα στοιχεία του πελάτη και την κατάστασή της. Κωδικοί έκπτωσης και πόντοι επιβράβευσης για όσους ξαναγοράζουν." tr={tr}>
+              <ul className="divide-y divide-[#2E4A37]/[0.07] rounded-xl bg-white px-4 py-1 text-[13px] ring-1 ring-[#2E4A37]/10">
+                {[["#1042", "Μαρία Κ.", "Νέα", "bg-[#C0503C]/[0.12] text-[#C0503C]"], ["#1041", "Γιώργος Π.", "Σε αποστολή", "bg-[#265E8E]/10 text-[#265E8E]"], ["#1040", "Ελένη Δ.", "Ολοκληρώθηκε", "bg-[#2E4A37]/10 text-[#2E4A37]"]].map(([no, who, status, cls]) => (
+                  <li key={no} className="flex items-center justify-between gap-2 py-2.5">
+                    <span className="min-w-0 truncate"><span className="font-bold tabular-nums">{no}</span> <span className="text-[#2E4A37]/70">· {tr(who)}</span></span>
+                    <span className={`shrink-0 rounded-full px-2 py-0.5 text-[11px] font-semibold ${cls}`}>{tr(status)}</span>
+                  </li>
+                ))}
+              </ul>
+              <p className="mt-3 flex flex-wrap gap-2 text-[12px] font-semibold">
+                <span className="rounded-full bg-white px-2.5 py-1 text-[#C0503C] ring-1 ring-[#C0503C]/20">{tr("Κωδικός έκπτωσης")}</span>
+                <span className="rounded-full bg-white px-2.5 py-1 text-[#2E4A37] ring-1 ring-[#2E4A37]/15">{tr("Πόντοι επιβράβευσης")}</span>
+              </p>
+            </Capability>
+            <Capability className="md:col-span-2" icon="box" color="#2E4A37" title="Απόθεμα & προϊόντα" text="Προϊόντα, παραλλαγές και ποσότητες. Βλέπεις τι τελειώνει και το ενημερώνεις με ένα κλικ. Δοκίμασέ το εδώ: πάτησε + και −." tr={tr}>
+              <StudioTable lang={lang} />
+            </Capability>
+            <Capability icon="truck" color="#265E8E" title="Αποστολές με courier" text="Δίνεις στους πελάτες σου επιλογές αποστολής με τις εταιρείες που συνεργάζεσαι. Με τον αριθμό αποστολής, ο πελάτης βλέπει πού είναι το δέμα του." tr={tr}>
+              <ul className="flex flex-wrap gap-2">
+                {["ACS", "ΕΛΤΑ Courier", "Γενική Ταχυδρομική", "DHL", "Box Now"].map((c) => (
+                  <li key={c} className="rounded-lg bg-white px-3 py-1.5 text-[13px] font-bold text-[#1F3628] ring-1 ring-[#2E4A37]/10">{tr(c)}</li>
+                ))}
+              </ul>
+            </Capability>
+            <Capability icon="layout" color="#C0503C" title="Όλη η επιχείρηση σε ένα Studio" text="Από ένα σημείο βλέπεις και διαχειρίζεσαι τα πάντα, μαζί με την ομάδα σου." tr={tr}>
+              <ul className="grid grid-cols-2 gap-1.5 text-[13px] font-semibold text-[#1F3628]">
+                {["Προϊόντα", "Παραγγελίες", "Απόθεμα", "Πληρωμές με κάρτα", "Courier", "Πόντοι επιβράβευσης", "Η βιτρίνα σου", "Ομάδα"].map((item) => (
+                  <li key={item} className="flex items-center gap-1.5 rounded-lg bg-white px-2.5 py-1.5 ring-1 ring-[#2E4A37]/10">
+                    <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#C0503C]" />
+                    <span className="truncate">{tr(item)}</span>
+                  </li>
+                ))}
+              </ul>
+            </Capability>
+            <Reveal className="h-full">
+              <div className="flex h-full flex-col rounded-2xl bg-[#2E4A37] p-6 text-[#F7F2E8]">
+                <h3 className="text-[17px] font-bold">{tr("Και επίσης")}</h3>
+                <ul className="mt-4 space-y-3">
+                  {extras.map((x) => (
+                    <li key={x.title} className="flex items-start gap-3">
+                      <span className="mt-0.5 shrink-0 text-[#E8A493]"><FeatureIcon name={x.icon} size={18} /></span>
+                      <span className="text-[14px] leading-snug">
+                        <span className="font-semibold">{tr(x.title)}</span>
+                        {"soon" in x ? <span className="ml-1.5 rounded-full bg-[#F7F2E8]/15 px-1.5 py-0.5 text-[10.5px] font-semibold">{tr("Σύντομα")}</span> : null}
+                        <span className="block text-[13px] text-[#F7F2E8]/70">{tr(x.text)}</span>
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </Reveal>
           </div>
         </div>
       </section>
 
-      {/* Template gallery */}
-      <section id="examples" className="scroll-mt-20">
-        <div className={`${WRAP} py-14 lg:py-20`}>
-          <Reveal className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
-            <h2 className="max-w-xl text-[1.7rem] font-extrabold leading-tight tracking-[-0.02em] text-[#1F3628] sm:text-[2rem]">{tr("Έτοιμα templates για κάθε επιχείρηση.")}</h2>
-            <p className={`max-w-md text-[15px] leading-7 ${MUTED}`}>{tr("Ξεκινάς από ένα ύφος και το κάνεις δικό σου με το λογότυπο, τα χρώματα και τις φωτογραφίες σου.")}</p>
-          </Reveal>
-          {/* phones: a swipeable row; tablet and up: a grid with equal cards */}
-          <ul className="-mx-5 mt-8 flex snap-x snap-mandatory gap-4 overflow-x-auto px-5 pb-2 [scrollbar-width:none] sm:mx-0 sm:grid sm:grid-cols-2 sm:gap-5 sm:overflow-visible sm:px-0 sm:pb-0 lg:grid-cols-3 [&::-webkit-scrollbar]:hidden">
-            {gallery.map((g, i) => (
-              <li key={g.cat} className="w-[80%] shrink-0 snap-start sm:w-auto">
-                <Reveal delay={(i % 3) * 60} className="h-full">
-                  <figure className="group flex h-full flex-col overflow-hidden rounded-2xl bg-white shadow-[0_18px_40px_-28px_rgba(31,54,40,0.5)] ring-1 ring-[#2E4A37]/10 transition duration-300 hover:-translate-y-1 hover:shadow-[0_30px_60px_-30px_rgba(31,54,40,0.55)] motion-reduce:hover:translate-y-0">
-                    <div className="flex items-center justify-between gap-2 border-b border-[#2E4A37]/[0.07] px-3.5 py-2">
-                      <span className="truncate text-[12px] font-bold text-[#1F3628]">{g.brand}</span>
-                      <span className="flex gap-3 text-[10.5px] text-[#2E4A37]/55"><span>{tr("Αρχική")}</span><span>{tr("Συλλογή")}</span></span>
-                    </div>
-                    <div className={`relative aspect-[4/3] overflow-hidden ${g.dark ? "bg-[#1F3628]" : "bg-[#F3EDE2]"}`}>
-                      <img src={g.img} alt="" loading="lazy" decoding="async" className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-[1.04] motion-reduce:transition-none motion-reduce:group-hover:scale-100" style={{ objectPosition: g.pos }} />
-                      <div className={`absolute inset-0 ${g.dark ? "bg-gradient-to-r from-[#1F3628]/90 via-[#1F3628]/45 to-transparent" : "bg-gradient-to-r from-white/85 via-white/35 to-transparent"}`} />
-                      <div className={`relative p-5 ${g.dark ? "text-[#F7F2E8]" : "text-[#1F3628]"}`}>
-                        <p className="font-serif text-[28px] leading-none">{g.brand}</p>
-                        <p className="mt-2 max-w-[60%] text-[13px] leading-snug opacity-80">{tr(g.tag)}</p>
-                        <span className="mt-3 inline-block rounded-md bg-[#C0503C] px-2.5 py-1 text-[11.5px] font-bold text-white">{tr("Ανακάλυψε")}</span>
-                      </div>
-                    </div>
-                    <figcaption className="flex flex-1 items-center justify-between gap-3 px-4 py-3.5">
-                      <span className="flex min-w-0 items-center gap-2 text-[14.5px] font-semibold leading-tight text-[#1F3628]">
-                        <span className="shrink-0 text-[#C0503C]"><FeatureIcon name={g.icon} size={18} /></span>
-                        {tr(g.cat)}
-                      </span>
-                      <span className="flex shrink-0 items-center gap-1.5">
-                        <a href="#try" className="rounded-lg px-2.5 py-1.5 text-[13px] font-semibold text-[#1F3628] underline-offset-4 transition hover:underline">{tr("Δοκίμασέ το")}</a>
-                        <a href={businessUrl} className="rounded-lg bg-[#2E4A37] px-3 py-1.5 text-[13px] font-semibold text-white transition hover:bg-[#1F3628]">{tr("Ξεκίνα")}</a>
-                      </span>
-                    </figcaption>
-                  </figure>
-                </Reveal>
-              </li>
-            ))}
-          </ul>
-          <Reveal delay={120} className="mt-5">
-            <a href={businessUrl} className="group relative flex flex-col gap-4 overflow-hidden rounded-2xl bg-[#2E4A37] px-6 py-5 text-[#F7F2E8] transition hover:-translate-y-0.5 sm:flex-row sm:items-center sm:justify-between">
-              <OliveSprig className="pointer-events-none absolute -bottom-6 right-32 w-36 text-[#F7F2E8]/15" />
-              <span className="relative flex items-center gap-3">
-                <svg className="h-8 w-8 shrink-0 text-[#E08A76]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M3 17 9 11l4 4 8-8" /><path d="M15 7h6v6" /></svg>
-                <span className="text-[18px] font-extrabold leading-tight">{tr("Άνοιξε τη βιτρίνα σου")}</span>
-              </span>
-              <span className="relative inline-flex w-fit items-center gap-1.5 rounded-lg bg-[#C0503C] px-4 py-2 text-[14px] font-semibold text-white">{tr("Ξεκίνα")} <Arrow /></span>
+      {/* Subscription: one plan, every tool */}
+      <section id="pricing" aria-labelledby="pricing-title" className="relative isolate scroll-mt-20 overflow-hidden bg-[#2E4A37] text-[#F7F2E8]">
+        <OliveBranch className="pointer-events-none absolute -bottom-6 -left-10 -z-10 w-[360px] text-[#F7F2E8]/[0.07] lg:w-[520px]" />
+        <div className={`${WRAP} grid gap-10 py-14 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16 lg:py-20`}>
+          <Reveal>
+            <Eyebrow light>{tr("Συνδρομή")}</Eyebrow>
+            <h2 id="pricing-title" className="mt-4 text-[1.9rem] font-extrabold leading-tight tracking-[-0.02em] sm:text-4xl">{tr("Μία συνδρομή. Όλα τα εργαλεία μαζί.")}</h2>
+            <p className="mt-4 max-w-md text-[15px] leading-7 text-[#F7F2E8]/80">{tr("Δεν χρειάζεται να πληρώνεις χωριστά για ιστοσελίδα, e-shop και διαχείριση, ούτε να τα κάνεις να μιλήσουν μεταξύ τους. Με το Vitrinaki τα έχεις έτοιμα και συνδεδεμένα από την πρώτη μέρα.")}</p>
+            <ul className="mt-6 grid gap-2.5 text-[14.5px] sm:grid-cols-2">
+              {["Ιστοσελίδα & e-shop", "Απόθεμα & προϊόντα", "Παραγγελίες & πελάτες", "Πληρωμές με κάρτα", "Αποστολές με courier", "Υποστήριξη από ανθρώπους"].map((item) => (
+                <li key={item} className="flex items-center gap-2">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#C0503C" /><path d="m7.5 12 3 3 6-6" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                  {tr(item)}
+                </li>
+              ))}
+            </ul>
+            <a href={businessUrl} className={`mt-8 ${primaryBtn}`}>
+              {tr("Άνοιξε τη βιτρίνα σου")} <Arrow />
             </a>
+          </Reveal>
+          <Reveal delay={120}>
+            <p className="text-[13px] font-semibold text-[#F7F2E8]/70">{tr("Τα πακέτα διαφέρουν στο μέγεθος της ομάδας και στη βοήθεια που παίρνεις. Όλα έχουν τα παραπάνω.")}</p>
+            <ul className="mt-4 grid gap-3 sm:grid-cols-2">
+              {plans.map((plan) => (
+                <li key={plan.id} className="rounded-2xl bg-[#F7F2E8] p-5 text-[#1F3628]">
+                  <p className="text-[17px] font-extrabold">{tr(plan.label)}</p>
+                  <p className="mt-0.5 text-[13px] font-semibold text-[#C0503C]">{tr(plan.team)}</p>
+                  <p className={`mt-2 text-[13.5px] leading-6 ${MUTED}`}>{tr(plan.text)}</p>
+                </li>
+              ))}
+            </ul>
+            <p className="mt-4 text-[13px] leading-6 text-[#F7F2E8]/70">{tr("Οι τιμές οριστικοποιούνται. Πριν ξεκινήσεις θα ξέρεις ακριβώς τι πληρώνεις. Ήρθες με σύσταση από άλλο κατάστημα; Ο πρώτος σου μήνας είναι δωρεάν.")}</p>
           </Reveal>
         </div>
       </section>
@@ -479,7 +525,7 @@ export default async function Home({
         <div className={`${WRAP} py-14 lg:py-20`}>
           <Reveal className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
             <h2 className="max-w-xl text-[1.9rem] font-extrabold leading-tight tracking-[-0.02em] text-[#1F3628] sm:text-4xl">{tr("Όλοι αξίζουν μια θέση στη μεγάλη βιτρίνα.")}</h2>
-            <p className={`max-w-md text-[15px] leading-7 ${MUTED}`}>{tr("Δεν χρειάζεται να ξέρεις από design, προγραμματισμό ή διαφημίσεις για να μεγαλώσεις την επιχείρησή σου. Και ποτέ δεν είναι αργά για το επόμενο βήμα.")}</p>
+            <p className={`max-w-md text-[15px] leading-7 ${MUTED}`}>{tr("Δεν χρειάζεται να ξέρεις από design, προγραμματισμό ή διαφημίσεις για να μεγαλώσεις την επιχείρησή σου.")}</p>
           </Reveal>
           <div className="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
             {audiences.map((item, i) => (
@@ -563,7 +609,7 @@ export default async function Home({
           <div aria-hidden="true" className="vk-grain absolute inset-0 -z-10 opacity-20" />
           <Eyebrow light>{tr("Το επόμενο βήμα")}</Eyebrow>
           <h2 className="font-serif mx-auto mt-7 max-w-4xl text-[2.4rem] font-medium leading-[1.04] tracking-[-0.02em] sm:text-6xl lg:text-7xl">
-            {tr("Ποτέ δεν είναι αργά για να ανοίξεις τη βιτρίνα σου.")}
+            {tr("Όλη η επιχείρησή σου, σε μία βιτρίνα.")}
           </h2>
           <p className="mx-auto mt-7 max-w-xl text-[17px] leading-8 text-[#F7F2E8]/70">{tr("Πες μας για την επιχείρησή σου και κάνε το πρώτο βήμα στο ψηφιακό εμπόριο. Δεν θα το κάνεις μόνος σου.")}</p>
           <a href={businessUrl} className={`mt-10 ${primaryBtn}`}>
