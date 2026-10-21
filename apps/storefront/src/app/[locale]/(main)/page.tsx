@@ -314,31 +314,40 @@ export default async function Home({
         />
       </section>
 
-      {/* Marketplace: products promoted from Vitrinaki shops, each with a way to the shop */}
-      <section id="marketplace" aria-labelledby="marketplace-title" className="scroll-mt-20">
+      {/* Try it: the visitor changes a sample shop live */}
+      <section id="try" aria-labelledby="try-title" className="scroll-mt-20 border-t border-[#2E4A37]/10 bg-[#EFE7D8]">
         <div className={`${WRAP} py-14 lg:py-20`}>
           <Reveal className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
             <div>
-              <Eyebrow>{tr("Marketplace")}</Eyebrow>
-              <h2 id="marketplace-title" className="mt-4 max-w-xl text-[1.9rem] font-extrabold leading-tight tracking-[-0.02em] text-[#1F3628] sm:text-4xl">{tr("Ανακάλυψε προϊόντα από ελληνικά καταστήματα.")}</h2>
+              <Eyebrow>Custom</Eyebrow>
+              <h2 id="try-title" className="mt-4 max-w-xl text-[1.9rem] font-extrabold leading-tight tracking-[-0.02em] text-[#1F3628] sm:text-4xl">{tr("Φτιάξε τη βιτρίνα όπως τη θες.")}</h2>
             </div>
-            <p className={`max-w-md text-[15px] leading-7 ${MUTED}`}>{tr("Προϊόντα που ξεχωρίσαμε από τις βιτρίνες του Vitrinaki. Άνοιξε ένα για να το δεις ή πήγαινε κατευθείαν στο κατάστημα.")}</p>
+            <p className={`max-w-md text-[15px] leading-7 ${MUTED}`}>{tr("Template, χρώματα, γραμματοσειρά, στυλ, λογότυπο, εξώφυλλο, ενότητες και domain. Δες το κατάστημα να αλλάζει αμέσως. Δεν αποθηκεύεται τίποτα.")}</p>
           </Reveal>
-          {promoted.length ? (
-            <Reveal className="mt-8">
-              <PromotedMarket products={promoted} lang={lang} locale={locale} />
-            </Reveal>
-          ) : (
-            <Reveal className="mt-8 flex flex-col items-start gap-4 rounded-2xl border border-dashed border-[#2E4A37]/25 bg-white/50 p-6 sm:flex-row sm:items-center sm:justify-between sm:p-8">
-              <div>
-                <h3 className="text-lg font-bold text-[#1F3628]">{tr("Σύντομα εδώ, προϊόντα από τα καταστήματά μας.")}</h3>
-                <p className={`mt-1 text-[14.5px] leading-6 ${MUTED}`}>{tr("Άνοιξε τη βιτρίνα σου και τα προϊόντα σου μπορεί να είναι από τα πρώτα.")}</p>
-              </div>
-              <a href={businessUrl} className={`${primaryBtn} shrink-0`}>
-                {tr("Άνοιξε τη βιτρίνα σου")} <Arrow />
-              </a>
-            </Reveal>
-          )}
+          <div className="mt-10">
+            <TryShop
+              cta={
+                <a href={businessUrl} className={`${primaryBtn} shrink-0`}>
+                  {tr("Άνοιξε τη βιτρίνα σου")} <Arrow />
+                </a>
+              }
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* How it works: steps scroll, the shop mockup stays pinned and follows them */}
+      <section id="how-it-works" className="scroll-mt-20">
+        <div className={`${WRAP} py-14 lg:py-16`}>
+          <HowItWorksScroll
+            intro={
+              <Reveal className="max-w-xl lg:pt-8">
+                <Eyebrow>{tr("Πώς ξεκινάς")}</Eyebrow>
+                <H2>{tr("Από το template στην πρώτη παραγγελία.")}</H2>
+                <p className={`mt-5 max-w-md text-[16px] leading-7 ${MUTED}`}>{tr("Τέσσερα βήματα, με τον δικό σου ρυθμό. Και άνθρωποι δίπλα σου σε κάθε ένα.")}</p>
+              </Reveal>
+            }
+          />
         </div>
       </section>
 
@@ -429,61 +438,31 @@ export default async function Home({
         </div>
       </section>
 
-      {/* Subscription: one plan, every tool */}
-      <section id="pricing" aria-labelledby="pricing-title" className="relative isolate scroll-mt-20 overflow-hidden bg-[#2E4A37] text-[#F7F2E8]">
-        <OliveBranch className="pointer-events-none absolute -bottom-6 -left-10 -z-10 w-[360px] text-[#F7F2E8]/[0.07] lg:w-[520px]" />
-        <div className={`${WRAP} grid gap-10 py-14 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16 lg:py-20`}>
-          <Reveal>
-            <Eyebrow light>{tr("Συνδρομή")}</Eyebrow>
-            <h2 id="pricing-title" className="mt-4 text-[1.9rem] font-extrabold leading-tight tracking-[-0.02em] sm:text-4xl">{tr("Μία συνδρομή. Όλα τα εργαλεία μαζί.")}</h2>
-            <p className="mt-4 max-w-md text-[15px] leading-7 text-[#F7F2E8]/80">{tr("Δεν χρειάζεται να πληρώνεις χωριστά για ιστοσελίδα, e-shop και διαχείριση, ούτε να τα κάνεις να μιλήσουν μεταξύ τους. Με το Vitrinaki τα έχεις έτοιμα και συνδεδεμένα από την πρώτη μέρα.")}</p>
-            <ul className="mt-6 grid gap-2.5 text-[14.5px] sm:grid-cols-2">
-              {["Ιστοσελίδα & e-shop", "Απόθεμα & προϊόντα", "Παραγγελίες & πελάτες", "Πληρωμές με κάρτα", "Αποστολές με courier", "Υποστήριξη από ανθρώπους"].map((item) => (
-                <li key={item} className="flex items-center gap-2">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#C0503C" /><path d="m7.5 12 3 3 6-6" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                  {tr(item)}
-                </li>
-              ))}
-            </ul>
-            <a href={businessUrl} className={`mt-8 ${primaryBtn}`}>
-              {tr("Άνοιξε τη βιτρίνα σου")} <Arrow />
-            </a>
-          </Reveal>
-          <Reveal delay={120}>
-            <p className="text-[13px] font-semibold text-[#F7F2E8]/70">{tr("Τα πακέτα διαφέρουν στο μέγεθος της ομάδας και στη βοήθεια που παίρνεις. Όλα έχουν τα παραπάνω.")}</p>
-            <ul className="mt-4 grid gap-3 sm:grid-cols-2">
-              {plans.map((plan) => (
-                <li key={plan.id} className="rounded-2xl bg-[#F7F2E8] p-5 text-[#1F3628]">
-                  <p className="text-[17px] font-extrabold">{tr(plan.label)}</p>
-                  <p className="mt-0.5 text-[13px] font-semibold text-[#C0503C]">{tr(plan.team)}</p>
-                  <p className={`mt-2 text-[13.5px] leading-6 ${MUTED}`}>{tr(plan.text)}</p>
-                </li>
-              ))}
-            </ul>
-            <p className="mt-4 text-[13px] leading-6 text-[#F7F2E8]/70">{tr("Οι τιμές οριστικοποιούνται. Πριν ξεκινήσεις θα ξέρεις ακριβώς τι πληρώνεις. Ήρθες με σύσταση από άλλο κατάστημα; Ο πρώτος σου μήνας είναι δωρεάν.")}</p>
-          </Reveal>
-        </div>
-      </section>
-
-      {/* Try it: the visitor changes a sample shop live */}
-      <section id="try" aria-labelledby="try-title" className="scroll-mt-20 border-t border-[#2E4A37]/10 bg-[#EFE7D8]">
+      {/* Marketplace: products promoted from Vitrinaki shops, each with a way to the shop */}
+      <section id="marketplace" aria-labelledby="marketplace-title" className="scroll-mt-20">
         <div className={`${WRAP} py-14 lg:py-20`}>
           <Reveal className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
             <div>
-              <Eyebrow>Custom</Eyebrow>
-              <h2 id="try-title" className="mt-4 max-w-xl text-[1.9rem] font-extrabold leading-tight tracking-[-0.02em] text-[#1F3628] sm:text-4xl">{tr("Φτιάξε τη βιτρίνα όπως τη θες.")}</h2>
+              <Eyebrow>{tr("Marketplace")}</Eyebrow>
+              <h2 id="marketplace-title" className="mt-4 max-w-xl text-[1.9rem] font-extrabold leading-tight tracking-[-0.02em] text-[#1F3628] sm:text-4xl">{tr("Ανακάλυψε προϊόντα από ελληνικά καταστήματα.")}</h2>
             </div>
-            <p className={`max-w-md text-[15px] leading-7 ${MUTED}`}>{tr("Template, χρώματα, γραμματοσειρά, στυλ, λογότυπο, εξώφυλλο, ενότητες και domain. Δες το κατάστημα να αλλάζει αμέσως. Δεν αποθηκεύεται τίποτα.")}</p>
+            <p className={`max-w-md text-[15px] leading-7 ${MUTED}`}>{tr("Προϊόντα που ξεχωρίσαμε από τις βιτρίνες του Vitrinaki. Άνοιξε ένα για να το δεις ή πήγαινε κατευθείαν στο κατάστημα.")}</p>
           </Reveal>
-          <div className="mt-10">
-            <TryShop
-              cta={
-                <a href={businessUrl} className={`${primaryBtn} shrink-0`}>
-                  {tr("Άνοιξε τη βιτρίνα σου")} <Arrow />
-                </a>
-              }
-            />
-          </div>
+          {promoted.length ? (
+            <Reveal className="mt-8">
+              <PromotedMarket products={promoted} lang={lang} locale={locale} />
+            </Reveal>
+          ) : (
+            <Reveal className="mt-8 flex flex-col items-start gap-4 rounded-2xl border border-dashed border-[#2E4A37]/25 bg-white/50 p-6 sm:flex-row sm:items-center sm:justify-between sm:p-8">
+              <div>
+                <h3 className="text-lg font-bold text-[#1F3628]">{tr("Σύντομα εδώ, προϊόντα από τα καταστήματά μας.")}</h3>
+                <p className={`mt-1 text-[14.5px] leading-6 ${MUTED}`}>{tr("Άνοιξε τη βιτρίνα σου και τα προϊόντα σου μπορεί να είναι από τα πρώτα.")}</p>
+              </div>
+              <a href={businessUrl} className={`${primaryBtn} shrink-0`}>
+                {tr("Άνοιξε τη βιτρίνα σου")} <Arrow />
+              </a>
+            </Reveal>
+          )}
         </div>
       </section>
 
@@ -533,6 +512,28 @@ export default async function Home({
         </div>
       </section>
 
+      {/* Philosophy */}
+      <section id="philosophy" className="relative isolate overflow-hidden bg-[#173A57] text-[#F7F2E8]">
+        <div aria-hidden="true" className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_60%_80%_at_20%_50%,#265E8E_0%,transparent_70%)]" />
+        <div aria-hidden="true" className="vk-grain absolute inset-0 -z-10 opacity-20" />
+        <OliveBranch className="pointer-events-none absolute -bottom-6 right-0 -z-10 w-[420px] text-[#F7F2E8]/10 lg:w-[620px]" />
+        <span aria-hidden="true" className="font-serif pointer-events-none absolute -top-16 right-4 -z-10 text-[22rem] leading-none text-white/[0.04] sm:text-[34rem]">«</span>
+        <div className={`${WRAP} py-14 lg:py-20`}>
+          <Reveal>
+            <Eyebrow light>{tr("Η φιλοσοφία μας")}</Eyebrow>
+            <blockquote className="font-serif mt-8 max-w-5xl text-[2.9rem] font-medium italic leading-[1.02] tracking-[-0.02em] sm:text-7xl lg:text-[6.5rem]">
+              <span className="text-[#D9806F]">{tr("«Το επιχειρείν")}</span>
+              <br />
+              {tr("εστίν φιλοσοφείν.»")}
+            </blockquote>
+          </Reveal>
+          <Reveal delay={120} className="mt-10 grid max-w-4xl gap-6 text-[17px] leading-8 text-[#F7F2E8]/75 md:grid-cols-2 md:gap-10">
+            <p>{tr("Το επιχειρείν δεν είναι μόνο η πώληση ενός προϊόντος. Είναι η σκέψη, η δημιουργία, η επιμονή και η αναζήτηση ενός καλύτερου τρόπου να προσφέρεις κάτι στον κόσμο.")}</p>
+            <p>{tr("Η ιστορία κάθε επιχείρησης έχει αξία. Η τεχνολογία πρέπει να την αναδεικνύει, όχι να μπαίνει εμπόδιο. Γι' αυτό φτιάξαμε το Vitrinaki.")}</p>
+          </Reveal>
+        </div>
+      </section>
+
       {/* Who it is for */}
       <section id="for-whom" className="scroll-mt-20">
         <div className={`${WRAP} py-14 lg:py-20`}>
@@ -554,39 +555,39 @@ export default async function Home({
         </div>
       </section>
 
-      {/* How it works: steps scroll, the shop mockup stays pinned and follows them */}
-      <section id="how-it-works" className="scroll-mt-20">
-        <div className={`${WRAP} py-14 lg:py-16`}>
-          <HowItWorksScroll
-            intro={
-              <Reveal className="max-w-xl lg:pt-8">
-                <Eyebrow>{tr("Πώς ξεκινάς")}</Eyebrow>
-                <H2>{tr("Από το template στην πρώτη παραγγελία.")}</H2>
-                <p className={`mt-5 max-w-md text-[16px] leading-7 ${MUTED}`}>{tr("Τέσσερα βήματα, με τον δικό σου ρυθμό. Και άνθρωποι δίπλα σου σε κάθε ένα.")}</p>
-              </Reveal>
-            }
-          />
-        </div>
-      </section>
-
-      {/* Philosophy */}
-      <section id="philosophy" className="relative isolate overflow-hidden bg-[#173A57] text-[#F7F2E8]">
-        <div aria-hidden="true" className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_60%_80%_at_20%_50%,#265E8E_0%,transparent_70%)]" />
-        <div aria-hidden="true" className="vk-grain absolute inset-0 -z-10 opacity-20" />
-        <OliveBranch className="pointer-events-none absolute -bottom-6 right-0 -z-10 w-[420px] text-[#F7F2E8]/10 lg:w-[620px]" />
-        <span aria-hidden="true" className="font-serif pointer-events-none absolute -top-16 right-4 -z-10 text-[22rem] leading-none text-white/[0.04] sm:text-[34rem]">«</span>
-        <div className={`${WRAP} py-14 lg:py-20`}>
+      {/* Subscription: one plan, every tool */}
+      <section id="pricing" aria-labelledby="pricing-title" className="relative isolate scroll-mt-20 overflow-hidden bg-[#173A57] text-[#F7F2E8]">
+        <div aria-hidden="true" className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_55%_75%_at_85%_40%,#265E8E_0%,transparent_70%)] opacity-80" />
+        <OliveBranch className="pointer-events-none absolute -bottom-6 -left-10 -z-10 w-[360px] text-[#F7F2E8]/[0.07] lg:w-[520px]" />
+        <div className={`${WRAP} grid gap-10 py-14 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16 lg:py-20`}>
           <Reveal>
-            <Eyebrow light>{tr("Η φιλοσοφία μας")}</Eyebrow>
-            <blockquote className="font-serif mt-8 max-w-5xl text-[2.9rem] font-medium italic leading-[1.02] tracking-[-0.02em] sm:text-7xl lg:text-[6.5rem]">
-              <span className="text-[#D9806F]">{tr("«Το επιχειρείν")}</span>
-              <br />
-              {tr("εστίν φιλοσοφείν.»")}
-            </blockquote>
+            <Eyebrow light>{tr("Συνδρομή")}</Eyebrow>
+            <h2 id="pricing-title" className="mt-4 text-[1.9rem] font-extrabold leading-tight tracking-[-0.02em] sm:text-4xl">{tr("Μία συνδρομή. Όλα τα εργαλεία μαζί.")}</h2>
+            <p className="mt-4 max-w-md text-[15px] leading-7 text-[#F7F2E8]/80">{tr("Δεν χρειάζεται να πληρώνεις χωριστά για ιστοσελίδα, e-shop και διαχείριση, ούτε να τα κάνεις να μιλήσουν μεταξύ τους. Με το Vitrinaki τα έχεις έτοιμα και συνδεδεμένα από την πρώτη μέρα.")}</p>
+            <ul className="mt-6 grid gap-2.5 text-[14.5px] sm:grid-cols-2">
+              {["Ιστοσελίδα & e-shop", "Απόθεμα & προϊόντα", "Παραγγελίες & πελάτες", "Πληρωμές με κάρτα", "Αποστολές με courier", "Υποστήριξη από ανθρώπους"].map((item) => (
+                <li key={item} className="flex items-center gap-2">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#C0503C" /><path d="m7.5 12 3 3 6-6" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                  {tr(item)}
+                </li>
+              ))}
+            </ul>
+            <a href={businessUrl} className={`mt-8 ${primaryBtn}`}>
+              {tr("Άνοιξε τη βιτρίνα σου")} <Arrow />
+            </a>
           </Reveal>
-          <Reveal delay={120} className="mt-10 grid max-w-4xl gap-6 text-[17px] leading-8 text-[#F7F2E8]/75 md:grid-cols-2 md:gap-10">
-            <p>{tr("Το επιχειρείν δεν είναι μόνο η πώληση ενός προϊόντος. Είναι η σκέψη, η δημιουργία, η επιμονή και η αναζήτηση ενός καλύτερου τρόπου να προσφέρεις κάτι στον κόσμο.")}</p>
-            <p>{tr("Η ιστορία κάθε επιχείρησης έχει αξία. Η τεχνολογία πρέπει να την αναδεικνύει, όχι να μπαίνει εμπόδιο. Γι' αυτό φτιάξαμε το Vitrinaki.")}</p>
+          <Reveal delay={120}>
+            <p className="text-[13px] font-semibold text-[#F7F2E8]/70">{tr("Τα πακέτα διαφέρουν στο μέγεθος της ομάδας και στη βοήθεια που παίρνεις. Όλα έχουν τα παραπάνω.")}</p>
+            <ul className="mt-4 grid gap-3 sm:grid-cols-2">
+              {plans.map((plan) => (
+                <li key={plan.id} className="rounded-2xl bg-[#F7F2E8] p-5 text-[#1F3628]">
+                  <p className="text-[17px] font-extrabold">{tr(plan.label)}</p>
+                  <p className="mt-0.5 text-[13px] font-semibold text-[#C0503C]">{tr(plan.team)}</p>
+                  <p className={`mt-2 text-[13.5px] leading-6 ${MUTED}`}>{tr(plan.text)}</p>
+                </li>
+              ))}
+            </ul>
+            <p className="mt-4 text-[13px] leading-6 text-[#F7F2E8]/70">{tr("Οι τιμές οριστικοποιούνται. Πριν ξεκινήσεις θα ξέρεις ακριβώς τι πληρώνεις. Ήρθες με σύσταση από άλλο κατάστημα; Ο πρώτος σου μήνας είναι δωρεάν.")}</p>
           </Reveal>
         </div>
       </section>
