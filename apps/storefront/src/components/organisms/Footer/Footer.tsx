@@ -31,7 +31,7 @@ export async function Footer() {
             vitrinaki<span className="text-[#f2a28f]">.gr</span>
           </LocalizedClientLink>
           <p className="mt-4 max-w-sm text-sm leading-6 text-[#d3e0d8]">
-            {tr("Η βιτρίνα σου στο ψηφιακό εμπόριο. Γιατί όλοι αξίζουν μια θέση στη μεγάλη βιτρίνα, και ποτέ δεν είναι αργά για το επόμενο βήμα.")}
+            {tr("Η βιτρίνα σου στο ψηφιακό εμπόριο. Γιατί όλοι αξίζουν μια θέση στη μεγάλη βιτρίνα.")}
           </p>
         </div>
         {footerGroups.map((group) => (

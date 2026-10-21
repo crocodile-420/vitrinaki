@@ -274,8 +274,8 @@ export function HowItWorksScroll({ intro }: { intro: React.ReactNode }) {
                 <p className="mt-3 max-w-md text-[15px] leading-7 text-[#2E4A37]/75">{tr(step.text)}</p>
                 {step.key === "order" ? (
                   <p className="mt-4 inline-flex items-center gap-2 rounded-full border border-[#2E4A37]/15 bg-white/70 px-3 py-1 text-[12.5px] font-semibold text-[#1F3628]">
+                    <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-[#C0503C]" />
                     {tr("Πληρωμές με κάρτα")}
-                    <span className="rounded-full bg-[#265E8E]/10 px-2 py-0.5 text-[10.5px] font-semibold text-[#265E8E]">{tr("Σύντομα")}</span>
                   </p>
                 ) : null}
               </div>
