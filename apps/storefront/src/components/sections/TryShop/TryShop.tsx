@@ -286,7 +286,7 @@ export function TryShop({ cta }: { cta: React.ReactNode }) {
         {text ? <span className={hint}>{text}</span> : null}
       </span>
       <input type="checkbox" role="switch" checked={checked} onChange={(e) => onChange(e.target.checked)} className="peer sr-only" />
-      <span aria-hidden="true" className="flex h-6 w-11 shrink-0 items-center rounded-full bg-[#2E4A37]/20 p-0.5 transition peer-checked:bg-[#C0503C] peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-[#2E4A37] [&>span]:transition-transform peer-checked:[&>span]:translate-x-5 motion-reduce:[&>span]:transition-none">
+      <span aria-hidden="true" className="flex h-6 w-11 shrink-0 items-center rounded-full bg-[#2E4A37]/20 p-0.5 transition peer-checked:bg-[#265E8E] peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-[#2E4A37] [&>span]:transition-transform peer-checked:[&>span]:translate-x-5 motion-reduce:[&>span]:transition-none">
         <span className="h-5 w-5 rounded-full bg-white shadow" />
       </span>
     </label>
@@ -337,8 +337,8 @@ export function TryShop({ cta }: { cta: React.ReactNode }) {
                 <label key={t} className="block cursor-pointer">
                   <input type="radio" name={`${uid}-template`} value={t} checked={cfg.template === t} onChange={() => set("template", t)} className="peer sr-only" />
                   <span className={`flex min-h-11 items-center justify-center gap-2.5 rounded-lg border border-[#2E4A37]/15 px-2 py-2 text-center transition lg:items-start lg:justify-start lg:px-3 lg:text-left ${choice}`}>
-                    <span className={`mt-0.5 hidden h-4 w-4 shrink-0 lg:grid place-items-center rounded-full border-2 ${cfg.template === t ? "border-[#C0503C]" : "border-[#2E4A37]/30"}`} aria-hidden="true">
-                      {cfg.template === t ? <span className="h-2 w-2 rounded-full bg-[#C0503C]" /> : null}
+                    <span className={`mt-0.5 hidden h-4 w-4 shrink-0 lg:grid place-items-center rounded-full border-2 ${cfg.template === t ? "border-[#265E8E]" : "border-[#2E4A37]/30"}`} aria-hidden="true">
+                      {cfg.template === t ? <span className="h-2 w-2 rounded-full bg-[#265E8E]" /> : null}
                     </span>
                     <span className="min-w-0">
                       <span className="block truncate text-[13.5px] font-bold text-[#1F3628] lg:text-[14px]">{tr(templateLabels[t].name)}</span>
@@ -495,7 +495,7 @@ export function TryShop({ cta }: { cta: React.ReactNode }) {
                 <label key={o.key} className="block cursor-pointer">
                   <input type="checkbox" checked={cfg.sections.includes(o.key)} onChange={() => toggleSection(o.key)} className="peer sr-only" />
                   <span className={`flex min-h-11 items-center gap-3 rounded-lg border border-[#2E4A37]/15 px-3 py-2 transition ${choice}`}>
-                    <span className={`grid h-4 w-4 shrink-0 place-items-center rounded border-2 ${cfg.sections.includes(o.key) ? "border-[#C0503C] bg-[#C0503C]" : "border-[#2E4A37]/30"}`} aria-hidden="true">
+                    <span className={`grid h-4 w-4 shrink-0 place-items-center rounded border-2 ${cfg.sections.includes(o.key) ? "border-[#265E8E] bg-[#265E8E]" : "border-[#2E4A37]/30"}`} aria-hidden="true">
                       {cfg.sections.includes(o.key) ? <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"><path d="m5 12 5 5 9-10" /></svg> : null}
                     </span>
                     <span className="min-w-0">

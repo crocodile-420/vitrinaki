@@ -47,7 +47,7 @@ export const Header = async ({ locale }: { locale: string }) => {
 
         <div className="flex shrink-0 items-center gap-1.5 sm:gap-3">
           <LanguageSwitcher lang={lang} label={tr("Γλώσσα")} className="text-[#2E4A37]" />
-          <a href={shopRegistrationHref(locale)} className="hidden text-sm font-semibold text-[#2E4A37] transition-colors hover:text-[#C0503C] sm:inline-flex">
+          <a href={shopRegistrationHref(locale)} className="hidden text-sm font-semibold text-[#2E4A37] transition-colors hover:text-[#265E8E] sm:inline-flex">
             {signedIn ? tr("Η βιτρίνα μου") : tr("Σύνδεση")}
           </a>
           <a

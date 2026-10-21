@@ -183,7 +183,7 @@ export function FeaturesMenu({ locale }: { locale: string }) {
           </div>
 
           <div className="relative isolate flex flex-col justify-between overflow-hidden rounded-2xl bg-[#2E4A37] p-6 ring-1 ring-[#F7F2E8]/10">
-            <div aria-hidden="true" className="absolute -right-16 -top-16 -z-10 h-48 w-48 rounded-full bg-[#C0503C]/35 blur-3xl" />
+            <div aria-hidden="true" className="absolute -right-16 -top-16 -z-10 h-48 w-48 rounded-full bg-[#265E8E]/35 blur-3xl" />
             <div aria-hidden="true" className="absolute -bottom-20 -left-10 -z-10 h-48 w-48 rounded-full bg-[#265E8E]/40 blur-3xl" />
             <div>
               <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#F2C9BE]">{tr("Ξεκίνα σήμερα")}</p>
@@ -193,7 +193,7 @@ export function FeaturesMenu({ locale }: { locale: string }) {
             <Link
               href={`/${locale}/start`}
               onClick={() => close()}
-              className="mt-6 inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-[#C0503C] px-5 text-[14px] font-semibold text-white outline-none transition hover:bg-[#ad4633] focus-visible:ring-2 focus-visible:ring-[#F2C9BE]"
+              className="mt-6 inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-[#265E8E] px-5 text-[14px] font-semibold text-white outline-none transition hover:bg-[#1D4C74] focus-visible:ring-2 focus-visible:ring-[#F2C9BE]"
             >
               {tr("Άνοιξε τη βιτρίνα σου")} <span aria-hidden="true">→</span>
             </Link>
@@ -321,7 +321,7 @@ export function MobileMenu({
             <a href={sellerLink.href} onClick={close} className="inline-flex min-h-12 items-center justify-center rounded-xl border border-[#2E4A37]/20 bg-white px-5 text-[15px] font-semibold text-[#2E4A37]">
               {tr(sellerLink.label)}
             </a>
-            <a href={`/${locale}/start`} onClick={close} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-[#C0503C] px-5 text-[15px] font-semibold text-white">
+            <a href={`/${locale}/start`} onClick={close} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-[#265E8E] px-5 text-[15px] font-semibold text-white">
               {tr("Άνοιξε τη βιτρίνα σου")} <span aria-hidden="true">→</span>
             </a>
           </div>

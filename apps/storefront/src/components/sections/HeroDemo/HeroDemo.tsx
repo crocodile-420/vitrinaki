@@ -102,7 +102,7 @@ export function StudioTable({ lang, className = "" }: { lang: Lang; className?: 
                 role="tab"
                 aria-selected={tab === t.key}
                 onClick={() => setTab(t.key)}
-                className={`-mb-px shrink-0 border-b-2 px-1.5 pb-1.5 font-semibold transition ${tab === t.key ? "border-[#C0503C] text-[#1F3628]" : "border-transparent text-[#2E4A37]/55 hover:text-[#1F3628]"}`}
+                className={`-mb-px shrink-0 border-b-2 px-1.5 pb-1.5 font-semibold transition ${tab === t.key ? "border-[#265E8E] text-[#1F3628]" : "border-transparent text-[#2E4A37]/55 hover:text-[#1F3628]"}`}
               >
                 {tr(t.label)} <span className="font-normal opacity-60">({count(t.key)})</span>
               </button>
@@ -132,7 +132,7 @@ export function StudioTable({ lang, className = "" }: { lang: Lang; className?: 
                     <td className="hidden py-1.5 text-[#2E4A37]/60 sm:table-cell">{r.sku}</td>
                     <td className="py-1.5">
                       <span className="mx-auto flex w-fit items-center gap-1">
-                        <button type="button" aria-label={`${tr("Μείωση αποθέματος")}: ${tr(r.name)}`} onClick={() => change(r.sku, -1)} className="grid h-[18px] w-[18px] place-items-center rounded border border-[#2E4A37]/15 text-[11px] leading-none transition hover:border-[#C0503C] hover:text-[#C0503C]">−</button>
+                        <button type="button" aria-label={`${tr("Μείωση αποθέματος")}: ${tr(r.name)}`} onClick={() => change(r.sku, -1)} className="grid h-[18px] w-[18px] place-items-center rounded border border-[#2E4A37]/15 text-[11px] leading-none transition hover:border-[#265E8E] hover:text-[#265E8E]">−</button>
                         <span className="w-5 text-center font-semibold tabular-nums">{r.stock}</span>
                         <button type="button" aria-label={`${tr("Αύξηση αποθέματος")}: ${tr(r.name)}`} onClick={() => change(r.sku, 1)} className="grid h-[18px] w-[18px] place-items-center rounded border border-[#2E4A37]/15 text-[11px] leading-none transition hover:border-[#2E4A37] hover:bg-[#2E4A37] hover:text-white">+</button>
                       </span>
@@ -160,7 +160,7 @@ export function StudioTable({ lang, className = "" }: { lang: Lang; className?: 
 function Hills({ className = "" }: { className?: string }) {
   return (
     <svg viewBox="0 0 1440 150" preserveAspectRatio="none" className={className} aria-hidden="true">
-      <path d="M900 150C1010 70 1120 40 1250 36c80-3 140 4 190 12v102z" fill="#C0503C" fillOpacity=".85" />
+      <path d="M900 150C1010 70 1120 40 1250 36c80-3 140 4 190 12v102z" fill="#265E8E" fillOpacity=".85" />
       <path d="M0 150V96c120-30 260-44 400-30 150 14 250 60 400 58 150-2 290-50 440-70 80-10 150-10 200-6v102z" fill="#2E4A37" />
       <path d="M0 110c140-34 280-46 420-32 150 14 250 60 400 58 150-2 290-50 440-70" fill="none" stroke="#D9B26F" strokeOpacity=".5" strokeWidth="1.2" vectorEffect="non-scaling-stroke" />
     </svg>
@@ -243,7 +243,7 @@ export function HeroDemo({ lang, intro }: { lang: Lang; intro: React.ReactNode }
       <style>{showcaseCss + fadeCss}</style>
       <div ref={heroRef} id="top" className="relative isolate scroll-mt-20 overflow-hidden bg-[#F5EEE1] text-[#1F3628]">
         {/* watercolour washes and the cypress / terracotta hills of the Greek landscape */}
-        <div aria-hidden="true" className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_40%_45%_at_70%_30%,rgba(46,74,55,0.10),transparent_70%),radial-gradient(ellipse_30%_40%_at_92%_8%,rgba(38,94,142,0.08),transparent_70%),radial-gradient(ellipse_45%_40%_at_10%_0%,rgba(192,80,60,0.06),transparent_70%)]" />
+        <div aria-hidden="true" className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_40%_45%_at_70%_30%,rgba(46,74,55,0.10),transparent_70%),radial-gradient(ellipse_30%_40%_at_92%_8%,rgba(38,94,142,0.08),transparent_70%),radial-gradient(ellipse_45%_40%_at_10%_0%,rgba(38,94,142,0.06),transparent_70%)]" />
         <Hills className="absolute bottom-0 left-0 -z-10 h-[70px] w-full sm:h-[110px] lg:h-[150px]" />
         <div className="mx-auto grid max-w-[1280px] items-center gap-8 px-5 pb-14 pt-8 sm:px-8 sm:pb-20 lg:grid-cols-[minmax(0,0.82fr)_minmax(0,1.18fr)] lg:gap-12 lg:px-12 lg:pb-24 lg:pt-14 xl:gap-14">
           <div className="relative z-10">{intro}</div>
@@ -263,12 +263,12 @@ export function HeroDemo({ lang, intro }: { lang: Lang; intro: React.ReactNode }
       </div>
       {/* Try it: name & colour, big enough to invite a click */}
       <div className="relative overflow-hidden border-b border-[#F7F2E8]/10 bg-[#2E4A37] text-[#F7F2E8]">
-        <div aria-hidden="true" className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-[#C0503C]/25 blur-3xl" />
+        <div aria-hidden="true" className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-[#265E8E]/25 blur-3xl" />
         <div aria-hidden="true" className="pointer-events-none absolute -bottom-28 left-1/4 h-64 w-64 rounded-full bg-[#265E8E]/25 blur-3xl" />
         <div className="relative mx-auto grid max-w-[1280px] gap-6 px-5 py-10 sm:px-8 md:py-12 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:items-center lg:gap-12 lg:px-12">
           <div>
             <p className="flex items-center gap-2 text-[12px] font-bold tracking-[0.16em] text-[#F2B8A8]">
-              <span className="h-2 w-2 animate-pulse rounded-full bg-[#C0503C] motion-reduce:animate-none" />
+              <span className="h-2 w-2 animate-pulse rounded-full bg-[#265E8E] motion-reduce:animate-none" />
               {tr("Δοκίμασέ το τώρα")}
             </p>
             <label htmlFor="vk-demo-name" className="mt-3 block text-[1.75rem] font-extrabold leading-tight tracking-[-0.02em] text-[#F7F2E8] sm:text-[2.1rem]">
@@ -284,7 +284,7 @@ export function HeroDemo({ lang, intro }: { lang: Lang; intro: React.ReactNode }
               autoComplete="off"
               placeholder={tr("Το όνομα της επιχείρησής σου")}
               onChange={(e) => setName(e.target.value)}
-              className="w-full rounded-xl border-2 border-transparent bg-[#F7F2E8] px-5 py-4 text-[18px] font-semibold text-[#1F3628] outline-none transition placeholder:font-normal placeholder:text-[#2E4A37]/60 focus:border-[#C0503C] focus:ring-4 focus:ring-[#C0503C]/25 sm:text-[20px]"
+              className="w-full rounded-xl border-2 border-transparent bg-[#F7F2E8] px-5 py-4 text-[18px] font-semibold text-[#1F3628] outline-none transition placeholder:font-normal placeholder:text-[#2E4A37]/60 focus:border-[#265E8E] focus:ring-4 focus:ring-[#265E8E]/25 sm:text-[20px]"
             />
             <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div role="radiogroup" aria-label={tr("Χρώματα")} className="flex flex-wrap gap-2">

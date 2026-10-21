@@ -28,7 +28,7 @@ export async function Footer() {
       <div className="mx-auto grid max-w-[1600px] gap-10 px-5 py-12 sm:px-8 md:grid-cols-[1.4fr_1fr_1fr] lg:px-10">
         <div>
           <LocalizedClientLink href="/" className="inline-flex items-center text-2xl font-extrabold tracking-tight text-white">
-            vitrinaki<span className="text-[#f2a28f]">.gr</span>
+            vitrinaki<span className="text-[#8DB8DE]">.gr</span>
           </LocalizedClientLink>
           <p className="mt-4 max-w-sm text-sm leading-6 text-[#d3e0d8]">
             {tr("Η βιτρίνα σου στο ψηφιακό εμπόριο. Γιατί όλοι αξίζουν μια θέση στη μεγάλη βιτρίνα.")}
