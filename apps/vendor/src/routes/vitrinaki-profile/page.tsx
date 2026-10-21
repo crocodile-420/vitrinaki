@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react"
+import { Link } from "react-router-dom"
 import type { RouteConfig } from "@mercurjs/dashboard-sdk"
 import { getAuthHeaders } from "@mercurjs/vendor"
 
@@ -463,7 +464,7 @@ export default function VitrinakiProfilePage() {
               </div>
             ))}
             <button type="button" disabled={items.length >= 20} onClick={() => setItems([...items, { name: "", duration: "", price: "", description: "" }])} className="rounded-lg border border-dashed border-ui-border-strong px-4 py-2.5 text-sm font-semibold">+ Πρόσθεσε υπηρεσία</button>
-            <div className="rounded-xl bg-ui-bg-subtle p-3 text-xs text-ui-fg-subtle"><span className="mr-2 rounded-full bg-ui-tag-orange-bg px-2 py-0.5 font-semibold text-ui-tag-orange-text">Σύντομα</span>Online κρατήσεις ραντεβού. Μέχρι τότε οι πελάτες επικοινωνούν μαζί σου με τηλέφωνο, email ή WhatsApp.</div>
+            <div className="rounded-xl bg-ui-bg-subtle p-3 text-xs text-ui-fg-subtle"><span className="mr-2 rounded-full bg-ui-tag-green-bg px-2 py-0.5 font-semibold text-ui-tag-green-text">Νέο</span>Online κρατήσεις ραντεβού: άνοιξέ τες από τη σελίδα <Link to="/vitrinaki-bookings" className="font-semibold text-ui-fg-interactive">«Κρατήσεις»</Link> του Studio. Οι υπηρεσίες σου μεταφέρονται εκεί αυτόματα.</div>
           </div>
         )
       }

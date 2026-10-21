@@ -137,7 +137,8 @@ export function CraftSection({ p, colors, tr, soft = false }: { p: ShopProfile; 
   )
 }
 
-export function ServicesSection({ p, colors, tr, soft = false }: { p: ShopProfile; colors: ShopColors; tr: Tr; soft?: boolean }) {
+// `booking`: the shop takes online bookings (the booking box is on the page).
+export function ServicesSection({ p, colors, tr, soft = false, booking = false }: { p: ShopProfile; colors: ShopColors; tr: Tr; soft?: boolean; booking?: boolean }) {
   return (
     <Section id="services" colors={colors} soft={soft}>
       <div className="flex flex-wrap items-end justify-between gap-4 border-b pb-4" style={{ borderColor: `${colors.ink}1f` }}>
@@ -146,7 +147,7 @@ export function ServicesSection({ p, colors, tr, soft = false }: { p: ShopProfil
           <h2 className="font-serif mt-3 text-3xl font-bold sm:text-4xl">{tr("Υπηρεσίες & τιμές")}</h2>
           {p.beauty.specialties ? <p className="mt-2 opacity-70">{tr("Ειδικότητες")}: {p.beauty.specialties}</p> : null}
         </div>
-        <span style={{ background: soft ? colors.page : colors.soft }} className="rounded-full px-3 py-1.5 text-xs font-bold">{tr("Online κρατήσεις: σύντομα")}</span>
+        {booking ? <a href="#booking" style={{ background: soft ? colors.page : colors.soft }} className="rounded-full px-3 py-1.5 text-xs font-bold hover:opacity-80">{tr("Online κρατήσεις")} →</a> : null}
       </div>
       <div className="mt-6 divide-y" style={{ borderColor: `${colors.ink}1f` }}>
         {p.services.items.map((item, i) => (
@@ -163,7 +164,7 @@ export function ServicesSection({ p, colors, tr, soft = false }: { p: ShopProfil
         ))}
       </div>
       {p.beauty.brands ? <p className="mt-4 text-sm opacity-70">{tr("Προϊόντα που χρησιμοποιούμε")}: {p.beauty.brands}</p> : null}
-      <a href="#contact" style={{ background: colors.accent }} className="mt-8 inline-block rounded-full px-6 py-3 font-bold text-white hover:opacity-90">{tr("Ζήτησε ραντεβού")}</a>
+      <a href={booking ? "#booking" : "#contact"} style={{ background: colors.accent }} className="mt-8 inline-block rounded-full px-6 py-3 font-bold text-white hover:opacity-90">{tr(booking ? "Κλείσε ραντεβού" : "Ζήτησε ραντεβού")}</a>
     </Section>
   )
 }

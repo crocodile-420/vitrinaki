@@ -601,8 +601,8 @@ export function ShopRegistration({ locale, session, startHref }: { locale: strin
               {tr("Πρόσθεσε υπηρεσία")}
             </button>
             <p className="rounded-xl bg-[#EAF1F7] p-3 text-[13px] text-[#1B3F5E]">
-              <span className="mr-2 rounded-full bg-white px-2 py-0.5 text-[11.5px] font-bold text-[#265E8E]">{tr("Σύντομα")}</span>
-              {tr("Online κρατήσεις ραντεβού. Μέχρι τότε οι πελάτες επικοινωνούν μαζί σου με τηλέφωνο, email ή WhatsApp.")}
+              <span className="mr-2 rounded-full bg-white px-2 py-0.5 text-[11.5px] font-bold text-[#265E8E]">{tr("Νέο")}</span>
+              {tr("Online κρατήσεις ραντεβού: τις ανοίγεις από το Studio, στη σελίδα «Κρατήσεις». Οι υπηρεσίες σου μεταφέρονται εκεί αυτόματα.")}
             </p>
           </div>
         )

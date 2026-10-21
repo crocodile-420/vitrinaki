@@ -118,6 +118,8 @@ export default defineMiddlewares({
     { matcher: "/store/vitrinaki/loyalty", methods: ["GET"], middlewares: [customerAuth] },
     { matcher: "/store/vitrinaki/loyalty/redeem", methods: ["POST"], middlewares: [customerAuth] },
     { matcher: "/store/vitrinaki/loyalty/carts/:id", methods: ["GET"], middlewares: [optionalCustomerAuth] },
+    // Online bookings: a logged-in customer's booking is linked to their account.
+    { matcher: "/store/vitrinaki/bookings/shops/:id", methods: ["POST"], middlewares: [optionalCustomerAuth] },
     { matcher: "/store/payment-collections/:id/payment-sessions", methods: ["POST"], middlewares: [guardCardPaymentSession] },
     {
       matcher: "/webhooks/stripe",
