@@ -104,6 +104,7 @@ async function keepServerOwnedSellerMetadata(req: MedusaRequest, _res: MedusaRes
 export default defineMiddlewares({
   routes: [
     { matcher: "/admin/vitrinaki/overview", middlewares: [adminAuth] },
+    { matcher: "/admin/vitrinaki/promoted", middlewares: [adminAuth] },
     { matcher: "/vendor/sellers/:id/members", methods: ["POST"], middlewares: [enforceTeamLimit] },
     { matcher: "/admin/sellers/:id/members", methods: ["POST"], middlewares: [enforceTeamLimit] },
     { matcher: "/admin/sellers/:id/members/invite", methods: ["POST"], middlewares: [enforceTeamLimit] },
