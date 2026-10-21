@@ -187,12 +187,12 @@ function OliveSprig({ className = "" }: { className?: string }) {
 const WRAP = "mx-auto max-w-[1280px] px-5 sm:px-8 lg:px-12"
 const MUTED = "text-[#2E4A37]/70"
 
-const audienceColors = ["#2E4A37", "#265E8E", "#265E8E", "#265E8E", "#2E4A37"]
+const audienceColors = ["#2E4A37", "#C0503C", "#265E8E", "#C0503C", "#2E4A37"]
 
 function Eyebrow({ children, light = false, center = false }: { children: React.ReactNode; light?: boolean; center?: boolean }) {
   return (
     <p className={`inline-flex items-center gap-2 ${center ? "justify-center" : ""} rounded-full border px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] ${light ? "border-white/15 bg-white/5 text-[#F7F2E8]/75" : "border-[#2E4A37]/15 bg-white/60 text-[#2E4A37]/70"}`}>
-      <span className={`h-1.5 w-1.5 rounded-full ${light ? "bg-[#8DB8DE]" : "bg-[#265E8E]"}`} />
+      <span className={`h-1.5 w-1.5 rounded-full ${light ? "bg-[#D9806F]" : "bg-[#C0503C]"}`} />
       {children}
     </p>
   )
@@ -224,7 +224,7 @@ function Swoosh({ className = "" }: { className?: string }) {
 }
 
 const primaryBtn =
-  "group inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-[#265E8E] px-7 py-3 text-[15px] font-semibold text-white shadow-[0_10px_30px_-10px_rgba(38,94,142,0.8)] transition hover:-translate-y-0.5 hover:bg-[#1D4C74] hover:shadow-[0_16px_40px_-12px_rgba(38,94,142,0.9)]"
+  "group inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-[#C0503C] px-7 py-3 text-[15px] font-semibold text-white shadow-[0_10px_30px_-10px_rgba(192,80,60,0.8)] transition hover:-translate-y-0.5 hover:bg-[#ad4633] hover:shadow-[0_16px_40px_-12px_rgba(192,80,60,0.9)]"
 const Arrow = () => <span aria-hidden="true" className="transition-transform group-hover:translate-x-1">→</span>
 
 
@@ -285,9 +285,9 @@ export default async function Home({
               </p>
               <h1 className="text-[2.15rem] font-extrabold leading-[1.05] tracking-[-0.03em] text-[#1F3628] sm:text-[3rem] lg:text-[2.6rem] xl:text-[3rem]">
                 {tr("Το vitrinaki σου, στο ψηφιακό εμπόριο.")}{" "}
-                <span className="relative inline-block text-[#265E8E]">
+                <span className="relative inline-block text-[#C0503C]">
                   {tr("Από την ιστοσελίδα ως την παραγγελία.")}
-                  <Swoosh className="absolute -bottom-2 left-0 h-2.5 w-full text-[#265E8E]/45" />
+                  <Swoosh className="absolute -bottom-2 left-0 h-2.5 w-full text-[#C0503C]/45" />
                 </span>
               </h1>
               <p className="mt-5 max-w-md text-[15px] leading-7 text-[#1F3628]/75 sm:text-[16px]">
@@ -359,9 +359,9 @@ export default async function Home({
               <Eyebrow>{tr("Όλα σε μία πλατφόρμα")}</Eyebrow>
               <h2 id="included-title" className="mt-4 max-w-xl text-[1.9rem] font-extrabold leading-tight tracking-[-0.02em] text-[#1F3628] sm:text-4xl">
                 {tr("Η ολοκληρωμένη λύση για")}{" "}
-                <span className="relative inline-block text-[#265E8E]">
+                <span className="relative inline-block text-[#C0503C]">
                   {tr("μικρές επιχειρήσεις.")}
-                  <Swoosh className="absolute -bottom-1.5 left-0 h-2 w-full text-[#265E8E]/35" />
+                  <Swoosh className="absolute -bottom-1.5 left-0 h-2 w-full text-[#C0503C]/35" />
                 </span>
               </h2>
             </div>
@@ -369,7 +369,7 @@ export default async function Home({
           </Reveal>
 
           <div className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            <Capability className="md:col-span-2" icon="spark" color="#265E8E" title="Ιστοσελίδα & e-shop" text="Έτοιμα templates με το όνομα, το λογότυπο και τα χρώματά σου, στο vitrinaki.gr/το-όνομά-σου ή στο δικό σου domain, σε Ελληνικά και Αγγλικά." tr={tr}>
+            <Capability className="md:col-span-2" icon="spark" color="#C0503C" title="Ιστοσελίδα & e-shop" text="Έτοιμα templates με το όνομα, το λογότυπο και τα χρώματά σου, στο vitrinaki.gr/το-όνομά-σου ή στο δικό σου domain, σε Ελληνικά και Αγγλικά." tr={tr}>
               <div className="grid grid-cols-2 gap-3">
                 <SitePreview site={sites[0]} lang={lang} />
                 <SitePreview site={sites[2]} lang={lang} />
@@ -385,7 +385,7 @@ export default async function Home({
             </Capability>
             <Capability icon="orders" color="#2E4A37" title="Παραγγελίες & πελάτες" text="Κάθε παραγγελία με τα στοιχεία του πελάτη και την κατάστασή της. Κωδικοί έκπτωσης και πόντοι επιβράβευσης για όσους ξαναγοράζουν." tr={tr}>
               <ul className="divide-y divide-[#2E4A37]/[0.07] rounded-xl bg-white px-4 py-1 text-[13px] ring-1 ring-[#2E4A37]/10">
-                {[["#1042", "Μαρία Κ.", "Νέα", "bg-[#265E8E]/[0.12] text-[#265E8E]"], ["#1041", "Γιώργος Π.", "Σε αποστολή", "bg-[#265E8E]/10 text-[#265E8E]"], ["#1040", "Ελένη Δ.", "Ολοκληρώθηκε", "bg-[#2E4A37]/10 text-[#2E4A37]"]].map(([no, who, status, cls]) => (
+                {[["#1042", "Μαρία Κ.", "Νέα", "bg-[#C0503C]/[0.12] text-[#C0503C]"], ["#1041", "Γιώργος Π.", "Σε αποστολή", "bg-[#265E8E]/10 text-[#265E8E]"], ["#1040", "Ελένη Δ.", "Ολοκληρώθηκε", "bg-[#2E4A37]/10 text-[#2E4A37]"]].map(([no, who, status, cls]) => (
                   <li key={no} className="flex items-center justify-between gap-2 py-2.5">
                     <span className="min-w-0 truncate"><span className="font-bold tabular-nums">{no}</span> <span className="text-[#2E4A37]/70">· {tr(who)}</span></span>
                     <span className={`shrink-0 rounded-full px-2 py-0.5 text-[11px] font-semibold ${cls}`}>{tr(status)}</span>
@@ -393,7 +393,7 @@ export default async function Home({
                 ))}
               </ul>
               <p className="mt-3 flex flex-wrap gap-2 text-[12px] font-semibold">
-                <span className="rounded-full bg-white px-2.5 py-1 text-[#265E8E] ring-1 ring-[#265E8E]/20">{tr("Κωδικός έκπτωσης")}</span>
+                <span className="rounded-full bg-white px-2.5 py-1 text-[#C0503C] ring-1 ring-[#C0503C]/20">{tr("Κωδικός έκπτωσης")}</span>
                 <span className="rounded-full bg-white px-2.5 py-1 text-[#2E4A37] ring-1 ring-[#2E4A37]/15">{tr("Πόντοι επιβράβευσης")}</span>
               </p>
             </Capability>
@@ -461,7 +461,7 @@ export default async function Home({
                         <div className="flex items-center justify-between gap-2">
                           <p className="text-[11px] font-semibold uppercase tracking-[0.18em]" style={{ color: c.accent }}>{tr(templateLabels[site.template]?.name || "")}</p>
                           {site.isFeatured && (
-                            <span className="rounded-full bg-[#265E8E] px-2.5 py-0.5 text-[11px] font-semibold text-white">{tr("Προτεινόμενο")}</span>
+                            <span className="rounded-full bg-[#C0503C] px-2.5 py-0.5 text-[11px] font-semibold text-white">{tr("Προτεινόμενο")}</span>
                           )}
                         </div>
                         <h3 className="mt-1 text-xl font-bold text-[#1F3628]">{site.storeName}</h3>
@@ -522,7 +522,7 @@ export default async function Home({
           <Reveal>
             <Eyebrow light>{tr("Η φιλοσοφία μας")}</Eyebrow>
             <blockquote className="font-serif mt-8 max-w-5xl text-[2.9rem] font-medium italic leading-[1.02] tracking-[-0.02em] sm:text-7xl lg:text-[6.5rem]">
-              <span className="text-[#8DB8DE]">{tr("«Το επιχειρείν")}</span>
+              <span className="text-[#D9806F]">{tr("«Το επιχειρείν")}</span>
               <br />
               {tr("εστίν φιλοσοφείν.»")}
             </blockquote>
@@ -618,7 +618,7 @@ export default async function Home({
       {/* CTA */}
       <section className="px-4 py-14 sm:px-6 lg:py-20">
         <Reveal className="relative isolate mx-auto max-w-[1280px] overflow-hidden rounded-[2.5rem] bg-[#1a2e21] px-6 py-16 text-center text-[#F7F2E8] sm:px-12 lg:py-20">
-          <div aria-hidden="true" className="vk-glow absolute -left-20 -top-32 -z-10 h-96 w-96 rounded-full bg-[#265E8E]/35 blur-[100px]" />
+          <div aria-hidden="true" className="vk-glow absolute -left-20 -top-32 -z-10 h-96 w-96 rounded-full bg-[#C0503C]/35 blur-[100px]" />
           <div aria-hidden="true" className="vk-glow absolute -bottom-40 -right-20 -z-10 h-96 w-96 rounded-full bg-[#265E8E]/40 blur-[100px] [animation-delay:-4s]" />
           <div aria-hidden="true" className="vk-grain absolute inset-0 -z-10 opacity-20" />
           <Eyebrow light>{tr("Το επόμενο βήμα")}</Eyebrow>

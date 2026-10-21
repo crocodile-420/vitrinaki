@@ -193,7 +193,7 @@ export function FeaturesMenu({ locale }: { locale: string }) {
             <Link
               href={`/${locale}/start`}
               onClick={() => close()}
-              className="mt-6 inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-[#265E8E] px-5 text-[14px] font-semibold text-white outline-none transition hover:bg-[#1D4C74] focus-visible:ring-2 focus-visible:ring-[#F2C9BE]"
+              className="mt-6 inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-[#C0503C] px-5 text-[14px] font-semibold text-white outline-none transition hover:bg-[#ad4633] focus-visible:ring-2 focus-visible:ring-[#F2C9BE]"
             >
               {tr("Άνοιξε τη βιτρίνα σου")} <span aria-hidden="true">→</span>
             </Link>
@@ -321,7 +321,7 @@ export function MobileMenu({
             <a href={sellerLink.href} onClick={close} className="inline-flex min-h-12 items-center justify-center rounded-xl border border-[#2E4A37]/20 bg-white px-5 text-[15px] font-semibold text-[#2E4A37]">
               {tr(sellerLink.label)}
             </a>
-            <a href={`/${locale}/start`} onClick={close} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-[#265E8E] px-5 text-[15px] font-semibold text-white">
+            <a href={`/${locale}/start`} onClick={close} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-[#C0503C] px-5 text-[15px] font-semibold text-white">
               {tr("Άνοιξε τη βιτρίνα σου")} <span aria-hidden="true">→</span>
             </a>
           </div>

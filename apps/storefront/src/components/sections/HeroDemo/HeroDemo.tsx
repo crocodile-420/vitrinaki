@@ -243,7 +243,7 @@ export function HeroDemo({ lang, intro }: { lang: Lang; intro: React.ReactNode }
       <style>{showcaseCss + fadeCss}</style>
       <div ref={heroRef} id="top" className="relative isolate scroll-mt-20 overflow-hidden bg-[#F5EEE1] text-[#1F3628]">
         {/* watercolour washes and the cypress / terracotta hills of the Greek landscape */}
-        <div aria-hidden="true" className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_40%_45%_at_70%_30%,rgba(46,74,55,0.10),transparent_70%),radial-gradient(ellipse_30%_40%_at_92%_8%,rgba(38,94,142,0.08),transparent_70%),radial-gradient(ellipse_45%_40%_at_10%_0%,rgba(38,94,142,0.06),transparent_70%)]" />
+        <div aria-hidden="true" className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_40%_45%_at_70%_30%,rgba(46,74,55,0.10),transparent_70%),radial-gradient(ellipse_30%_40%_at_92%_8%,rgba(38,94,142,0.08),transparent_70%),radial-gradient(ellipse_45%_40%_at_10%_0%,rgba(192,80,60,0.06),transparent_70%)]" />
         <Hills className="absolute bottom-0 left-0 -z-10 h-[70px] w-full sm:h-[110px] lg:h-[150px]" />
         <div className="mx-auto grid max-w-[1280px] items-center gap-8 px-5 pb-14 pt-8 sm:px-8 sm:pb-20 lg:grid-cols-[minmax(0,0.82fr)_minmax(0,1.18fr)] lg:gap-12 lg:px-12 lg:pb-24 lg:pt-14 xl:gap-14">
           <div className="relative z-10">{intro}</div>
@@ -263,12 +263,12 @@ export function HeroDemo({ lang, intro }: { lang: Lang; intro: React.ReactNode }
       </div>
       {/* Try it: name & colour, big enough to invite a click */}
       <div className="relative overflow-hidden border-b border-[#F7F2E8]/10 bg-[#2E4A37] text-[#F7F2E8]">
-        <div aria-hidden="true" className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-[#265E8E]/25 blur-3xl" />
+        <div aria-hidden="true" className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-[#C0503C]/25 blur-3xl" />
         <div aria-hidden="true" className="pointer-events-none absolute -bottom-28 left-1/4 h-64 w-64 rounded-full bg-[#265E8E]/25 blur-3xl" />
         <div className="relative mx-auto grid max-w-[1280px] gap-6 px-5 py-10 sm:px-8 md:py-12 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:items-center lg:gap-12 lg:px-12">
           <div>
             <p className="flex items-center gap-2 text-[12px] font-bold tracking-[0.16em] text-[#F2B8A8]">
-              <span className="h-2 w-2 animate-pulse rounded-full bg-[#265E8E] motion-reduce:animate-none" />
+              <span className="h-2 w-2 animate-pulse rounded-full bg-[#C0503C] motion-reduce:animate-none" />
               {tr("Δοκίμασέ το τώρα")}
             </p>
             <label htmlFor="vk-demo-name" className="mt-3 block text-[1.75rem] font-extrabold leading-tight tracking-[-0.02em] text-[#F7F2E8] sm:text-[2.1rem]">
