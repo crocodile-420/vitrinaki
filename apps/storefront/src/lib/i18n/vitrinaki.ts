@@ -892,6 +892,7 @@ const en: Record<string, string> = {
   "Άνθρωποι δίπλα σου, με οδηγούς και πραγματική βοήθεια όταν τη χρειαστείς.": "People by your side, with guides and real help whenever you need it.",
   "Έκδοση παραστατικών με διασύνδεση στο myDATA της ΑΑΔΕ.": "Issue invoices connected to the Greek tax authority's myDATA.",
   "Έτοιμα templates": "Ready-made templates",
+  "Στα μέτρα της επιχείρησής σου": "Tailored to your business",
   "Έτοιμα templates για κάθε επιχείρηση.": "Ready-made templates for every business.",
   "Όλα": "All",
   "Όλα όσα χρειάζεσαι για να πουλάς online, σε ένα σημείο.": "Everything you need to sell online, in one place.",

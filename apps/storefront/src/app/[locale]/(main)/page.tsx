@@ -302,7 +302,7 @@ export default async function Home({
                 </a>
               </div>
               <ul className="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-[13px] font-medium text-[#1F3628]/85">
-                {["Χωρίς τεχνικές γνώσεις", "Έτοιμα templates", "Άνθρωποι δίπλα σου"].map((item) => (
+                {["Χωρίς τεχνικές γνώσεις", "Στα μέτρα της επιχείρησής σου", "Άνθρωποι δίπλα σου"].map((item) => (
                   <li key={item} className="flex items-center gap-1.5">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#2E4A37" /><path d="m7.5 12 3 3 6-6" stroke="#F7F2E8" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
                     {tr(item)}
