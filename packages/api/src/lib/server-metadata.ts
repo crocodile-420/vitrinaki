@@ -1,13 +1,15 @@
 // seller.metadata keys that only the backend writes: the subscription
 // (billing webhook, checkout, promo codes), the shop's Stripe Connect account
 // and the referral programme, and the loyalty rules (saved, validated, only
-// through /vendor/vitrinaki/loyalty). Mercur's vendor seller routes accept any
+// through /vendor/vitrinaki/loyalty), and the products the Vitrinaki team
+// promotes on the homepage (admin only). Mercur's vendor seller routes accept any
 // metadata, so the client's copy of these keys is replaced by the stored one.
 export const SERVER_OWNED_SELLER_METADATA_KEYS = [
   "vitrinaki_subscription",
   "vitrinaki_stripe_connect",
   "vitrinaki_referral",
   "vitrinaki_loyalty",
+  "vitrinaki_promoted",
 ] as const
 
 // The incoming metadata with every server-owned key set to its stored value,

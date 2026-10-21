@@ -4,12 +4,13 @@ import { headers } from "next/headers"
 import Script from "next/script"
 import { LiveSitePreview } from "@/components/sections/SitePreview/LiveSitePreview"
 import { HeroDemo, StudioTable } from "@/components/sections/HeroDemo/HeroDemo"
-import { SiteGallery } from "@/components/sections/HeroDemo/SiteGallery"
+import { PromotedMarket } from "@/components/sections/PromotedMarket/PromotedMarket"
 import { SitePreview } from "@/components/sections/HeroDemo/SitePreview"
 import { sites } from "@/components/sections/HeroDemo/sites"
 import { Reveal } from "@/components/atoms/Reveal/Reveal"
 import { HowItWorksScroll } from "@/components/sections/HowItWorksScroll/HowItWorksScroll"
 import { TryShop } from "@/components/sections/TryShop/TryShop"
+import { listPromotedProducts } from "@/lib/data/vitrinaki-promoted"
 import { listPublishedStorefronts, paletteColors, templateLabels, type DirectoryStorefront } from "@/lib/data/vitrinaki-storefronts"
 import { listRegions } from "@/lib/data/regions"
 import { getTranslator } from "@/lib/i18n/server"
@@ -240,7 +241,7 @@ export default async function Home({
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || `${protocol}://${host}`
 
   const businessUrl = startHref(locale)
-  const published = await listPublishedStorefronts()
+  const [published, promoted] = await Promise.all([listPublishedStorefronts(), listPromotedProducts(locale)])
 
   // overflow-x-clip, not overflow-hidden: a scroll container would break the sticky "how it works"
   return (
@@ -296,8 +297,8 @@ export default async function Home({
                 <a href={businessUrl} className={primaryBtn}>
                   {tr("Άνοιξε τη βιτρίνα σου")} <Arrow />
                 </a>
-                <a href="#examples" className="group inline-flex min-h-12 items-center gap-2 rounded-xl border border-[#2E4A37]/30 bg-[#F7F2E8]/60 px-6 text-[15px] font-semibold text-[#1F3628] transition hover:border-[#2E4A37] hover:bg-white">
-                  {tr("Δες παραδείγματα")}
+                <a href="#try" className="group inline-flex min-h-12 items-center gap-2 rounded-xl border border-[#2E4A37]/30 bg-[#F7F2E8]/60 px-6 text-[15px] font-semibold text-[#1F3628] transition hover:border-[#2E4A37] hover:bg-white">
+                  {tr("Δοκίμασέ το")}
                 </a>
               </div>
               <ul className="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-[13px] font-medium text-[#1F3628]/85">
@@ -313,19 +314,31 @@ export default async function Home({
         />
       </section>
 
-      {/* What you can build: example websites from across Greece */}
-      <section id="examples" aria-labelledby="examples-title" className="scroll-mt-20">
+      {/* Marketplace: products promoted from Vitrinaki shops, each with a way to the shop */}
+      <section id="marketplace" aria-labelledby="marketplace-title" className="scroll-mt-20">
         <div className={`${WRAP} py-14 lg:py-20`}>
           <Reveal className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
             <div>
-              <Eyebrow>{tr("Από όλη την Ελλάδα")}</Eyebrow>
-              <h2 id="examples-title" className="mt-4 max-w-xl text-[1.9rem] font-extrabold leading-tight tracking-[-0.02em] text-[#1F3628] sm:text-4xl">{tr("Τι μπορείς να φτιάξεις με το Vitrinaki;")}</h2>
+              <Eyebrow>{tr("Marketplace")}</Eyebrow>
+              <h2 id="marketplace-title" className="mt-4 max-w-xl text-[1.9rem] font-extrabold leading-tight tracking-[-0.02em] text-[#1F3628] sm:text-4xl">{tr("Ανακάλυψε προϊόντα από ελληνικά καταστήματα.")}</h2>
             </div>
-            <p className={`max-w-md text-[15px] leading-7 ${MUTED}`}>{tr("Παραγωγοί, καταστήματα, ξενώνες, γραφεία, φροντιστήρια και δημιουργοί. Κάθε επιχείρηση παίρνει τη δική της ιστοσελίδα, με το δικό της ύφος. Τα παραδείγματα είναι ενδεικτικά.")}</p>
+            <p className={`max-w-md text-[15px] leading-7 ${MUTED}`}>{tr("Προϊόντα που ξεχωρίσαμε από τις βιτρίνες του Vitrinaki. Άνοιξε ένα για να το δεις ή πήγαινε κατευθείαν στο κατάστημα.")}</p>
           </Reveal>
-          <Reveal className="mt-8">
-            <SiteGallery lang={lang} startHref={businessUrl} />
-          </Reveal>
+          {promoted.length ? (
+            <Reveal className="mt-8">
+              <PromotedMarket products={promoted} lang={lang} locale={locale} />
+            </Reveal>
+          ) : (
+            <Reveal className="mt-8 flex flex-col items-start gap-4 rounded-2xl border border-dashed border-[#2E4A37]/25 bg-white/50 p-6 sm:flex-row sm:items-center sm:justify-between sm:p-8">
+              <div>
+                <h3 className="text-lg font-bold text-[#1F3628]">{tr("Σύντομα εδώ, προϊόντα από τα καταστήματά μας.")}</h3>
+                <p className={`mt-1 text-[14.5px] leading-6 ${MUTED}`}>{tr("Άνοιξε τη βιτρίνα σου και τα προϊόντα σου μπορεί να είναι από τα πρώτα.")}</p>
+              </div>
+              <a href={businessUrl} className={`${primaryBtn} shrink-0`}>
+                {tr("Άνοιξε τη βιτρίνα σου")} <Arrow />
+              </a>
+            </Reveal>
+          )}
         </div>
       </section>
 
@@ -457,10 +470,10 @@ export default async function Home({
         <div className={`${WRAP} py-14 lg:py-20`}>
           <Reveal className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
             <div>
-              <Eyebrow>{tr("Δοκίμασέ το")}</Eyebrow>
-              <h2 id="try-title" className="mt-4 max-w-xl text-[1.9rem] font-extrabold leading-tight tracking-[-0.02em] text-[#1F3628] sm:text-4xl">{tr("Φτιάξε μια βιτρίνα, εδώ, τώρα.")}</h2>
+              <Eyebrow>Custom</Eyebrow>
+              <h2 id="try-title" className="mt-4 max-w-xl text-[1.9rem] font-extrabold leading-tight tracking-[-0.02em] text-[#1F3628] sm:text-4xl">{tr("Φτιάξε τη βιτρίνα όπως τη θες.")}</h2>
             </div>
-            <p className={`max-w-md text-[15px] leading-7 ${MUTED}`}>{tr("Άλλαξε χρώματα, template και όνομα και δες το κατάστημα να αλλάζει αμέσως. Δεν αποθηκεύεται τίποτα.")}</p>
+            <p className={`max-w-md text-[15px] leading-7 ${MUTED}`}>{tr("Template, χρώματα, γραμματοσειρά, στυλ, λογότυπο, εξώφυλλο, ενότητες και domain. Δες το κατάστημα να αλλάζει αμέσως. Δεν αποθηκεύεται τίποτα.")}</p>
           </Reveal>
           <div className="mt-10">
             <TryShop

@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from "react"
 import { translator, type Lang } from "@/lib/i18n/vitrinaki"
 
 import { HeroShowcase, SCENE_MS, type Scene, showcaseCss } from "./HeroShowcase"
-import { palettes, SHOW_SITE_EVENT, sites } from "./sites"
+import { palettes, sites } from "./sites"
 import { SitePreview } from "./SitePreview"
 
 const greekToLatin: Record<string, string> = {
@@ -213,18 +213,6 @@ export function HeroDemo({ lang, intro }: { lang: Lang; intro: React.ReactNode }
       observer?.disconnect()
       document.removeEventListener("visibilitychange", update)
     }
-  }, [])
-
-  // an example picked in the gallery stays on screen until the visitor presses play
-  useEffect(() => {
-    const onShow = (e: Event) => {
-      const i = sites.findIndex((site) => site.key === (e as CustomEvent<string>).detail)
-      if (i < 0) return
-      setScene(i)
-      setPlaying(false)
-    }
-    window.addEventListener(SHOW_SITE_EVENT, onShow)
-    return () => window.removeEventListener(SHOW_SITE_EVENT, onShow)
   }, [])
 
   useEffect(() => {

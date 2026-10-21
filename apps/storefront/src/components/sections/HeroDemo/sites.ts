@@ -1,9 +1,6 @@
 /* Example websites for the homepage: different kinds of business from around Greece, each
    with its own name, address and colours. They are examples, not customers. */
 
-/* The gallery's "Δες το" buttons ask the hero to show one example. */
-export const SHOW_SITE_EVENT = "vk:show-site"
-
 export type SitePalette = { key: string; label: string; page: string; ink: string; accent: string; soft: string }
 
 export const palettes: SitePalette[] = [

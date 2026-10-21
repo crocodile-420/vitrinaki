@@ -15,7 +15,7 @@ const footerGroups = [
     title: "Η βιτρίνα",
     links: [
       { label: "Καταστήματα", href: "/#vitrina" },
-      { label: "Ύφος", href: "/#examples" },
+      { label: "Ύφος", href: "/#try" },
       { label: "Ερωτήσεις", href: "/#faq" },
     ],
   },

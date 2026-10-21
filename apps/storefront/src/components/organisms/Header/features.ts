@@ -25,7 +25,7 @@ export const featureGroups: FeatureGroup[] = [
   {
     title: "Φτιάξε τη βιτρίνα σου",
     items: [
-      { label: "Πρότυπα & χρώματα", text: "Ξεκινάς από ένα ύφος και το κάνεις δικό σου.", href: "/#examples", icon: "template" },
+      { label: "Πρότυπα & χρώματα", text: "Ξεκινάς από ένα ύφος και το κάνεις δικό σου.", href: "/#try", icon: "template" },
       { label: "Δικό σου domain", text: "vitrinaki.gr/το-όνομά-σου ή η δική σου διεύθυνση.", href: "/#included", icon: "globe" },
       { label: "Ερωτήσεις που στήνουν τη σελίδα", text: "Απαντάς σε λίγες ερωτήσεις, η σελίδα στήνεται μόνη της.", href: "/start", icon: "questions" },
       { label: "Ελληνικά & Αγγλικά", text: "Το κατάστημά σου μιλά τη γλώσσα των πελατών σου.", href: "/#included", icon: "lang" },
@@ -35,7 +35,7 @@ export const featureGroups: FeatureGroup[] = [
     title: "Πούλα",
     items: [
       { label: "Online κατάστημα", text: "Καλάθι και παραγγελίες, ανοιχτά όλο το εικοσιτετράωρο.", href: "/#included", icon: "store" },
-      { label: "Έτοιμο για κινητά", text: "Ίδιο κατάστημα σε κάθε οθόνη, χωρίς ρυθμίσεις.", href: "/#examples", icon: "phone" },
+      { label: "Έτοιμο για κινητά", text: "Ίδιο κατάστημα σε κάθε οθόνη, χωρίς ρυθμίσεις.", href: "/#try", icon: "phone" },
       { label: "Προβολή στο vitrinaki.gr", text: "Η βιτρίνα σου ανάμεσα στις επιχειρήσεις του Vitrinaki.", href: "/#vitrina", icon: "megaphone" },
     ],
   },
