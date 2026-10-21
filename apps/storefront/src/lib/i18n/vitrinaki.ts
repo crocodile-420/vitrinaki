@@ -657,6 +657,21 @@ const en: Record<string, string> = {
   "Χωρίς τεχνικές γνώσεις": "No technical skills needed",
   // Crisp homepage
   "Mano Χειροποίητα": "Mano Handmade",
+  // Hero: four-scene showcase
+  "Τι μπορείς να φτιάξεις με το Vitrinaki": "What you can build with Vitrinaki",
+  "Σκηνή": "Scene",
+  "Προηγούμενη σκηνή": "Previous scene",
+  "Επόμενη σκηνή": "Next scene",
+  "Λάδι, μέλι, τυριά και κεραμικά, με τη συσκευασία που τους αξίζει": "Olive oil, honey, cheese and ceramics, in the packaging they deserve",
+  "Μπουτίκ & lifestyle": "Boutiques & lifestyle",
+  "Μόδα, αξεσουάρ και αντικείμενα με το δικό σου ύφος": "Fashion, accessories and objects in your own style",
+  "Χειροποίητα & ομορφιά": "Handmade & beauty",
+  "Κοσμήματα, κεριά και φυσικά καλλυντικά, σε προσεγμένες φωτογραφίες": "Jewellery, candles and natural skincare, beautifully photographed",
+  "Πούλα online": "Sell online",
+  "Το κατάστημά σου, στο κινητό των πελατών, και οι παραγγελίες στο Studio": "Your shop on your customers' phones, and the orders in Studio",
+  "Δοκίμασε τη διαχείριση αποθέματος": "Try stock management",
+  "Η διαχείριση, απλή σαν λίστα.": "Managing it is as simple as a list.",
+  "Πάτησε + και − για να αλλάξεις το απόθεμα. Το ίδιο κάνεις από το Studio, για κάθε προϊόν σου.": "Press + and − to change the stock. You do the same in Studio, for every product you sell.",
   // Hero: rotating example shops
   "Παράδειγμα": "Example",
   "Παύση εναλλαγής": "Pause examples",
