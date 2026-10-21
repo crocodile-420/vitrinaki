@@ -264,7 +264,7 @@ export default async function Home({
       {/* Brand statement band */}
       <section aria-label={tr("Τι είναι το Vitrinaki")} className="relative isolate overflow-hidden bg-[#F7F2E8]">
         <OliveSprig className="pointer-events-none absolute -left-16 -top-8 -z-10 w-40 -rotate-12 text-[#2E4A37]/20 sm:w-52" />
-        <div className={`${WRAP} grid items-center gap-6 py-6 lg:grid-cols-[0.9fr_1.1fr] lg:gap-10 lg:py-5`}>
+        <div className={`${WRAP} grid items-center gap-4 py-5 sm:gap-6 sm:py-6 lg:grid-cols-[0.9fr_1.1fr] lg:gap-10 lg:py-5`}>
           <div className="lg:border-l-2 lg:border-[#C0503C]/40 lg:pl-6">
             <p className="text-[1.6rem] font-extrabold leading-[1.12] tracking-[-0.02em] text-[#1F3628] sm:text-[2rem]">
               {tr("Η ολοκληρωμένη λύση για")}{" "}
@@ -273,18 +273,18 @@ export default async function Home({
                 <Swoosh className="absolute -bottom-1.5 left-0 h-2 w-full text-[#C0503C]/35" />
               </span>
             </p>
-            <p className="mt-3 max-w-lg text-[14.5px] leading-6 text-[#2E4A37]/75">
+            <p className="mt-2 max-w-lg text-[14px] leading-6 text-[#2E4A37]/75 sm:mt-3 sm:text-[14.5px]">
               {tr("Επαγγελματικό e-shop, διαχείριση προϊόντων και αποθέματος, προβολή στο Vitrinaki. Όλα σε μία πλατφόρμα.")}
             </p>
           </div>
-          <ul className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-5">
+          <ul className="-mx-5 flex gap-2.5 overflow-x-auto px-5 pt-2 [scrollbar-width:none] sm:pt-0 sm:mx-0 sm:grid sm:grid-cols-3 sm:overflow-visible sm:px-0 lg:grid-cols-5 [&::-webkit-scrollbar]:hidden">
             {bandTiles.map((t) => (
-              <li key={t.title} className="relative flex items-center gap-2.5 rounded-2xl px-2.5 py-2.5 ring-1 ring-black/[0.04] last:col-span-2 sm:flex-col sm:justify-center sm:px-2 sm:py-3.5 sm:text-center sm:last:col-span-1" style={{ background: t.bg }}>
-                {"soon" in t ? <span className="absolute right-1.5 top-1.5 rounded-full bg-white/80 px-1.5 py-0.5 text-[9.5px] font-bold text-[#265E8E]">{tr("Σύντομα")}</span> : null}
+              <li key={t.title} className="relative flex shrink-0 items-center gap-2.5 rounded-2xl py-2 pl-2 pr-3.5 ring-1 ring-black/[0.04] sm:flex-col sm:justify-center sm:px-2 sm:py-3.5 sm:text-center" style={{ background: t.bg }}>
+                {"soon" in t ? <span className="absolute -top-1.5 right-1.5 rounded-full sm:top-1.5 bg-white/80 px-1.5 py-0.5 text-[9.5px] font-bold text-[#265E8E]">{tr("Σύντομα")}</span> : null}
                 <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-white/70 sm:h-11 sm:w-11" style={{ color: t.color }}>
                   <FeatureIcon name={t.icon} />
                 </span>
-                <span className="text-[12.5px] sm:mt-2.5 font-semibold leading-tight text-[#1F3628]">{tr(t.title)}</span>
+                <span className="whitespace-nowrap text-[12.5px] font-semibold leading-tight text-[#1F3628] sm:mt-2.5 sm:whitespace-normal">{tr(t.title)}</span>
               </li>
             ))}
           </ul>
@@ -297,17 +297,17 @@ export default async function Home({
           lang={lang}
           intro={
             <>
-              <h1 className="text-[2.35rem] font-extrabold leading-[1.05] tracking-[-0.03em] text-[#1F3628] sm:text-[3rem] xl:text-[2.45rem] min-[1400px]:text-[2.7rem] min-[1500px]:text-[2.95rem]">
+              <h1 className="text-[2.15rem] font-extrabold leading-[1.05] tracking-[-0.03em] text-[#1F3628] sm:text-[3rem] lg:text-[2.85rem] xl:text-[3.35rem]">
                 {tr("Το vitrinaki σου, στο ψηφιακό εμπόριο.")}{" "}
                 <span className="relative inline-block text-[#C0503C]">
                   {tr("Ποτέ δεν είναι αργά.")}
                   <Swoosh className="absolute -bottom-2 left-0 h-2.5 w-full text-[#C0503C]/45" />
                 </span>
               </h1>
-              <p className="mt-4 max-w-md text-[15px] leading-7 text-[#1F3628]/75 xl:text-[14px] xl:leading-6 min-[1400px]:text-[15px] min-[1400px]:leading-7">
+              <p className="mt-5 max-w-md text-[15px] leading-7 text-[#1F3628]/75 sm:text-[16px]">
                 {tr("Δημιούργησε εύκολα το δικό σου e-shop, πούλα τα προϊόντα σου, διαχειρίσου το απόθεμα και βρες περισσότερους πελάτες μέσα από το Vitrinaki.")}
               </p>
-              <div className="mt-7 flex flex-wrap items-center gap-3 xl:mt-5 min-[1400px]:mt-7">
+              <div className="mt-7 flex flex-wrap items-center gap-3">
                 <a href={businessUrl} className={primaryBtn}>
                   {tr("Άνοιξε τη βιτρίνα σου")} <Arrow />
                 </a>
@@ -315,7 +315,7 @@ export default async function Home({
                   {tr("Δες παραδείγματα")}
                 </a>
               </div>
-              <ul className="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-[13px] font-medium text-[#1F3628]/85 xl:mt-4 min-[1400px]:mt-6">
+              <ul className="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-[13px] font-medium text-[#1F3628]/85">
                 {["Χωρίς τεχνικές γνώσεις", "Έτοιμα templates", "Άνθρωποι δίπλα σου"].map((item) => (
                   <li key={item} className="flex items-center gap-1.5">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#2E4A37" /><path d="m7.5 12 3 3 6-6" stroke="#F7F2E8" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
@@ -330,21 +330,21 @@ export default async function Home({
 
       {/* Features */}
       <section id="included" className="scroll-mt-20 bg-[#2E4A37] text-[#F7F2E8]">
-        <div className={`${WRAP} py-12 lg:py-14`}>
+        <div className={`${WRAP} py-14 lg:py-20`}>
           <Reveal className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
             <h2 className="max-w-xl text-[1.7rem] font-extrabold leading-tight tracking-[-0.02em] text-[#F7F2E8] sm:text-[2rem]">{tr("Ένα ολοκληρωμένο e-shop. Δικό σου.")}</h2>
             <p className="max-w-md text-[15px] leading-7 text-[#F7F2E8]/80">{tr("Όλα όσα χρειάζεσαι για να πουλάς online, σε ένα σημείο.")}</p>
           </Reveal>
-          <div className="mt-8 grid grid-cols-1 gap-3 min-[480px]:grid-cols-2 md:grid-cols-4 xl:grid-cols-8">
+          <div className="mt-8 grid grid-cols-1 gap-4 min-[480px]:grid-cols-2 lg:grid-cols-4">
             {features.map((f, i) => (
               <Reveal key={f.title} delay={(i % 4) * 60} className="h-full">
-                <div className="group relative h-full rounded-2xl border border-[#F7F2E8]/20 bg-[#F7F2E8] p-4 text-[#1F3628] shadow-[0_18px_40px_-28px_rgba(0,0,0,0.6)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_55px_-30px_rgba(0,0,0,0.7)]">
+                <div className="group relative h-full rounded-2xl border border-[#F7F2E8]/20 bg-[#F7F2E8] p-5 text-[#1F3628] shadow-[0_18px_40px_-28px_rgba(0,0,0,0.6)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_55px_-30px_rgba(0,0,0,0.7)]">
                   {"soon" in f ? <span className="absolute right-2.5 top-2.5 rounded-full bg-[#265E8E]/10 px-2 py-0.5 text-[10.5px] font-semibold text-[#265E8E]">{tr("Σύντομα")}</span> : null}
                   <span className="grid h-10 w-10 place-items-center rounded-full" style={{ background: `${f.color}17`, color: f.color }}>
                     <FeatureIcon name={f.icon} size={20} />
                   </span>
-                  <h3 className="mt-3 text-[14px] font-bold leading-snug text-[#1F3628]">{tr(f.title)}</h3>
-                  <p className={`mt-1.5 text-[12.5px] leading-[1.55] ${MUTED}`}>{tr(f.text)}</p>
+                  <h3 className="mt-3 text-[15.5px] font-bold leading-snug text-[#1F3628]">{tr(f.title)}</h3>
+                  <p className={`mt-1.5 text-[14px] leading-6 ${MUTED}`}>{tr(f.text)}</p>
                 </div>
               </Reveal>
             ))}
@@ -354,46 +354,55 @@ export default async function Home({
 
       {/* Template gallery */}
       <section id="examples" className="scroll-mt-20">
-        <div className={`${WRAP} py-12 lg:py-14`}>
+        <div className={`${WRAP} py-14 lg:py-20`}>
           <Reveal className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
             <h2 className="max-w-xl text-[1.7rem] font-extrabold leading-tight tracking-[-0.02em] text-[#1F3628] sm:text-[2rem]">{tr("Έτοιμα templates για κάθε επιχείρηση.")}</h2>
             <p className={`max-w-md text-[15px] leading-7 ${MUTED}`}>{tr("Ξεκινάς από ένα ύφος και το κάνεις δικό σου με το λογότυπο, τα χρώματα και τις φωτογραφίες σου.")}</p>
           </Reveal>
-          <div className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-4 lg:grid-cols-7">
+          {/* phones: a swipeable row; tablet and up: a grid with equal cards */}
+          <ul className="-mx-5 mt-8 flex snap-x snap-mandatory gap-4 overflow-x-auto px-5 pb-2 [scrollbar-width:none] sm:mx-0 sm:grid sm:grid-cols-2 sm:gap-5 sm:overflow-visible sm:px-0 sm:pb-0 lg:grid-cols-3 [&::-webkit-scrollbar]:hidden">
             {gallery.map((g, i) => (
-              <Reveal key={g.cat} delay={(i % 4) * 60}>
-                <figure className="group">
-                  <div className="overflow-hidden rounded-xl bg-white shadow-[0_14px_30px_-22px_rgba(31,54,40,0.5)] ring-1 ring-[#2E4A37]/10 transition duration-300 group-hover:-translate-y-1.5 group-hover:shadow-[0_26px_50px_-26px_rgba(31,54,40,0.55)]">
-                    <div className="flex items-center justify-between gap-1 px-2 py-1.5">
-                      <span className={`truncate text-[8px] font-bold ${g.dark ? "text-[#1F3628]" : "text-[#1F3628]/80"}`}>{g.brand}</span>
-                      <span className="flex gap-1.5 text-[6.5px] text-[#2E4A37]/50"><span>{tr("Αρχική")}</span><span>{tr("Συλλογή")}</span></span>
+              <li key={g.cat} className="w-[80%] shrink-0 snap-start sm:w-auto">
+                <Reveal delay={(i % 3) * 60} className="h-full">
+                  <figure className="group flex h-full flex-col overflow-hidden rounded-2xl bg-white shadow-[0_18px_40px_-28px_rgba(31,54,40,0.5)] ring-1 ring-[#2E4A37]/10 transition duration-300 hover:-translate-y-1 hover:shadow-[0_30px_60px_-30px_rgba(31,54,40,0.55)] motion-reduce:hover:translate-y-0">
+                    <div className="flex items-center justify-between gap-2 border-b border-[#2E4A37]/[0.07] px-3.5 py-2">
+                      <span className="truncate text-[12px] font-bold text-[#1F3628]">{g.brand}</span>
+                      <span className="flex gap-3 text-[10.5px] text-[#2E4A37]/55"><span>{tr("Αρχική")}</span><span>{tr("Συλλογή")}</span></span>
                     </div>
-                    <div className={`relative aspect-[4/3.6] overflow-hidden ${g.dark ? "bg-[#1F3628]" : "bg-[#F3EDE2]"}`}>
-                      <img src={g.img} alt="" loading="lazy" decoding="async" className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-[1.04]" style={{ objectPosition: g.pos }} />
-                      <div className={`absolute inset-0 ${g.dark ? "bg-gradient-to-r from-[#1F3628]/90 via-[#1F3628]/50 to-transparent" : "bg-gradient-to-r from-white/85 via-white/40 to-transparent"}`} />
-                      <div className={`relative p-3 ${g.dark ? "text-[#F7F2E8]" : "text-[#1F3628]"}`}>
-                        <p className="font-serif text-[17px] leading-none">{g.brand}</p>
-                        <p className="mt-1 max-w-[70%] text-[9px] leading-snug opacity-80">{tr(g.tag)}</p>
-                        <span className="mt-2 inline-block rounded bg-[#C0503C] px-1.5 py-0.5 text-[8px] font-bold text-white">{tr("Ανακάλυψε")}</span>
+                    <div className={`relative aspect-[4/3] overflow-hidden ${g.dark ? "bg-[#1F3628]" : "bg-[#F3EDE2]"}`}>
+                      <img src={g.img} alt="" loading="lazy" decoding="async" className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-[1.04] motion-reduce:transition-none motion-reduce:group-hover:scale-100" style={{ objectPosition: g.pos }} />
+                      <div className={`absolute inset-0 ${g.dark ? "bg-gradient-to-r from-[#1F3628]/90 via-[#1F3628]/45 to-transparent" : "bg-gradient-to-r from-white/85 via-white/35 to-transparent"}`} />
+                      <div className={`relative p-5 ${g.dark ? "text-[#F7F2E8]" : "text-[#1F3628]"}`}>
+                        <p className="font-serif text-[28px] leading-none">{g.brand}</p>
+                        <p className="mt-2 max-w-[60%] text-[13px] leading-snug opacity-80">{tr(g.tag)}</p>
+                        <span className="mt-3 inline-block rounded-md bg-[#C0503C] px-2.5 py-1 text-[11.5px] font-bold text-white">{tr("Ανακάλυψε")}</span>
                       </div>
                     </div>
-                  </div>
-                  <figcaption className="mt-2.5 flex items-center gap-1.5 text-[12.5px] font-semibold leading-tight text-[#1F3628]">
-                    <span className="shrink-0 text-[#C0503C]"><FeatureIcon name={g.icon} size={16} /></span>
-                    {tr(g.cat)}
-                  </figcaption>
-                </figure>
-              </Reveal>
+                    <figcaption className="flex flex-1 items-center justify-between gap-3 px-4 py-3.5">
+                      <span className="flex min-w-0 items-center gap-2 text-[14.5px] font-semibold leading-tight text-[#1F3628]">
+                        <span className="shrink-0 text-[#C0503C]"><FeatureIcon name={g.icon} size={18} /></span>
+                        {tr(g.cat)}
+                      </span>
+                      <span className="flex shrink-0 items-center gap-1.5">
+                        <a href="#try" className="rounded-lg px-2.5 py-1.5 text-[13px] font-semibold text-[#1F3628] underline-offset-4 transition hover:underline">{tr("Δοκίμασέ το")}</a>
+                        <a href={businessUrl} className="rounded-lg bg-[#2E4A37] px-3 py-1.5 text-[13px] font-semibold text-white transition hover:bg-[#1F3628]">{tr("Ξεκίνα")}</a>
+                      </span>
+                    </figcaption>
+                  </figure>
+                </Reveal>
+              </li>
             ))}
-            <Reveal delay={120} className="col-span-2 md:col-span-4 lg:col-span-1">
-              <a href={businessUrl} className="group relative flex h-full min-h-[180px] flex-col justify-between overflow-hidden rounded-xl bg-[#2E4A37] p-4 text-[#F7F2E8] transition hover:-translate-y-1.5">
-                <OliveSprig className="pointer-events-none absolute -bottom-4 -right-6 w-32 text-[#F7F2E8]/20" />
-                <svg className="relative h-8 w-8 text-[#E08A76]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M3 17 9 11l4 4 8-8" /><path d="M15 7h6v6" /></svg>
-                <p className="relative mt-3 text-[18px] font-extrabold leading-tight">{tr("Άνοιξε τη βιτρίνα σου")}</p>
-                <span className="relative mt-4 inline-flex w-fit items-center gap-1.5 rounded-lg bg-[#C0503C] px-3 py-2 text-[13px] font-semibold text-white">{tr("Ξεκίνα")} <Arrow /></span>
-              </a>
-            </Reveal>
-          </div>
+          </ul>
+          <Reveal delay={120} className="mt-5">
+            <a href={businessUrl} className="group relative flex flex-col gap-4 overflow-hidden rounded-2xl bg-[#2E4A37] px-6 py-5 text-[#F7F2E8] transition hover:-translate-y-0.5 sm:flex-row sm:items-center sm:justify-between">
+              <OliveSprig className="pointer-events-none absolute -bottom-6 right-32 w-36 text-[#F7F2E8]/15" />
+              <span className="relative flex items-center gap-3">
+                <svg className="h-8 w-8 shrink-0 text-[#E08A76]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M3 17 9 11l4 4 8-8" /><path d="M15 7h6v6" /></svg>
+                <span className="text-[18px] font-extrabold leading-tight">{tr("Άνοιξε τη βιτρίνα σου")}</span>
+              </span>
+              <span className="relative inline-flex w-fit items-center gap-1.5 rounded-lg bg-[#C0503C] px-4 py-2 text-[14px] font-semibold text-white">{tr("Ξεκίνα")} <Arrow /></span>
+            </a>
+          </Reveal>
         </div>
       </section>
 
@@ -488,7 +497,7 @@ export default async function Home({
 
       {/* How it works: steps scroll, the shop mockup stays pinned and follows them */}
       <section id="how-it-works" className="scroll-mt-20">
-        <div className={`${WRAP} py-14 lg:py-12`}>
+        <div className={`${WRAP} py-14 lg:py-16`}>
           <HowItWorksScroll
             intro={
               <Reveal className="max-w-xl lg:pt-8">
@@ -507,7 +516,7 @@ export default async function Home({
         <div aria-hidden="true" className="vk-grain absolute inset-0 -z-10 opacity-20" />
         <OliveBranch className="pointer-events-none absolute -bottom-6 right-0 -z-10 w-[420px] text-[#F7F2E8]/10 lg:w-[620px]" />
         <span aria-hidden="true" className="font-serif pointer-events-none absolute -top-16 right-4 -z-10 text-[22rem] leading-none text-white/[0.04] sm:text-[34rem]">«</span>
-        <div className={`${WRAP} py-16 lg:py-24`}>
+        <div className={`${WRAP} py-14 lg:py-20`}>
           <Reveal>
             <Eyebrow light>{tr("Η φιλοσοφία μας")}</Eyebrow>
             <blockquote className="font-serif mt-8 max-w-5xl text-[2.9rem] font-medium italic leading-[1.02] tracking-[-0.02em] sm:text-7xl lg:text-[6.5rem]">
@@ -516,7 +525,7 @@ export default async function Home({
               {tr("εστίν φιλοσοφείν.»")}
             </blockquote>
           </Reveal>
-          <Reveal delay={120} className="mt-14 grid max-w-4xl gap-6 text-[17px] leading-8 text-[#F7F2E8]/75 md:grid-cols-2 md:gap-10">
+          <Reveal delay={120} className="mt-10 grid max-w-4xl gap-6 text-[17px] leading-8 text-[#F7F2E8]/75 md:grid-cols-2 md:gap-10">
             <p>{tr("Το επιχειρείν δεν είναι μόνο η πώληση ενός προϊόντος. Είναι η σκέψη, η δημιουργία, η επιμονή και η αναζήτηση ενός καλύτερου τρόπου να προσφέρεις κάτι στον κόσμο.")}</p>
             <p>{tr("Η ιστορία κάθε επιχείρησης έχει αξία. Η τεχνολογία πρέπει να την αναδεικνύει, όχι να μπαίνει εμπόδιο. Γι' αυτό φτιάξαμε το Vitrinaki.")}</p>
           </Reveal>
@@ -525,7 +534,7 @@ export default async function Home({
 
       {/* FAQ */}
       <section id="faq" className="scroll-mt-20 bg-[#2E4A37] text-[#F7F2E8]">
-        <div className={`${WRAP} grid gap-12 py-24 lg:grid-cols-[0.8fr_1.2fr] lg:gap-20 lg:py-32`}>
+        <div className={`${WRAP} grid gap-10 py-14 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16 lg:py-20`}>
           <Reveal>
             <Eyebrow light>{tr("Ερωτήσεις")}</Eyebrow>
             <H2>{tr("Όσα ρωτούν συνήθως πριν ξεκινήσουν.")}</H2>
@@ -547,8 +556,8 @@ export default async function Home({
       </section>
 
       {/* CTA */}
-      <section className="px-4 py-16 sm:px-6 lg:py-24">
-        <Reveal className="relative isolate mx-auto max-w-[1280px] overflow-hidden rounded-[2.5rem] bg-[#1a2e21] px-6 py-20 text-center text-[#F7F2E8] sm:px-12 lg:py-28">
+      <section className="px-4 py-14 sm:px-6 lg:py-20">
+        <Reveal className="relative isolate mx-auto max-w-[1280px] overflow-hidden rounded-[2.5rem] bg-[#1a2e21] px-6 py-16 text-center text-[#F7F2E8] sm:px-12 lg:py-20">
           <div aria-hidden="true" className="vk-glow absolute -left-20 -top-32 -z-10 h-96 w-96 rounded-full bg-[#C0503C]/35 blur-[100px]" />
           <div aria-hidden="true" className="vk-glow absolute -bottom-40 -right-20 -z-10 h-96 w-96 rounded-full bg-[#265E8E]/40 blur-[100px] [animation-delay:-4s]" />
           <div aria-hidden="true" className="vk-grain absolute inset-0 -z-10 opacity-20" />
