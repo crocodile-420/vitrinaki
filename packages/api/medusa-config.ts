@@ -33,6 +33,18 @@ module.exports = withMercur({
   },
   modules: [
     {
+      // Private legal/owner details of each store (never exposed publicly).
+      resolve: './src/modules/vitrinaki-private',
+    },
+    {
+      // Loyalty points per (shop, customer) and their ledger.
+      resolve: './src/modules/vitrinaki-loyalty',
+    },
+    {
+      // Online bookings for service businesses (appointments per shop).
+      resolve: './src/modules/vitrinaki-bookings',
+    },
+    {
       resolve: '@mercurjs/core/modules/admin-ui',
       options: {
         appDir: dashboardAppDir('admin'),
@@ -46,6 +58,32 @@ module.exports = withMercur({
         path: '/seller',
       }
     },
+    // Card payments at checkout: direct charges on each shop's own Stripe
+    // account (src/modules/stripe-direct). Only registered when Stripe is
+    // configured; without it checkout offers the other payment methods.
+    ...(process.env.STRIPE_SECRET_KEY
+      ? [
+          {
+            resolve: '@medusajs/medusa/payment',
+            options: {
+              providers: [
+                {
+                  resolve: './src/modules/stripe-direct',
+                  id: 'stripe',
+                  options: {
+                    apiKey: process.env.STRIPE_SECRET_KEY,
+                    webhookSecret: process.env.STRIPE_CONNECT_WEBHOOK_SECRET,
+                    // Charged at once on the shop's account; the shop refunds from the Studio.
+                    capture: true,
+                    paymentDescription: process.env.STRIPE_PAYMENT_DESCRIPTION || undefined,
+                    applicationFeePercent: process.env.STRIPE_APPLICATION_FEE_PERCENT || '0',
+                  },
+                },
+              ],
+            },
+          },
+        ]
+      : []),
     {
       resolve: '@medusajs/medusa/file',
       options: {

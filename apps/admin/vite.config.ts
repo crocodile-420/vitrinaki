@@ -21,6 +21,9 @@ export default defineConfig(({ mode }) => {
       react(),
       mercurDashboardPlugin({
         medusaConfigPath: '../../packages/api/medusa-config.ts',
+        // Sidebar header and login/register titles (otherwise "Mercur").
+        name: 'Vitrinaki Admin',
+        logo: '/dashboard/vitrinaki-icon.png',
         ...(backendUrl ? { backendUrl } : {}),
       }),
     ],

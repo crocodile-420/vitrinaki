@@ -1,3 +1,6 @@
+"use client"
+
+import { useTranslator } from "@/lib/i18n/client"
 import { Fragment } from 'react';
 
 import Image from 'next/image';
@@ -15,7 +18,9 @@ export const OrderProductListItem = ({
   item: any;
   currency_code: string;
   withDivider?: boolean;
-}) => (
+}) => {
+  const { tr } = useTranslator();
+  return (
   <Fragment>
     {withDivider && <Divider className="mt-4" />}
     <li className={cn('flex items-center', withDivider && 'mt-2')}>
@@ -51,13 +56,13 @@ export const OrderProductListItem = ({
         </div>
         <div className="flex items-center sm:col-span-2">
           <p className="label-md text-secondary">
-            {`Variant: `}
+            {tr('Παραλλαγή')}:{' '}
             <span className="text-primary">{item?.variant_title || item?.variant?.title}</span>
           </p>
         </div>
         <div className="flex items-center justify-center sm:col-span-2">
           <p className="label-md text-secondary">
-            {`Quantity: `}
+            {tr('Ποσότητα')}:{' '}
             <span className="text-primary">{item?.quantity}</span>
           </p>
         </div>
@@ -70,4 +75,5 @@ export const OrderProductListItem = ({
       </div>
     </li>
   </Fragment>
-);
+  );
+};

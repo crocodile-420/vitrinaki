@@ -1,9 +1,11 @@
+import { getTranslator } from "@/lib/i18n/server"
 import { Card, Divider } from "@/components/atoms"
 import { convertToLocale } from "@/lib/helpers/money"
 
-export const OrderTotals = ({ orderGroup }: { orderGroup: any }) => {
+export const OrderTotals = async ({ orderGroup }: { orderGroup: any }) => {
   // The order group only exposes a computed `total`; per-seller monetary
   // breakdowns live on its child orders, so aggregate them here.
+  const { tr } = await getTranslator()
   const orders: any[] = orderGroup.orders ?? []
 
   const delivery = orders.reduce(
@@ -20,7 +22,7 @@ export const OrderTotals = ({ orderGroup }: { orderGroup: any }) => {
   return (
     <Card className="mb-8 p-4">
       <p className="text-secondary label-md mb-2 flex justify-between">
-        Subtotal:
+        {tr("Υποσύνολο")}:
         <span className="text-primary">
           {convertToLocale({
             amount: subtotal,
@@ -29,7 +31,7 @@ export const OrderTotals = ({ orderGroup }: { orderGroup: any }) => {
         </span>
       </p>
       <p className="text-secondary label-md flex justify-between">
-        Delivery:
+        {tr("Αποστολή")}:
         <span className="text-primary">
           {convertToLocale({
             amount: delivery,
@@ -39,7 +41,7 @@ export const OrderTotals = ({ orderGroup }: { orderGroup: any }) => {
       </p>
       <Divider className="my-4" />
       <p className="text-secondary label-md flex justify-between items-center">
-        Total:{" "}
+        {tr("Σύνολο")}:{" "}
         <span className="text-primary heading-md">
           {convertToLocale({
             amount: total,

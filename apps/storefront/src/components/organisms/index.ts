@@ -9,8 +9,6 @@ import { ProductsPagination } from "./ProductsPagination/ProductsPagination"
 import { ProductSidebar } from "./ProductSidebar/ProductSidebar"
 import { ProductSearchSidebar } from "./ProductSearchSidebar/ProductSearchSidebar"
 import { ProductListingActiveFilters } from "./ProductListingActiveFilters/ProductListingActiveFilters"
-import { Header } from "./Header/Header"
-import { Footer } from "./Footer/Footer"
 import { GalleryCarousel } from "./GalleryCarousel/GalleryCarousel"
 import { SellerHeading } from "./SellerHeading/SellerHeading"
 import { SellerFooter } from "./SellerFooter/SellerFooter"
@@ -35,8 +33,6 @@ export {
   ProductSidebar,
   ProductSearchSidebar,
   ProductListingActiveFilters,
-  Header,
-  Footer,
   GalleryCarousel,
   SellerHeading,
   SellerFooter,

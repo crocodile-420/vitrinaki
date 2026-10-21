@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslator } from "@/lib/i18n/client"
 import { FC, useState } from 'react';
 
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -37,6 +38,7 @@ export const ProfileDetailsForm: FC<Props> = ({ defaultValues, ...props }) => {
 
 const Form: React.FC<Props> = ({ handleClose }) => {
   const [error, setError] = useState<string>();
+  const { tr } = useTranslator();
   const {
     handleSubmit,
     register,
@@ -65,35 +67,35 @@ const Form: React.FC<Props> = ({ handleClose }) => {
       <div className="space-y-4 px-4">
         <div className="items-top mb-4 grid max-w-full grid-cols-2 gap-4">
           <LabeledInput
-            label="First name"
-            placeholder="Type first name"
+            label={tr("Όνομα")}
+            placeholder={tr("Γράψε το όνομά σου")}
             error={errors.firstName as FieldError}
             data-testid="profile-details-form-first-name-input"
             {...register('firstName')}
           />
           <LabeledInput
-            label="Last name"
-            placeholder="Type last name"
+            label={tr("Επώνυμο")}
+            placeholder={tr("Γράψε το επώνυμό σου")}
             error={errors.lastName as FieldError}
             data-testid="profile-details-form-last-name-input"
             {...register('lastName')}
           />
           <LabeledInput
-            label="Phone"
-            placeholder="Type phone number"
+            label={tr("Τηλέφωνο")}
+            placeholder={tr("Γράψε το τηλέφωνό σου")}
             error={errors.phone as FieldError}
             data-testid="profile-details-form-phone-input"
             {...register('phone')}
           />
           <LabeledInput
-            label="Email"
+            label={tr("Email")}
             disabled
             data-testid="profile-details-form-email-input"
             {...register('email')}
           />
         </div>
         {error && <p className="label-md text-negative" data-testid="profile-details-form-error">{error}</p>}
-        <Button className="w-full" data-testid="profile-details-form-submit-button">Save</Button>
+        <Button className="w-full" data-testid="profile-details-form-submit-button">{tr("Αποθήκευση")}</Button>
       </div>
     </form>
   );

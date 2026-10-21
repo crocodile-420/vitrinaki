@@ -1,3 +1,4 @@
+import { getTranslator } from "@/lib/i18n/server"
 import { Suspense } from 'react';
 
 import { Metadata } from 'next';
@@ -11,18 +12,22 @@ import CartShippingMethodsSection from '@/components/sections/CartShippingMethod
 import { retrieveCart } from '@/lib/data/cart';
 import { retrieveCustomer } from '@/lib/data/customer';
 import { listCartShippingMethods } from '@/lib/data/fulfillment';
-import { listCartPaymentMethods } from '@/lib/data/payment';
+import { getCartCardPayment, listCartPaymentMethods } from '@/lib/data/payment';
+import { isStripe } from '@/lib/constants';
 
-export const metadata: Metadata = {
-  title: 'Checkout',
-  description: 'My cart page - Checkout',
-  robots: { index: false, follow: false }
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const { tr } = await getTranslator();
+  return {
+    title: tr('Ολοκλήρωση παραγγελίας'),
+    robots: { index: false, follow: false }
+  };
+}
 
 export default async function CheckoutPage({}) {
+  const { tr } = await getTranslator();
   return (
     <Suspense
-      fallback={<div className="container flex items-center justify-center" data-testid="checkout-page-loading">Loading...</div>}
+      fallback={<div className="container flex items-center justify-center" data-testid="checkout-page-loading">{tr("Φόρτωση...")}</div>}
     >
       <CheckoutPageContent />
     </Suspense>
@@ -37,8 +42,16 @@ async function CheckoutPageContent({}) {
   }
 
   const shippingMethods = await listCartShippingMethods(cart.id, false);
-  const paymentMethods = await listCartPaymentMethods(cart.region?.id ?? '');
+  const regionPaymentMethods = await listCartPaymentMethods(cart.region?.id ?? '');
   const customer = await retrieveCustomer();
+  // Card is charged on the shop's own Stripe account: offer it only when the
+  // backend says this cart can be paid that way.
+  const offersCard = regionPaymentMethods?.some(method => isStripe(method.id)) ?? false;
+  const cardPayment = offersCard ? await getCartCardPayment(cart.id) : null;
+  const paymentMethods = cardPayment?.available
+    ? regionPaymentMethods
+    : regionPaymentMethods?.filter(method => !isStripe(method.id)) ?? null;
+  const cardNotice = cardPayment?.reason === 'mixed_shops' ? 'mixed_shops' : null;
 
   return (
     <PaymentWrapper cart={cart}>
@@ -56,6 +69,7 @@ async function CheckoutPageContent({}) {
             <CartPaymentSection
               cart={cart}
               availablePaymentMethods={paymentMethods}
+              cardNotice={cardNotice}
             />
           </div>
 

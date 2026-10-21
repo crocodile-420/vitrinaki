@@ -1,24 +1,28 @@
+import { getTranslator } from "@/lib/i18n/server"
 import { Avatar } from "@/components/atoms"
 import { Chat } from "../Chat/Chat"
 import { retrieveCustomer } from "@/lib/data/customer"
 import { OrderParcelItems } from "@/components/molecules/OrderParcelItems/OrderParcelItems"
 import { OrderParcelStatus } from "@/components/molecules/OrderParcelStatus/OrderParcelStatus"
 import { OrderParcelActions } from "@/components/molecules/OrderParcelActions/OrderParcelActions"
+import { OrderParcelTracking } from "@/components/molecules/OrderParcelTracking/OrderParcelTracking"
 
 export const OrderParcels = async ({ orders }: { orders: any[] }) => {
   const user = await retrieveCustomer()
+  const { tr } = await getTranslator()
 
   return (
     <>
       {orders.map((order) => (
         <div key={order.id} className="w-full mb-8">
           <div className="border rounded-sm p-4 bg-component-secondary font-semibold text-secondary uppercase">
-            Order #{order.display_id}
+            {tr("Παραγγελία")} #{order.display_id}
           </div>
           <div className="border rounded-sm">
             <div className="p-4 border-b">
               <OrderParcelStatus order={order} />
             </div>
+            <OrderParcelTracking orderId={order.id} />
             <div className="p-4 border-b md:flex items-center justify-between">
               <div className="flex items-center gap-4 mb-4 md:mb-0">
                 <Avatar src={order.seller?.logo || undefined} />

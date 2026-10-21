@@ -3,5 +3,308 @@
     "title": "Custom Fields",
     "description": "Manage your custom fields and configurations",
     "noFields": "No custom fields configured yet"
+  },
+  "vitrinakiCouriers": {
+    "nav": "Couriers",
+    "title": "Couriers",
+    "subtitle": "The courier shipping methods your customers see at checkout. Use your own contract with the courier.",
+    "loading": "Loading…",
+    "loadError": "Could not load your shipping options.",
+    "saveError": "Could not save.",
+    "retry": "Try again",
+    "empty": "You have not added a courier yet.",
+    "freeOverShort": "free from {{amount}}",
+    "delete": "Delete",
+    "deleted": "Shipping option deleted.",
+    "confirmDelete": "Delete the shipping option \"{{name}}\"?",
+    "created": "Added: {{name}}",
+    "form": {
+      "title": "New courier shipping option",
+      "hint": "Pick a courier, give it a name and a price. The price is flat per order.",
+      "courier": "Courier",
+      "trackingLink": "Tracking link for the customer",
+      "trackingNumberOnly": "Customer sees the tracking number (no link)",
+      "name": "Name at checkout",
+      "nameHint": "Customers see this, e.g. \"ACS – παράδοση σε 1–3 εργάσιμες\".",
+      "price": "Price (€)",
+      "freeOver": "Free shipping from (€, optional)",
+      "freeOverHint": "When the cart's products reach this amount, shipping is free.",
+      "zone": "Shipping zone",
+      "profile": "Shipping profile",
+      "save": "Add"
+    },
+    "errors": {
+      "name": "Enter a name.",
+      "price": "Enter a price, e.g. 3.50 (0 for free).",
+      "freeOver": "Enter an amount above 0 or leave it empty.",
+      "zone": "A shipping zone is required.",
+      "profile": "No shipping profile found."
+    },
+    "noZone": {
+      "title": "First, a shipping zone",
+      "body": "To add a courier you need a location with a shipping zone (e.g. \"Greece\").",
+      "link": "Settings → Locations"
+    },
+    "soon": {
+      "badge": "Soon",
+      "title": "Courier integrations",
+      "body": "Live courier rates, voucher printing and Box Now locker choice at checkout. For now the price is flat and you create the voucher with the courier."
+    }
+  },
+  "vitrinakiReferral": {
+    "nav": "Refer a colleague",
+    "eyebrow": "Referral programme",
+    "title": "Refer a colleague",
+    "intro": "Know a business that wants its own e-shop? Send them your code. You get {{percent}}% off one month of your subscription and your colleague gets a month free.",
+    "loading": "Loading…",
+    "loadError": "Could not load your referral code.",
+    "codeLabel": "Your code",
+    "linkLabel": "Link to share",
+    "copyCode": "Copy code",
+    "copyLink": "Copy link",
+    "copied": "Copied",
+    "howTitle": "How it works",
+    "how1": "Your colleague opens their shop from your link, or types your code when signing up.",
+    "how2": "Once they pay their first subscription, they get a month free and you get {{percent}}% off one month: taken off your next bill or, if your subscription is on a promo code, {{days}} extra days.",
+    "stats": {
+      "referred": "Shops you referred",
+      "earned": "Discounts received",
+      "pending": "Discounts waiting"
+    },
+    "pendingNote": "Waiting discounts are added as soon as you start a subscription.",
+    "cap": "Up to {{count}} referral rewards a year (this year: {{used}}).",
+    "welcome": {
+      "applied": "You signed up with a referral code: your free month has been added.",
+      "pending": "You signed up with a referral code: your free month is added once your subscription starts."
+    },
+    "listTitle": "Your referrals",
+    "joined": "Joined {{date}}",
+    "status": {
+      "signedUp": "Signed up",
+      "qualified": "Paid · you earned {{percent}}% off"
+    },
+    "empty": "You haven't referred any shops yet."
+  },
+  "vitrinakiPayments": {
+    "eyebrow": "Vitrinaki Studio",
+    "title": "Card payments",
+    "intro": "Your customers pay by card and the money goes straight to your own Stripe account. You are the seller: you issue receipts, handle VAT, refunds and disputes. Vitrinaki never holds your money.",
+    "loading": "Loading…",
+    "loadError": "Could not load your payment status.",
+    "connectError": "Could not connect to Stripe.",
+    "statusLabel": "Status",
+    "status": {
+      "not_connected": "Not connected",
+      "pending": "Pending",
+      "active": "Active"
+    },
+    "notConfigured": "Card payments are not enabled on Vitrinaki yet. You can connect your account as soon as they are.",
+    "notConnected": {
+      "text": "Connect a Stripe account to accept cards in your shop. If you already use Stripe, sign in with it. Otherwise you create an account in a few minutes (you'll need your tax ID, IBAN and ID).",
+      "button": "Connect Stripe account",
+      "hidden": "Until then, card payment is not shown at your shop's checkout."
+    },
+    "pending": {
+      "text": "Your Stripe account cannot accept payments yet. Continue the setup on Stripe, or wait for the review to finish.",
+      "requirements_one": "Stripe still needs {{count}} item.",
+      "requirements_other": "Stripe still needs {{count}} items.",
+      "button": "Continue setup on Stripe",
+      "refresh": "Check again"
+    },
+    "active": {
+      "text": "Your shop accepts card payments. The money for each order goes into your Stripe account.",
+      "payoutsPending": "Stripe has not enabled payouts to your bank yet. The money stays in your balance until you finish your details on Stripe.",
+      "dashboard": "Open Stripe Dashboard",
+      "refunds": "Refunds: from the order page here in the Studio. The amount is refunded from your Stripe balance."
+    },
+    "account": "Account"
+  },
+  "vitrinakiLoyalty": {
+    "nav": "Customer points",
+    "title": "Customer points",
+    "subtitle": "Your customers collect points with every order and trade them for a discount or free shipping, in your shop only.",
+    "on": "On",
+    "off": "Off",
+    "loading": "Loading…",
+    "loadError": "Could not load your points programme.",
+    "saveError": "Saving failed.",
+    "saved": "Settings saved.",
+    "retry": "Try again",
+    "stats": {
+      "members": "Customers with points",
+      "issued": "Points given",
+      "redeemed": "Points redeemed",
+      "rewards": "Rewards taken"
+    },
+    "form": {
+      "enabled": "Points for my customers",
+      "enabledHint": "When off, no new points are given and none can be redeemed. Customers keep the points they already have.",
+      "pointsPerEuro": "Points per €1",
+      "pointsPerEuroHint": "Counts the value of the products in the order, without shipping.",
+      "rewards": "Rewards",
+      "rewardsHint": "What customers get for their points. Up to 6 options.",
+      "noRewards": "You haven't added a reward yet.",
+      "points": "Points",
+      "reward": "Reward",
+      "amountOff": "Discount in €",
+      "freeShipping": "Free shipping",
+      "amount": "Amount (€)",
+      "remove": "Remove",
+      "add": "Add reward",
+      "previewAmount": "{{points}} points → €{{amount}} off. A customer collects them after spending about €{{spend}}.",
+      "previewShipping": "{{points}} points → free shipping on one order.",
+      "save": "Save"
+    },
+    "how": {
+      "title": "How it works",
+      "earn": "Only customers with an account earn points, when they complete an order in your shop.",
+      "redeem": "Customers redeem from their cart and get a single-use code that works only here.",
+      "cancel": "If you cancel an order, the points it gave are taken back."
+    },
+    "errors": {
+      "pointsPerEuro": "Enter a number from 0.1 to 100.",
+      "points": "Points must be a whole number of 1 or more.",
+      "amount": "Enter an amount from €0.01 to €1,000.",
+      "noRewards": "Add at least one reward to turn points on."
+    }
+  },
+  "vitrinakiBookings": {
+    "nav": "Bookings",
+    "title": "Bookings",
+    "subtitle": "Customers book appointments straight from your page, only at times you are available. Here you see your schedule and answer requests.",
+    "on": "Open",
+    "off": "Closed",
+    "loading": "Loading…",
+    "loadError": "Bookings could not be loaded.",
+    "saveError": "Saving failed.",
+    "saved": "Settings saved.",
+    "retry": "Try again",
+    "created": "Appointment added.",
+    "minutes": "{{n}} min",
+    "hours_one": "{{count}} hour",
+    "hours_other": "{{count}} hours",
+    "hoursMinutes": "{{h}} h {{m}} min",
+    "stats": {
+      "pending": "Waiting for an answer",
+      "today": "Appointments today",
+      "upcoming": "Confirmed, upcoming"
+    },
+    "tabs": {
+      "calendar": "Calendar",
+      "settings": "Settings"
+    },
+    "closedTitle": "Online bookings are closed",
+    "closedText": "Customers don't see the booking button on your page yet. You can already add the appointments you take by phone here.",
+    "openSettings": "Open bookings",
+    "pendingTitle_one": "{{count}} request waiting for an answer",
+    "pendingTitle_other": "{{count}} requests waiting for an answer",
+    "pendingHint": "The time is held for the customer until you answer. Confirm or decline, and call them if needed.",
+    "prevWeek": "Previous week",
+    "nextWeek": "Next week",
+    "thisWeek": "This week",
+    "new": "New appointment",
+    "newHint": "For appointments you take by phone or in person. It is confirmed right away and the time no longer shows as free online.",
+    "dayOff": "Day off",
+    "closed": "Closed",
+    "open": "Open",
+    "status": {
+      "pending": "Pending",
+      "confirmed": "Confirmed",
+      "declined": "Declined",
+      "cancelled": "Cancelled",
+      "completed": "Completed",
+      "no_show": "No-show"
+    },
+    "source": {
+      "online": "Booked from your page",
+      "studio": "Added in the Studio"
+    },
+    "cancelledBy": {
+      "shop": "by you",
+      "customer": "by the customer"
+    },
+    "shopNote": "Note (only for you)",
+    "shopNoteHint": "The customer doesn't see it.",
+    "saveNote": "Save note",
+    "moveTitle": "New day and time",
+    "moveHint": "Let the customer know about the change.",
+    "back": "Back",
+    "actions": {
+      "confirm": "Confirm",
+      "decline": "Decline",
+      "cancel": "Cancel appointment",
+      "complete": "Completed",
+      "no_show": "No-show",
+      "move": "Move"
+    },
+    "done": {
+      "confirm": "Appointment confirmed.",
+      "decline": "Request declined.",
+      "cancel": "Appointment cancelled.",
+      "complete": "Marked as completed.",
+      "no_show": "Marked as no-show.",
+      "move": "Appointment moved.",
+      "note": "Note saved."
+    },
+    "overlapConfirm": "There is already an appointment at that time. Add it anyway?",
+    "cancelConfirm": "Cancel this appointment? Remember to tell the customer.",
+    "firstTimeTitle": "We started from your profile",
+    "firstTimeText": "We filled in the services and hours from your shop profile. Check the durations, open bookings and press Save.",
+    "form": {
+      "service": "Service",
+      "otherService": "Other service…",
+      "serviceName": "Service",
+      "duration": "Duration",
+      "date": "Date",
+      "time": "Time",
+      "customerName": "Customer's full name",
+      "phone": "Phone",
+      "emailOptional": "Email (optional)",
+      "create": "Add appointment",
+      "enabled": "Online bookings from my page",
+      "enabledHint": "Shows a «Book an appointment» button with your free times on your page.",
+      "autoConfirm": "Confirm automatically",
+      "autoConfirmHint": "On: the appointment is booked at once. Off: each booking waits for you to confirm it.",
+      "services": "What customers can book",
+      "servicesHint": "The duration sets how much time each appointment takes in your calendar.",
+      "noServices": "You haven't added any services yet.",
+      "price": "Price",
+      "bookable": "Online",
+      "remove": "Remove",
+      "addService": "+ Add service",
+      "schedule": "Hours for appointments",
+      "scheduleHint": "Free appointments are offered within these hours. If you take a lunch break, add a second interval.",
+      "from": "From",
+      "to": "To",
+      "addSplit": "+ Second interval",
+      "rules": "Rules",
+      "rulesHint": "Small settings so nothing catches you unprepared.",
+      "daysOff": "Days off and holidays",
+      "daysOffHint": "Days you don't take appointments, e.g. holidays.",
+      "offNote": "Note",
+      "offNotePlaceholder": "e.g. Summer holidays",
+      "addDayOff": "+ Add days off",
+      "note": "Message to customers",
+      "notePlaceholder": "e.g. Bring a towel. To cancel, let me know by the day before.",
+      "noteHint": "Shown next to the booking button.",
+      "save": "Save"
+    },
+    "rules": {
+      "slotStepMinutes": "Appointments every",
+      "bufferMinutes": "Break (minutes)",
+      "minNoticeHours": "Notice (hours)",
+      "maxDaysAhead": "Up to days ahead",
+      "cancelHours": "Cancel until (hours before)",
+      "explain": "Break: free time after each appointment. Notice: how many hours ahead the earliest appointment can be booked. Cancel: until when the customer can cancel on their own from the booking link."
+    },
+    "days": {
+      "mon": "Monday",
+      "tue": "Tuesday",
+      "wed": "Wednesday",
+      "thu": "Thursday",
+      "fri": "Friday",
+      "sat": "Saturday",
+      "sun": "Sunday"
+    }
   }
 }

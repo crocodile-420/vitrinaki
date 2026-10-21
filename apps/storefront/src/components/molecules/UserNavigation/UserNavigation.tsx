@@ -1,4 +1,5 @@
 "use client"
+import { useTranslator } from "@/lib/i18n/client"
 import {
   Badge,
   Card,
@@ -11,24 +12,29 @@ import { usePathname } from "next/navigation"
 
 const navigationItems = [
   {
-    label: "Orders",
+    label: "Παραγγελίες",
     href: "/user/orders",
   },
   // {
-  //   label: "Messages",
+  //   label: "Μηνύματα",
   //   href: "/user/messages",
   // },
   // {
-  //   label: "Returns",
+  //   label: "Επιστροφές",
   //   href: "/user/returns",
   // },
   {
-    label: "Addresses",
+    label: "Διευθύνσεις",
     href: "/user/addresses",
+  },
+  {
+    label: "Οι πόντοι μου",
+    href: "/user/points",
   },
 ]
 
 export const UserNavigation = () => {
+  const { tr } = useTranslator()
   const unreads = useUnreads()
   const path = usePathname()
 
@@ -41,8 +47,8 @@ export const UserNavigation = () => {
           active={path === item.href}
           className="relative"
         >
-          {item.label}
-          {item.label === "Messages" && Boolean(unreads?.length) && (
+          {tr(item.label)}
+          {item.href === "/user/messages" && Boolean(unreads?.length) && (
             <Badge className="absolute top-3 left-24 w-4 h-4 p-0">
               {unreads?.length}
             </Badge>
@@ -54,9 +60,11 @@ export const UserNavigation = () => {
         href={"/user/settings"}
         active={path === "/user/settings"}
       >
-        Settings
+        {tr("Ρυθμίσεις")}
       </NavigationItem>
-      <LogoutButton className="w-full text-left" />
+      <LogoutButton className="w-full text-left">
+        {tr("Αποσύνδεση")}
+      </LogoutButton>
     </Card>
   )
 }

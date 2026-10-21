@@ -10,9 +10,11 @@ import {
   getCacheOptions,
   getCacheTag,
   getCartId,
+  getShopCartIds,
   removeAuthToken,
   removeCartId,
-  setAuthToken
+  setAuthToken,
+  setShopCartIds
 } from './cookies';
 
 export const retrieveCustomer = async (): Promise<HttpTypes.StoreCustomer | null> => {
@@ -134,6 +136,7 @@ export async function signout() {
   revalidateTag(customerCacheTag);
 
   await removeCartId();
+  await setShopCartIds({});
 
   const cartCacheTag = await getCacheTag('carts');
   revalidateTag(cartCacheTag);
@@ -141,15 +144,26 @@ export async function signout() {
 }
 
 export async function transferCart() {
-  const cartId = await getCartId();
+  const activeId = await getCartId();
+  const cartIds = Array.from(
+    new Set([activeId, ...Object.values(await getShopCartIds())].filter(Boolean))
+  ) as string[];
 
-  if (!cartId) {
+  if (!cartIds.length) {
     return;
   }
 
   const headers = await getAuthHeaders();
 
-  await sdk.store.carts.$id.customer.mutate({ $id: cartId, fetchOptions: { headers } });
+  // Every shop's open cart moves to the customer, not just the one on screen.
+  for (const cartId of cartIds) {
+    await sdk.store.carts.$id.customer
+      .mutate({ $id: cartId, fetchOptions: { headers } })
+      .catch((error: any) => {
+        if (cartId === activeId) throw error;
+        console.error('Failed to transfer cart', cartId, error?.message || error);
+      });
+  }
 
   const cartCacheTag = await getCacheTag('carts');
   revalidateTag(cartCacheTag);

@@ -6,7 +6,7 @@ export const paymentInfoMap: Record<
   { title: string; icon: React.JSX.Element }
 > = {
   pp_stripe_stripe: {
-    title: "Credit card",
+    title: "Πιστωτική κάρτα",
     icon: <CreditCard />,
   },
   "pp_stripe-ideal_stripe": {
@@ -22,7 +22,7 @@ export const paymentInfoMap: Record<
     icon: <CreditCard />,
   },
   pp_system_default: {
-    title: "Manual Payment",
+    title: "Χειροκίνητη πληρωμή",
     icon: <Cash />,
   },
 }
@@ -61,4 +61,4 @@ export const noDivisionCurrencies = [
   "xau",
 ]
 
-export const PROTECTED_ROUTES = ['/user', '/user/orders', '/user/settings', '/user/addresses', '/user/messages', '/user/returns']
+export const PROTECTED_ROUTES = ['/user', '/user/orders', '/user/settings', '/user/addresses', '/user/messages', '/user/returns', '/user/points']

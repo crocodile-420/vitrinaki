@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslator } from "@/lib/i18n/client"
 import { useState } from 'react';
 
 import { HttpTypes } from '@medusajs/types';
@@ -34,6 +35,7 @@ export const Chat = ({
   buttonSize?: 'small' | 'large';
 }) => {
   const [modal, setModal] = useState(false);
+  const { tr } = useTranslator();
 
   if (!TALKJS_APP_ID) {
     return null;
@@ -54,11 +56,11 @@ export const Chat = ({
         className={buttonClassNames}
         size={buttonSize}
       >
-        {icon ? <MessageIcon size={20} /> : 'Write to seller'}
+        {icon ? <MessageIcon size={20} /> : tr('Στείλε μήνυμα στον πωλητή')}
       </Button>
       {modal && (
         <Modal
-          heading="Chat"
+          heading={tr("Συνομιλία")}
           onClose={() => setModal(false)}
         >
           <div className="px-4">

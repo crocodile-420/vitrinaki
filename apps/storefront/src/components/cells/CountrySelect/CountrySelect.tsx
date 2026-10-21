@@ -1,3 +1,6 @@
+"use client"
+
+import { useTranslator } from "@/lib/i18n/client"
 import {
   forwardRef,
   useImperativeHandle,
@@ -20,7 +23,9 @@ const CountrySelect = forwardRef<
   NativeSelectProps & {
     region?: HttpTypes.StoreRegion
   }
->(({ placeholder = "Country", region, defaultValue, ...props }, ref) => {
+>(({ placeholder: placeholderProp, region, defaultValue, ...props }, ref) => {
+  const { tr } = useTranslator()
+  const placeholder = placeholderProp ?? tr("Χώρα")
   const innerRef = useRef<HTMLSelectElement>(null)
 
   useImperativeHandle<HTMLSelectElement | null, HTMLSelectElement | null>(
@@ -50,7 +55,7 @@ const CountrySelect = forwardRef<
 
   return (
     <label className="label-md">
-      <p className="mb-2">Country</p>
+      <p className="mb-2">{tr("Χώρα")}</p>
       <Listbox onChange={handleSelect} value={props.value}>
         <div className="relative">
           <Listbox.Button
@@ -64,7 +69,7 @@ const CountrySelect = forwardRef<
                 <span className="block truncate">
                   {countryOptions?.find(
                     (country) => country.value === props.value
-                  )?.label || "Choose a country"}
+                  )?.label || tr("Διάλεξε χώρα")}
                 </span>
                 <ChevronUpDown
                   className={clx("transition-rotate duration-200", {

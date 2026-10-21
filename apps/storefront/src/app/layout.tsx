@@ -9,17 +9,19 @@ import { HtmlLangSetter } from '@/components/atoms/HtmlLangSetter/HtmlLangSetter
 import { retrieveCart } from '@/lib/data/cart';
 
 import { Providers } from './providers';
+import { LangProvider } from '@/lib/i18n/client';
+import { getLang } from '@/lib/i18n/server';
 
 export const metadata: Metadata = {
   title: {
     template: `%s | ${
-      process.env.NEXT_PUBLIC_SITE_NAME || 'Mercur B2C Demo - Marketplace Storefront'
+      process.env.NEXT_PUBLIC_SITE_NAME || 'Vitrinaki.gr — Η βιτρίνα σου στο ψηφιακό εμπόριο'
     }`,
-    default: process.env.NEXT_PUBLIC_SITE_NAME || 'Mercur B2C Demo - Marketplace Storefront'
+    default: process.env.NEXT_PUBLIC_SITE_NAME || 'Vitrinaki.gr — Η βιτρίνα σου στο ψηφιακό εμπόριο'
   },
   description:
-    process.env.NEXT_PUBLIC_SITE_DESCRIPTION || 'Mercur B2C Demo - Marketplace Storefront',
-  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000')
+    process.env.NEXT_PUBLIC_SITE_DESCRIPTION || 'Vitrinaki.gr — Η βιτρίνα σου στο ψηφιακό εμπόριο',
+  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3100')
 };
 
 export default async function RootLayout({
@@ -87,7 +89,9 @@ export default async function RootLayout({
       </Head>
       <body className="relative bg-primary text-secondary antialiased">
         <HtmlLangSetter />
-        <Providers cart={cart}>{children}</Providers>
+        <LangProvider lang={await getLang()}>
+          <Providers cart={cart}>{children}</Providers>
+        </LangProvider>
         <Toaster position="top-right" />
       </body>
     </html>

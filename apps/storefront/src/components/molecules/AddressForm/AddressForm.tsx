@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslator } from "@/lib/i18n/client"
 import { FC, useState } from 'react';
 
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -48,6 +49,7 @@ export const AddressForm: FC<Props> = ({ defaultValues, ...props }) => {
 };
 
 const Form: FC<Props> = ({ regions, handleClose }) => {
+  const { tr } = useTranslator();
   const [error, setError] = useState<string>();
   const {
     handleSubmit,
@@ -96,58 +98,58 @@ const Form: FC<Props> = ({ regions, handleClose }) => {
       <div className="space-y-4 px-4">
         <div className="items-top mb-4 grid max-w-full grid-cols-2 gap-4">
           <LabeledInput
-            label="Address name"
-            placeholder="Type address name"
+            label={tr("Όνομα διεύθυνσης")}
+            placeholder={tr("Γράψε ένα όνομα για τη διεύθυνση")}
             className="col-span-2"
             error={errors.firstName as FieldError}
             data-testid="address-form-address-name-input"
             {...register('addressName')}
           />
           <LabeledInput
-            label="First name"
-            placeholder="Type first name"
+            label={tr("Όνομα")}
+            placeholder={tr("Γράψε το όνομά σου")}
             error={errors.firstName as FieldError}
             data-testid="address-form-first-name-input"
             {...register('firstName')}
           />
           <LabeledInput
-            label="Last name"
-            placeholder="Type last name"
+            label={tr("Επώνυμο")}
+            placeholder={tr("Γράψε το επώνυμό σου")}
             error={errors.firstName as FieldError}
             data-testid="address-form-last-name-input"
             {...register('lastName')}
           />
           <LabeledInput
-            label="Company (optional)"
-            placeholder="Type company"
+            label={tr("Εταιρεία (προαιρετικό)")}
+            placeholder={tr("Γράψε την εταιρεία")}
             error={errors.company as FieldError}
             data-testid="address-form-company-input"
             {...register('company')}
           />
           <LabeledInput
-            label="Address"
-            placeholder="Type address"
+            label={tr("Διεύθυνση")}
+            placeholder={tr("Γράψε τη διεύθυνση")}
             error={errors.address as FieldError}
             data-testid="address-form-address-input"
             {...register('address')}
           />
           <LabeledInput
-            label="City"
-            placeholder="Type city"
+            label={tr("Πόλη")}
+            placeholder={tr("Γράψε την πόλη")}
             error={errors.city as FieldError}
             data-testid="address-form-city-input"
             {...register('city')}
           />
           <LabeledInput
-            label="Postal code"
-            placeholder="Type postal code"
+            label={tr("Ταχυδρομικός κώδικας")}
+            placeholder={tr("Γράψε τον ταχυδρομικό κώδικα")}
             error={errors.postalCode as FieldError}
             data-testid="address-form-postal-code-input"
             {...register('postalCode')}
           />
           <LabeledInput
-            label="State / Province"
-            placeholder="Type state / province"
+            label={tr("Νομός / Περιοχή")}
+            placeholder={tr("Γράψε τον νομό / την περιοχή")}
             error={errors.province as FieldError}
             data-testid="address-form-province-input"
             {...register('province')}
@@ -165,14 +167,14 @@ const Form: FC<Props> = ({ regions, handleClose }) => {
                 className="label-sm text-negative"
                 data-testid="address-form-country-error"
               >
-                {(errors.countryCode as FieldError).message}
+                {tr((errors.countryCode as FieldError).message ?? '')}
               </p>
             )}
           </div>
 
           <LabeledInput
-            label="Phone"
-            placeholder="Type phone number"
+            label={tr("Τηλέφωνο")}
+            placeholder={tr("Γράψε το τηλέφωνό σου")}
             error={errors.phone as FieldError}
             data-testid="address-form-phone-input"
             {...register('phone')}
@@ -190,7 +192,7 @@ const Form: FC<Props> = ({ regions, handleClose }) => {
           className="w-full"
           data-testid="address-form-submit-button"
         >
-          Save address
+          {tr("Αποθήκευση διεύθυνσης")}
         </Button>
       </div>
     </form>

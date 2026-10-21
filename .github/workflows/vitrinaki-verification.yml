@@ -1,0 +1,37 @@
+name: Vitrinaki verification
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: vitrinaki-verification-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  frontend-builds:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      MEDUSA_BACKEND_URL: http://127.0.0.1:9100
+      NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY: pk_build_only_not_a_real_key
+      NEXT_PUBLIC_DEFAULT_REGION: gr
+      NEXT_PUBLIC_BASE_URL: http://localhost:3100
+      NEXT_PUBLIC_VENDOR_URL: http://localhost:7001
+      NEXT_PUBLIC_SITE_NAME: Vitrinaki
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: bun install --frozen-lockfile
+      - name: Build Business Studio
+        run: bun run --filter @acme/vendor build
+      - name: Build Platform Admin
+        run: bun run --filter @acme/admin build
+      - name: Build public storefront
+        run: bun run --filter @mercurjs/storefront build

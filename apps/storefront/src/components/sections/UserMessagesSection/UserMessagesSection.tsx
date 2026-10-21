@@ -1,10 +1,12 @@
 "use client"
 
+import { useTranslator } from "@/lib/i18n/client"
 import { Inbox } from "@talkjs/react"
 import { useCallback } from "react"
 import Talk from "talkjs"
 
 export const UserMessagesSection = () => {
+  const { tr } = useTranslator()
   const syncConversation = useCallback((session: Talk.Session) => {
     const conversation = session.getOrCreateConversation(
       "my_conversations" + session.me.id
@@ -18,7 +20,7 @@ export const UserMessagesSection = () => {
       <Inbox
         loadingComponent={
           <div className="h-96 w-full flex items-center justify-center" data-testid="user-messages-loading">
-            Loading..
+            {tr("Φόρτωση...")}
           </div>
         }
         syncConversation={syncConversation}

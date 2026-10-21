@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslator } from "@/lib/i18n/client"
 import { useEffect, useState } from 'react';
 
 import { CheckCircle } from '@medusajs/icons';
@@ -29,6 +30,7 @@ export const PasswordValidator = ({
   password: string;
   setError: (error: any) => void;
 }) => {
+  const { tr } = useTranslator();
   const [newPasswordError, setNewPasswordError] = useState({
     isValid: false,
     lower: false,
@@ -66,7 +68,7 @@ export const PasswordValidator = ({
           newPasswordError['8chars'] ? 'text-red-700' : 'text-green-700'
         )}
       >
-        <CheckCircle /> At least 8 characters
+        <CheckCircle /> {tr("Τουλάχιστον 8 χαρακτήρες")}
       </p>
       <p
         className={cn(
@@ -74,7 +76,7 @@ export const PasswordValidator = ({
           newPasswordError['lower'] ? 'text-red-700' : 'text-green-700'
         )}
       >
-        <CheckCircle /> One lowercase letter
+        <CheckCircle /> {tr("Ένα πεζό γράμμα")}
       </p>
       <p
         className={cn(
@@ -82,7 +84,7 @@ export const PasswordValidator = ({
           newPasswordError['upper'] ? 'text-red-700' : 'text-green-700'
         )}
       >
-        <CheckCircle /> One uppercase letter
+        <CheckCircle /> {tr("Ένα κεφαλαίο γράμμα")}
       </p>
       <p
         className={cn(
@@ -90,7 +92,7 @@ export const PasswordValidator = ({
           newPasswordError['digit'] ? 'text-red-700' : 'text-green-700'
         )}
       >
-        <CheckCircle /> One number
+        <CheckCircle /> {tr("Έναν αριθμό")}
       </p>
       <p
         className={cn(
@@ -98,7 +100,7 @@ export const PasswordValidator = ({
           newPasswordError['symbol'] ? 'text-red-700' : 'text-green-700'
         )}
       >
-        <CheckCircle /> One special character
+        <CheckCircle /> {tr("Ένα σύμβολο")}
       </p>
     </Card>
   );

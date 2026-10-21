@@ -1,4 +1,5 @@
 "use client"
+import { useTranslator } from "@/lib/i18n/client"
 import { Input } from "@/components/atoms"
 import { cn } from "@/lib/utils"
 import { FieldError } from "react-hook-form"
@@ -13,10 +14,13 @@ export const LabeledInput = ({
   label,
   className,
   ...props
-}: LabeledInputProps) => (
+}: LabeledInputProps) => {
+  const { tr } = useTranslator()
+  return (
   <label className={cn("label-sm block", className)}>
     <p className={cn(error && "text-negative")}>{label}</p>
     <Input error={!!error} {...props} />
-    {error && <p className="label-sm text-negative">{error.message}</p>}
+    {error && <p className="label-sm text-negative">{tr(error.message ?? "")}</p>}
   </label>
-)
+  )
+}

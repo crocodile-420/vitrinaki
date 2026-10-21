@@ -3,31 +3,31 @@ import { z } from 'zod';
 export const registerFormSchema = z.object({
   firstName: z
     .string()
-    .nonempty('Please enter first name')
-    .max(50, 'First name must contain up to 50 characters'),
+    .nonempty('Συμπλήρωσε το όνομά σου')
+    .max(50, 'Το όνομα μπορεί να έχει έως 50 χαρακτήρες'),
   lastName: z
     .string()
-    .nonempty('Please enter last name')
-    .max(50, 'Last name must contain up to 50 characters'),
+    .nonempty('Συμπλήρωσε το επώνυμό σου')
+    .max(50, 'Το επώνυμο μπορεί να έχει έως 50 χαρακτήρες'),
   email: z
     .string()
-    .nonempty('Please enter email')
-    .email('Invalid email')
-    .max(60, 'Email must contain up to 60 characters'),
+    .nonempty('Συμπλήρωσε το email σου')
+    .email('Μη έγκυρο email')
+    .max(60, 'Το email μπορεί να έχει έως 60 χαρακτήρες'),
   password: z
     .string()
-    .nonempty('Please enter password')
-    .min(8, 'Password must be at least 8 characters long')
+    .nonempty('Συμπλήρωσε τον κωδικό σου')
+    .min(8, 'Ο κωδικός πρέπει να έχει τουλάχιστον 8 χαρακτήρες')
     .regex(/^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])/, {
       message:
-        'Password must contain at least one uppercase letter, one number and one special character'
+        'Ο κωδικός πρέπει να έχει τουλάχιστον ένα κεφαλαίο γράμμα, έναν αριθμό και ένα σύμβολο'
     })
-    .max(64, 'Password must contain up to 64 characters'),
+    .max(64, 'Ο κωδικός μπορεί να έχει έως 64 χαρακτήρες'),
   phone: z
     .string()
-    .min(6, 'Please enter phone number')
-    .regex(/^\+?\d+$/, { message: 'Mobile phone must contain digits only' })
-    .max(20, 'Phone number must contain up to 20 characters')
+    .min(6, 'Συμπλήρωσε το τηλέφωνό σου')
+    .regex(/^\+?\d+$/, { message: 'Το κινητό πρέπει να περιέχει μόνο αριθμούς' })
+    .max(20, 'Το τηλέφωνο μπορεί να έχει έως 20 χαρακτήρες')
 });
 
 export type RegisterFormData = z.infer<typeof registerFormSchema>;

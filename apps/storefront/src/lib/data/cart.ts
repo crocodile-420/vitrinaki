@@ -8,14 +8,18 @@ import medusaError from '@/lib/helpers/medusa-error';
 import { parseVariantIdsFromError } from '@/lib/helpers/parse-variant-error';
 
 import { sdk } from '../client';
+import { CACHE_TAGS, getGlobalCacheOptions } from './cache-tags';
 import {
   getAuthHeaders,
   getCacheOptions,
   getCacheTag,
   getCartId,
+  getShopCartIds,
   removeCartId,
-  setCartId
+  setCartId,
+  setShopCartIds
 } from './cookies';
+import { applyPendingLoyaltyCodes } from './loyalty';
 import { getRegion } from './regions';
 
 export async function retrieveCart(cartId?: string) {
@@ -34,25 +38,169 @@ export async function retrieveCart(cartId?: string) {
       $id: id,
       fields:
         '*items,*region, *items.product, *items.variant, *items.variant.options,' +
-        '*items.thumbnail, *items.metadata, +items.total, *promotions, +shipping_methods.name, *items.offer, *items.offer.seller' +
+        '*items.thumbnail, *items.metadata, +items.total, *items.adjustments, *promotions, +shipping_methods.name, *items.offer, *items.offer.seller' +
         '',
       fetchOptions: { headers, cache: 'no-cache' }
     })
-    .then(({ cart }) => cart)
+    .then(({ cart }) => attachOfferSellers(cart))
     .catch(error => {
       console.error('Failed to retrieve cart', error);
       return null;
     });
 }
 
-export async function getOrSetCart(countryCode: string) {
+type CartSeller = { id: string; name?: string; handle?: string; logo?: string | null };
+
+// Store carts can't expand `items.offer`, so the seller behind each line is
+// looked up from the offer stamped on `metadata.offer_id`.
+async function getOfferSellers(offerIds: string[]): Promise<Record<string, CartSeller>> {
+  const ids = Array.from(new Set(offerIds.filter(Boolean)));
+  if (!ids.length) return {};
+
+  return (
+    sdk.store.offers.query({
+      id: ids,
+      limit: ids.length,
+      fields: 'id,seller_id,seller.id,seller.name,seller.handle,seller.logo',
+      fetchOptions: {
+        headers: { ...(await getAuthHeaders()) },
+        cache: 'force-cache',
+        next: getGlobalCacheOptions(CACHE_TAGS.offers)
+      }
+    } as never) as unknown as Promise<{
+      offers: { id: string; seller_id: string; seller?: CartSeller }[];
+    }>
+  )
+    .then(({ offers }) =>
+      Object.fromEntries(
+        offers.map(offer => [offer.id, offer.seller || { id: offer.seller_id }])
+      )
+    )
+    .catch(() => ({}));
+}
+
+async function attachOfferSellers<T extends HttpTypes.StoreCart>(cart: T): Promise<T> {
+  const items = (cart.items || []) as any[];
+  const sellers = await getOfferSellers(items.map(item => item.metadata?.offer_id));
+
+  items.forEach(item => {
+    const offerId = item.metadata?.offer_id;
+    const seller = offerId ? sellers[offerId] : undefined;
+    if (seller && !item.offer?.seller) {
+      item.offer = { ...(item.offer || {}), id: offerId, seller_id: seller.id, seller };
+    }
+  });
+
+  return cart;
+}
+
+function getCartSellerIds(cart: HttpTypes.StoreCart | null) {
+  const ids = ((cart?.items || []) as any[]).map(item => item.offer?.seller_id);
+  return Array.from(new Set(ids.filter(Boolean))) as string[];
+}
+
+// Each shop gets its own cart. Make the shop's cart the active one (claiming
+// an empty or same-shop active cart, reopening one parked earlier, or starting
+// a new one) and park the previous active cart under its own shop.
+async function getOrSetShopCart(countryCode: string, sellerId: string) {
+  const shopCarts = await getShopCartIds();
+  const activeId = await getCartId();
+  const active = activeId ? await retrieveCart(activeId) : null;
+  const activeSellers = getCartSellerIds(active);
+
+  const forget = (cartId: string) => {
+    Object.keys(shopCarts).forEach(key => {
+      if (shopCarts[key] === cartId) delete shopCarts[key];
+    });
+  };
+
+  if (active && !active.completed_at && activeSellers.every(id => id === sellerId)) {
+    forget(active.id);
+    shopCarts[sellerId] = active.id;
+    await setShopCartIds(shopCarts);
+    return getOrSetCart(countryCode, active.id);
+  }
+
+  if (active && !active.completed_at && activeSellers.length === 1) {
+    forget(active.id);
+    shopCarts[activeSellers[0]] = active.id;
+  }
+
+  const parkedId = shopCarts[sellerId];
+  const parked = parkedId ? await retrieveCart(parkedId) : null;
+
+  if (parked && !parked.completed_at) {
+    await setCartId(parked.id);
+    await setShopCartIds(shopCarts);
+    return getOrSetCart(countryCode, parked.id);
+  }
+
+  delete shopCarts[sellerId];
+  const cart = await getOrSetCart(countryCode, null);
+  shopCarts[sellerId] = cart.id;
+  await setShopCartIds(shopCarts);
+  return cart;
+}
+
+export type ShopCartSummary = {
+  id: string;
+  seller: CartSeller | null;
+  itemCount: number;
+  total: number;
+  currency_code: string;
+};
+
+// The shopper's other open carts, one per shop, for the cart page.
+export async function listOtherShopCarts(): Promise<ShopCartSummary[]> {
+  const shopCarts = await getShopCartIds();
+  const activeId = await getCartId();
+  const summaries: ShopCartSummary[] = [];
+  let changed = false;
+
+  for (const [sellerId, cartId] of Object.entries(shopCarts)) {
+    if (cartId === activeId) continue;
+    const cart = await retrieveCart(cartId);
+    if (!cart || cart.completed_at || !cart.items?.length) {
+      delete shopCarts[sellerId];
+      changed = true;
+      continue;
+    }
+    const seller = ((cart.items || []) as any[]).find(item => item.offer?.seller)?.offer?.seller;
+    summaries.push({
+      id: cart.id,
+      seller: seller || null,
+      itemCount: (cart.items as HttpTypes.StoreCartLineItem[]).reduce(
+        (sum: number, item: HttpTypes.StoreCartLineItem) => sum + (item.quantity || 0),
+        0
+      ),
+      total: cart.total || 0,
+      currency_code: cart.currency_code
+    });
+  }
+
+  if (changed) await setShopCartIds(shopCarts);
+  return summaries;
+}
+
+export async function switchShopCart(cartId: string) {
+  const shopCarts = await getShopCartIds();
+  if (!Object.values(shopCarts).includes(cartId)) {
+    throw new Error('Cart not found');
+  }
+
+  await setCartId(cartId);
+  revalidateTag(await getCacheTag('carts'));
+}
+
+export async function getOrSetCart(countryCode: string, cartId?: string | null) {
   const region = await getRegion(countryCode);
 
   if (!region) {
     throw new Error(`Region not found for country code: ${countryCode}`);
   }
 
-  let cart = await retrieveCart();
+  // `null` forces a new cart; `undefined` falls back to the active cart cookie.
+  let cart = cartId === null ? null : await retrieveCart(cartId);
 
   const headers = {
     ...(await getAuthHeaders())
@@ -118,7 +266,10 @@ export async function addToCart({
     throw new Error('Missing offer ID when adding to cart');
   }
 
-  const cart = await getOrSetCart(countryCode);
+  const sellerId = (await getOfferSellers([offerId]))[offerId]?.id;
+  const cart = sellerId
+    ? await getOrSetShopCart(countryCode, sellerId)
+    : await getOrSetCart(countryCode);
 
   if (!cart) {
     throw new Error('Error retrieving or creating cart');
@@ -236,6 +387,10 @@ export async function setShippingMethod({
     .then(data => ({ ok: true, error: null, data }))
     .catch(error => ({ ok: false, error, data: null }));
 
+  // A free-shipping reward (loyalty points) taken in the cart applies now
+  // that there is a shipping method to discount.
+  if (res.ok) await applyPendingLoyaltyCodes(cartId);
+
   const cartCacheTag = await getCacheTag('carts');
   revalidateTag(cartCacheTag);
 
@@ -280,36 +435,54 @@ export async function initiatePaymentSession(
   }
 }
 
-export async function applyPromotions(codes: string[]) {
+export type PromotionResult =
+  | { success: true; applied: boolean }
+  | { success: false; error: 'invalid' | 'no_cart' | 'failed' }
+
+// Applies a discount code through the cart promotions route. Mercur scopes a
+// shop's code to that shop's lines, so a valid code can still end up with
+// nothing to discount (`applied: false`). Codes are matched as typed first,
+// then upper-cased, since shop owners usually create them in capitals.
+export async function applyPromotions(codes: string[]): Promise<PromotionResult> {
   const cartId = await getCartId();
 
   if (!cartId) {
-    return { success: false, error: "No existing cart found" }
+    return { success: false, error: 'no_cart' };
   }
 
   const headers = {
     ...(await getAuthHeaders())
   };
 
-  try {
-    const { cart } = await sdk.store.carts.$id.mutate({
+  const apply = (promo_codes: string[]) =>
+    (sdk.store.carts.$id.promotions.mutate({
       $id: cartId,
-      promo_codes: codes,
+      promo_codes,
       fetchOptions: { headers }
-    })
-    const cartCacheTag = await getCacheTag("carts")
-    revalidateTag(cartCacheTag)
-    // @ts-ignore
-    const applied = cart.promotions?.some((promotion: any) =>
-      codes.includes(promotion.code)
-    )
-    return { success: true, applied }
+    } as never) as unknown as Promise<{ cart: HttpTypes.StoreCart & { promotions?: { code?: string }[] } }>);
+
+  const isInvalid = (error: any) =>
+    error?.status === 400 && /invalid/i.test(String(error?.message || ''));
+
+  let tried = codes;
+  try {
+    let cart: Awaited<ReturnType<typeof apply>>['cart'];
+    try {
+      ({ cart } = await apply(codes));
+    } catch (error) {
+      const upper = codes.map(code => code.toUpperCase());
+      if (!isInvalid(error) || upper.every((code, i) => code === codes[i])) throw error;
+      tried = upper;
+      ({ cart } = await apply(upper));
+    }
+    const applied = !!cart.promotions?.some(promotion => tried.includes(promotion.code || ''));
+    return { success: true, applied };
   } catch (error: any) {
-    const errorMessage =
-      error?.response?.data?.message ||
-      error?.message ||
-      "Failed to apply promotion code"
-    return { success: false, error: errorMessage }
+    if (isInvalid(error)) return { success: false, error: 'invalid' };
+    console.error('Failed to apply promotion code', error?.message || error);
+    return { success: false, error: 'failed' };
+  } finally {
+    revalidateTag(await getCacheTag('carts'));
   }
 }
 
@@ -337,28 +510,30 @@ export async function removeShippingMethod(shippingMethodId: string) {
     .catch(medusaError);
 }
 
-export async function deletePromotionCode(promoId: string) {
+export async function deletePromotionCode(code: string): Promise<{ success: boolean }> {
   const cartId = await getCartId();
 
   if (!cartId) {
-    throw new Error('No existing cart found');
+    return { success: false };
   }
 
   const headers = {
     ...(await getAuthHeaders())
   };
 
-  return ((sdk.store.carts.$id.promotions as unknown as { delete: (i: never) => unknown })
-    .delete({
+  try {
+    await (sdk.store.carts.$id.promotions.delete({
       $id: cartId,
-      promo_codes: [promoId],
+      promo_codes: [code],
       fetchOptions: { headers }
-    } as never) as unknown as Promise<{ cart: HttpTypes.StoreCart }>)
-    .then(async () => {
-      const cartCacheTag = await getCacheTag('carts');
-      revalidateTag(cartCacheTag);
-    })
-    .catch(medusaError);
+    } as never) as unknown as Promise<{ cart: HttpTypes.StoreCart }>);
+    return { success: true };
+  } catch (error: any) {
+    console.error('Failed to remove promotion code', error?.message || error);
+    return { success: false };
+  } finally {
+    revalidateTag(await getCacheTag('carts'));
+  }
 }
 
 export async function setAddresses(currentState: unknown, formData: FormData) {
@@ -418,7 +593,12 @@ export async function placeOrder(cartId?: string) {
   if (res.data?.order_group) {
     revalidatePath('/user/reviews');
     revalidatePath('/user/orders');
-    removeCartId();
+    await removeCartId();
+    const shopCarts = await getShopCartIds();
+    Object.keys(shopCarts).forEach(key => {
+      if (shopCarts[key] === id) delete shopCarts[key];
+    });
+    await setShopCartIds(shopCarts);
     // The completed cart splits into one order group (many per-seller orders).
     // Send the shopper to the order-group detail page, which renders every
     // child order + aggregated totals. `order_group.id` is always present;
