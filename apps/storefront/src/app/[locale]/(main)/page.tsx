@@ -315,7 +315,7 @@ export default async function Home({
       </section>
 
       {/* Try it: the visitor changes a sample shop live */}
-      <section id="try" aria-labelledby="try-title" className="scroll-mt-20 border-t border-[#2E4A37]/10 bg-[#EFE7D8]">
+      <section id="try" aria-labelledby="try-title" className="scroll-mt-20 border-t border-[#2E4A37]/10 bg-[#DDE6D8]">
         <div className={`${WRAP} py-14 lg:py-20`}>
           <Reveal className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
             <div>
@@ -337,7 +337,7 @@ export default async function Home({
       </section>
 
       {/* How it works: steps scroll, the shop mockup stays pinned and follows them */}
-      <section id="how-it-works" className="scroll-mt-20">
+      <section id="how-it-works" className="scroll-mt-20 bg-[#F3DCD2]">
         <div className={`${WRAP} py-14 lg:py-16`}>
           <HowItWorksScroll
             intro={
@@ -352,7 +352,7 @@ export default async function Home({
       </section>
 
       {/* All-in-one: the business tools under one roof */}
-      <section id="included" aria-labelledby="included-title" className="scroll-mt-20 border-t border-[#2E4A37]/10 bg-[#EFE7D8]">
+      <section id="included" aria-labelledby="included-title" className="scroll-mt-20 bg-[#DCE6F0]">
         <div className={`${WRAP} py-14 lg:py-20`}>
           <Reveal className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
             <div>
@@ -485,7 +485,7 @@ export default async function Home({
       </section>
 
       {/* Marketplace: products promoted from Vitrinaki shops, each with a way to the shop */}
-      <section id="marketplace" aria-labelledby="marketplace-title" className="scroll-mt-20">
+      <section id="marketplace" aria-labelledby="marketplace-title" className="scroll-mt-20 bg-[#DCE6F0]">
         <div className={`${WRAP} py-14 lg:py-20`}>
           <Reveal className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
             <div>
@@ -535,7 +535,7 @@ export default async function Home({
       </section>
 
       {/* Who it is for */}
-      <section id="for-whom" className="scroll-mt-20">
+      <section id="for-whom" className="scroll-mt-20 bg-[#DDE6D8]">
         <div className={`${WRAP} py-14 lg:py-20`}>
           <Reveal className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
             <h2 className="max-w-xl text-[1.9rem] font-extrabold leading-tight tracking-[-0.02em] text-[#1F3628] sm:text-4xl">{tr("Όλοι αξίζουν μια θέση στη μεγάλη βιτρίνα.")}</h2>
