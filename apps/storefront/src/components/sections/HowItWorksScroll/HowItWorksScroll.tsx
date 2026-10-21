@@ -255,7 +255,7 @@ export function HowItWorksScroll({ intro }: { intro: React.ReactNode }) {
     <div className="grid gap-10 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:gap-16">
       <div>
         {intro}
-        <ol className="mt-10 lg:mt-0 lg:pb-[10vh]">
+        <ol className="mt-10 lg:mt-0">
           {steps.map((step, i) => (
             <li
               key={step.key}
@@ -263,7 +263,7 @@ export function HowItWorksScroll({ intro }: { intro: React.ReactNode }) {
                 refs.current[i] = node
               }}
               data-step={i}
-              className="border-t border-[#2E4A37]/10 py-8 first:border-t-0 lg:flex lg:min-h-[42vh] lg:items-center lg:border-t-0 lg:py-0"
+              className="border-t border-[#2E4A37]/10 py-8 first:border-t-0 lg:flex lg:min-h-[42vh] lg:items-center lg:last:min-h-[32vh] lg:border-t-0 lg:py-0"
             >
               <div className={`transition-opacity duration-500 motion-reduce:transition-none ${active === i ? "lg:opacity-100" : "lg:opacity-35"}`}>
                 <span className="flex items-center gap-3">

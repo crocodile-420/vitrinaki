@@ -9,9 +9,11 @@ import { shopRegistrationHref, startHref } from "@/lib/vitrinaki-links"
 
 // «Τι παίρνεις» lives inside the «Δυνατότητες» menu now.
 const navigation = [
-  { label: "Για ποιον", href: "/#for-whom" },
-  { label: "Καταστήματα", href: "/#vitrina" },
   { label: "Πώς ξεκινάς", href: "/#how-it-works" },
+  { label: "Καταστήματα", href: "/#vitrina" },
+  // Shown from xl up; below that they stay in the mobile menu so the bar never overflows.
+  { label: "Για ποιον", href: "/#for-whom", wide: true },
+  { label: "Συνδρομή", href: "/#pricing", wide: true },
   { label: "Ερωτήσεις", href: "/#faq" },
 ]
 
@@ -30,13 +32,13 @@ export const Header = async ({ locale }: { locale: string }) => {
           <VitrinakiWordmark />
         </LocalizedClientLink>
 
-        <nav className="hidden items-center gap-6 lg:flex" aria-label={tr("Κεντρική πλοήγηση")}>
+        <nav className="hidden items-center gap-5 lg:flex xl:gap-6" aria-label={tr("Κεντρική πλοήγηση")}>
           <FeaturesMenu locale={locale} />
           {navigation.map((item) => (
             <LocalizedClientLink
               key={item.label}
               href={item.href}
-              className="text-[13px] font-medium tracking-wide text-[#2E4A37]/80 transition-colors hover:text-[#2E4A37]"
+              className={`whitespace-nowrap text-[13px] font-medium tracking-wide text-[#2E4A37]/80 transition-colors hover:text-[#2E4A37] ${"wide" in item ? "hidden xl:inline" : ""}`}
             >
               {tr(item.label)}
             </LocalizedClientLink>
