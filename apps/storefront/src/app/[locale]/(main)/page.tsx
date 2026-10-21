@@ -187,6 +187,12 @@ function OliveSprig({ className = "" }: { className?: string }) {
 const WRAP = "mx-auto max-w-[1280px] px-5 sm:px-8 lg:px-12"
 const MUTED = "text-[#2E4A37]/70"
 
+const about = [
+  { title: "Ποιοι είμαστε", text: ["Είμαστε μια ομάδα ανθρώπων που μεγάλωσε ανάμεσα σε μαγαζιά της γειτονιάς, εργαστήρια και μικρούς παραγωγούς. Ξέρουμε πόση δουλειά, μεράκι και επιμονή χρειάζεται για να κρατήσεις ανοιχτή μια επιχείρηση.", "Φτιάξαμε το vitrinaki.gr γιατί είδαμε πολλούς από αυτούς να μένουν εκτός ψηφιακού κόσμου: τα εργαλεία ήταν ακριβά, πολύπλοκα ή απρόσωπα. Θέλαμε κάτι απλό, ελληνικό και ανθρώπινο."] },
+  { title: "Το όραμά μας", text: ["Κάθε επιχείρηση, όσο μικρή κι αν είναι, να έχει μια θέση στη μεγάλη βιτρίνα. Ο φούρνος της γειτονιάς, η κεραμίστρια, ο παραγωγός λαδιού και ο φυσικοθεραπευτής να στέκονται online με την ίδια αξιοπρέπεια με τα μεγάλα brands.", "Πιστεύουμε ότι το επιχειρείν είναι σκέψη και δημιουργία. Η τεχνολογία πρέπει να αναδεικνύει την ιστορία κάθε επιχείρησης, όχι να μπαίνει εμπόδιο ανάμεσα σε αυτήν και τους πελάτες της."] },
+  { title: "Τι προσφέρουμε στην κοινωνία μας", text: ["Δίνουμε στις τοπικές επιχειρήσεις τα εργαλεία να βρίσκουν πελάτες σε όλη την Ελλάδα: ιστοσελίδα, e-shop και διαχείριση σε ένα μέρος, χωρίς τεχνικές γνώσεις. Μέσα από το marketplace, προβάλλουμε τα προϊόντα τους και σε νέο κοινό.", "Δεν σε αφήνουμε μόνο σου: υπάρχουν άνθρωποι δίπλα σου σε κάθε βήμα. Γιατί όταν δυναμώνει το μαγαζί της γειτονιάς, δυναμώνει και η γειτονιά."] },
+]
+
 const audienceColors = ["#2E4A37", "#C0503C", "#265E8E", "#C0503C", "#2E4A37"]
 
 function Eyebrow({ children, light = false, center = false, dot }: { children: React.ReactNode; light?: boolean; center?: boolean; dot?: string }) {
@@ -617,22 +623,23 @@ export default async function Home({
 
       {/* About */}
       <section id="about" aria-labelledby="about-title" className="scroll-mt-20 px-4 py-14 sm:px-6 lg:py-20">
-        <Reveal className="relative isolate mx-auto grid max-w-[1280px] gap-10 overflow-hidden rounded-[2.5rem] bg-[#A8432F] px-6 py-14 text-[#F7F2E8] sm:px-12 lg:grid-cols-[1fr_1.1fr] lg:items-center lg:gap-16 lg:px-16 lg:py-20">
+        <Reveal className="relative isolate mx-auto max-w-[1280px] overflow-hidden rounded-[2.5rem] bg-[#A8432F] px-6 py-14 text-[#F7F2E8] sm:px-12 lg:px-16 lg:py-20">
           <div aria-hidden="true" className="vk-glow absolute -left-20 -top-32 -z-10 h-96 w-96 rounded-full bg-[#D9806F]/40 blur-[100px]" />
           <div aria-hidden="true" className="vk-glow absolute -bottom-40 -right-20 -z-10 h-96 w-96 rounded-full bg-[#7A2E20]/50 blur-[100px] [animation-delay:-4s]" />
           <div aria-hidden="true" className="vk-grain absolute inset-0 -z-10 opacity-20" />
-          <div>
-            <Eyebrow light dot="bg-[#F7F2E8]">{tr("Σχετικά με εμάς")}</Eyebrow>
-            <h2 id="about-title" className="font-serif mt-7 text-[2.4rem] font-medium leading-[1.04] tracking-[-0.02em] sm:text-6xl">
-              {tr("Σχετικά με το")} <span className="whitespace-nowrap">vitrinaki<span className="text-[#F6D3C6]">.gr</span></span>
-            </h2>
-          </div>
-          <div className="text-[17px] leading-8 text-[#F7F2E8]/85">
-            <p>{tr("Το vitrinaki.gr δίνει σε κάθε επιχείρηση τη δική της ψηφιακή βιτρίνα: ιστοσελίδα και e-shop με το όνομά της, και ένα Studio για προϊόντα, παραγγελίες και πελάτες.")}</p>
-            <p className="mt-5">{tr("Το φτιάξαμε για τα μαγαζιά της γειτονιάς, τους παραγωγούς και τους δημιουργούς, ώστε να στέκονται online με τη δική τους ταυτότητα, χωρίς τεχνικές γνώσεις και με ανθρώπους δίπλα τους.")}</p>
-            <a href={businessUrl} className={`mt-9 ${primaryBtn} !bg-[#F7F2E8] !text-[#A8432F] hover:!bg-white`}>
-              {tr("Άνοιξε τη βιτρίνα σου")} <Arrow />
-            </a>
+          <Eyebrow light dot="bg-[#F7F2E8]">{tr("Σχετικά με εμάς")}</Eyebrow>
+          <h2 id="about-title" className="font-serif mt-7 text-[2.4rem] font-medium leading-[1.04] tracking-[-0.02em] sm:text-6xl">
+            {tr("Σχετικά με το")} <span className="whitespace-nowrap">vitrinaki<span className="text-[#F6D3C6]">.gr</span></span>
+          </h2>
+          <div className="mt-10 grid gap-8 border-t border-[#F7F2E8]/20 pt-8 md:grid-cols-3 md:gap-10">
+            {about.map((item) => (
+              <div key={item.title}>
+                <h3 className="font-serif text-2xl font-medium italic text-[#F6D3C6]">{tr(item.title)}</h3>
+                {item.text.map((p) => (
+                  <p key={p} className="mt-3 text-[16px] leading-7 text-[#F7F2E8]/85">{tr(p)}</p>
+                ))}
+              </div>
+            ))}
           </div>
         </Reveal>
       </section>
