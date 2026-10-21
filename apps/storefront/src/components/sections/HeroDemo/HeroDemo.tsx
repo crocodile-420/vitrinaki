@@ -156,12 +156,12 @@ export function StudioTable({ lang, className = "" }: { lang: Lang; className?: 
 }
 
 
-/* soft cypress / terracotta hills along the bottom of the hero */
+/* soft blue / cypress hills along the bottom of the hero */
 function Hills({ className = "" }: { className?: string }) {
   return (
     <svg viewBox="0 0 1440 150" preserveAspectRatio="none" className={className} aria-hidden="true">
-      <path d="M900 150C1010 70 1120 40 1250 36c80-3 140 4 190 12v102z" fill="#265E8E" fillOpacity=".85" />
-      <path d="M0 150V96c120-30 260-44 400-30 150 14 250 60 400 58 150-2 290-50 440-70 80-10 150-10 200-6v102z" fill="#2E4A37" />
+      <path d="M900 150C1010 70 1120 40 1250 36c80-3 140 4 190 12v102z" fill="#2E4A37" fillOpacity=".85" />
+      <path d="M0 150V96c120-30 260-44 400-30 150 14 250 60 400 58 150-2 290-50 440-70 80-10 150-10 200-6v102z" fill="#173A57" />
       <path d="M0 110c140-34 280-46 420-32 150 14 250 60 400 58 150-2 290-50 440-70" fill="none" stroke="#D9B26F" strokeOpacity=".5" strokeWidth="1.2" vectorEffect="non-scaling-stroke" />
     </svg>
   )
@@ -262,7 +262,7 @@ export function HeroDemo({ lang, intro }: { lang: Lang; intro: React.ReactNode }
         </div>
       </div>
       {/* Try it: name & colour, big enough to invite a click */}
-      <div className="relative overflow-hidden border-b border-[#F7F2E8]/10 bg-[#2E4A37] text-[#F7F2E8]">
+      <div className="relative overflow-hidden border-b border-[#F7F2E8]/10 bg-[#173A57] text-[#F7F2E8]">
         <div aria-hidden="true" className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-[#C0503C]/25 blur-3xl" />
         <div aria-hidden="true" className="pointer-events-none absolute -bottom-28 left-1/4 h-64 w-64 rounded-full bg-[#265E8E]/25 blur-3xl" />
         <div className="relative mx-auto grid max-w-[1280px] gap-6 px-5 py-10 sm:px-8 md:py-12 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:items-center lg:gap-12 lg:px-12">
