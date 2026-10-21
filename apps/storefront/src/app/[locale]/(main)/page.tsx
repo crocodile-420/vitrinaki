@@ -615,20 +615,25 @@ export default async function Home({
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="px-4 py-14 sm:px-6 lg:py-20">
-        <Reveal className="relative isolate mx-auto max-w-[1280px] overflow-hidden rounded-[2.5rem] bg-[#1a2e21] px-6 py-16 text-center text-[#F7F2E8] sm:px-12 lg:py-20">
+      {/* About */}
+      <section id="about" aria-labelledby="about-title" className="scroll-mt-20 px-4 py-14 sm:px-6 lg:py-20">
+        <Reveal className="relative isolate mx-auto grid max-w-[1280px] gap-10 overflow-hidden rounded-[2.5rem] bg-[#1a2e21] px-6 py-14 text-[#F7F2E8] sm:px-12 lg:grid-cols-[1fr_1.1fr] lg:items-center lg:gap-16 lg:px-16 lg:py-20">
           <div aria-hidden="true" className="vk-glow absolute -left-20 -top-32 -z-10 h-96 w-96 rounded-full bg-[#C0503C]/35 blur-[100px]" />
           <div aria-hidden="true" className="vk-glow absolute -bottom-40 -right-20 -z-10 h-96 w-96 rounded-full bg-[#265E8E]/40 blur-[100px] [animation-delay:-4s]" />
           <div aria-hidden="true" className="vk-grain absolute inset-0 -z-10 opacity-20" />
-          <Eyebrow light>{tr("Το επόμενο βήμα")}</Eyebrow>
-          <h2 className="font-serif mx-auto mt-7 max-w-4xl text-[2.4rem] font-medium leading-[1.04] tracking-[-0.02em] sm:text-6xl lg:text-7xl">
-            {tr("Άνοιξε τη βιτρίνα σου σήμερα.")}
-          </h2>
-          <p className="mx-auto mt-7 max-w-xl text-[17px] leading-8 text-[#F7F2E8]/70">{tr("Πες μας για την επιχείρησή σου και κάνε το πρώτο βήμα στο ψηφιακό εμπόριο. Δεν θα το κάνεις μόνος σου.")}</p>
-          <a href={businessUrl} className={`mt-10 ${primaryBtn}`}>
-            {tr("Άνοιξε τη βιτρίνα σου")} <Arrow />
-          </a>
+          <div>
+            <Eyebrow light>{tr("Σχετικά με εμάς")}</Eyebrow>
+            <h2 id="about-title" className="font-serif mt-7 text-[2.4rem] font-medium leading-[1.04] tracking-[-0.02em] sm:text-6xl">
+              {tr("Σχετικά με το")} <span className="whitespace-nowrap">vitrinaki<span className="text-[#D9806F]">.gr</span></span>
+            </h2>
+          </div>
+          <div className="text-[17px] leading-8 text-[#F7F2E8]/75">
+            <p>{tr("Το vitrinaki.gr δίνει σε κάθε επιχείρηση τη δική της ψηφιακή βιτρίνα: ιστοσελίδα και e-shop με το όνομά της, και ένα Studio για προϊόντα, παραγγελίες και πελάτες.")}</p>
+            <p className="mt-5">{tr("Το φτιάξαμε για τα μαγαζιά της γειτονιάς, τους παραγωγούς και τους δημιουργούς, ώστε να στέκονται online με τη δική τους ταυτότητα, χωρίς τεχνικές γνώσεις και με ανθρώπους δίπλα τους.")}</p>
+            <a href={businessUrl} className={`mt-9 ${primaryBtn}`}>
+              {tr("Άνοιξε τη βιτρίνα σου")} <Arrow />
+            </a>
+          </div>
         </Reveal>
       </section>
     </main>
