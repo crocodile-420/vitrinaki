@@ -1,7 +1,9 @@
 import { notFound } from "next/navigation"
 
+import { getShopBookings } from "@/lib/data/bookings"
 import { listOffers } from "@/lib/data/offers"
 import { rankOffers, type StoreOffer } from "@/lib/helpers/buybox"
+import { ShopBooking } from "@/components/shop/ShopBooking"
 import { ShopFooter, ShopHeader } from "@/components/shop/ShopChrome"
 import { ShopImage } from "@/components/shop/ShopImage"
 import { ShopProductCard } from "@/components/shop/ShopProductCard"
@@ -45,7 +47,10 @@ export default async function ShopPage({ params }: { params: Promise<{ locale: s
   const { seller, storefront } = shop
   const colors = shopColors(shop)
   const paths = await shopPaths(shop, locale, handle)
-  const result = await listOffers({ sellerId: seller.id, countryCode: locale, limit: 500, offset: 0 }).catch(() => ({ offers: [], count: 0 }))
+  const [result, bookings] = await Promise.all([
+    listOffers({ sellerId: seller.id, countryCode: locale, limit: 500, offset: 0 }).catch(() => ({ offers: [], count: 0 })),
+    getShopBookings(seller.id),
+  ])
 
   // Offers are per variant (size); keep the best-ranked offer of each product.
   const seen = new Set<string>()
@@ -70,17 +75,29 @@ export default async function ShopPage({ params }: { params: Promise<{ locale: s
   const viber = profile?.viber ? intlNumber(profile.viber) : ""
   const hasContact = Boolean(storefront.contactEmail || storefront.contactPhone || whatsapp || viber)
   const copy = type ? HERO_COPY[type] : null
-  const order = SECTION_ORDER[type || "legacy"]
+  // Online bookings (Studio → Κρατήσεις): the booking box goes right after the
+  // price list, or before the contact block when there is none.
+  const baseOrder = SECTION_ORDER[type || "legacy"]
+  const order = bookings.enabled
+    ? baseOrder.includes("services") && sectionHasData("services", profile)
+      ? baseOrder.flatMap((id) => (id === "services" ? ["services", "booking"] : [id]))
+      : baseOrder.flatMap((id) => (id === "contact" ? ["booking", "contact"] : [id]))
+    : baseOrder
   const showSection = (id: string) =>
-    id === "catalog" ? productFirst || offers.length > 0 : sectionHasData(id, profile)
+    id === "catalog" ? productFirst || offers.length > 0 : id === "booking" ? bookings.enabled : sectionHasData(id, profile)
   const secondaryOk = (href: string) => href === "#contact" ? true : showSection(href.slice(1) === "about" ? "story" : href.slice(1))
 
-  const primaryCta = copy
+  const bookCta = { href: "#booking", label: tr("Κλείσε ραντεβού") }
+  const primaryCta = bookings.enabled
+    ? bookCta
+    : copy
     ? { href: copy.ctaHref, label: tr(copy.cta) }
     : isServices && hasContact
       ? { href: "#contact", label: tr("Κλείσε ραντεβού") }
       : { href: "#catalog", label: tr(isServices ? "Δες τις υπηρεσίες" : "Δες τη συλλογή") }
-  const secondaryCta = copy && secondaryOk(copy.secondaryHref) ? { href: copy.secondaryHref, label: tr(copy.secondary) } : null
+  const secondaryCta = bookings.enabled
+    ? copy && secondaryOk(copy.ctaHref) ? { href: copy.ctaHref, label: tr(copy.cta) } : null
+    : copy && secondaryOk(copy.secondaryHref) ? { href: copy.secondaryHref, label: tr(copy.secondary) } : null
   const eyebrow = copy
     ? type === "other" && profile?.businessTypeOther
       ? profile.businessTypeOther
@@ -89,6 +106,7 @@ export default async function ShopPage({ params }: { params: Promise<{ locale: s
 
   // Small facts under the hero, chosen per type from what the seller filled.
   const heroFacts: string[] = []
+  if (bookings.enabled) heroFacts.push(tr("Online κρατήσεις"))
   if (profile) {
     if (type === "food") {
       if (profile.food.producerSince) heroFacts.push(`${tr("Από το")} ${profile.food.producerSince}`)
@@ -186,7 +204,20 @@ export default async function ShopPage({ params }: { params: Promise<{ locale: s
     ) : null,
     origin: (soft) => profile ? <OriginSection key="origin" p={profile} colors={colors} tr={tr} soft={soft} /> : null,
     craft: (soft) => profile ? <CraftSection key="craft" p={profile} colors={colors} tr={tr} soft={soft} /> : null,
-    services: (soft) => profile ? <ServicesSection key="services" p={profile} colors={colors} tr={tr} soft={soft} /> : null,
+    services: (soft) => profile ? <ServicesSection key="services" p={profile} colors={colors} tr={tr} soft={soft} booking={bookings.enabled} /> : null,
+    booking: (soft) => bookings.enabled ? (
+      <ShopBooking
+        key="booking"
+        sellerId={seller.id}
+        services={bookings.services}
+        autoConfirm={bookings.autoConfirm}
+        note={bookings.note}
+        cancelHours={bookings.cancelHours}
+        colors={colors}
+        soft={soft}
+        manageBase={`${paths.home === "/" ? "" : paths.home}/booking`}
+      />
+    ) : null,
     projects: (soft) => profile ? <ProjectsSection key="projects" p={profile} colors={colors} tr={tr} soft={soft} /> : null,
     skills: (soft) => profile ? <SkillsSection key="skills" p={profile} colors={colors} tr={tr} soft={soft} /> : null,
     visit: (soft) => profile ? <VisitSection key="visit" p={profile} colors={colors} tr={tr} soft={soft} /> : null,

@@ -41,6 +41,10 @@ module.exports = withMercur({
       resolve: './src/modules/vitrinaki-loyalty',
     },
     {
+      // Online bookings for service businesses (appointments per shop).
+      resolve: './src/modules/vitrinaki-bookings',
+    },
+    {
       resolve: '@mercurjs/core/modules/admin-ui',
       options: {
         appDir: dashboardAppDir('admin'),
