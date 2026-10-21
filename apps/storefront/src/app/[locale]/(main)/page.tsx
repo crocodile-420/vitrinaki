@@ -285,7 +285,7 @@ export default async function Home({
               <h1 className="text-[2.15rem] font-extrabold leading-[1.05] tracking-[-0.03em] text-[#1F3628] sm:text-[3rem] lg:text-[2.6rem] xl:text-[3rem]">
                 {tr("Το vitrinaki σου, στο ψηφιακό εμπόριο.")}{" "}
                 <span className="relative inline-block text-[#C0503C]">
-                  {tr("Όλη η επιχείρηση σε ένα μέρος.")}
+                  {tr("Από την ιστοσελίδα ως την παραγγελία.")}
                   <Swoosh className="absolute -bottom-2 left-0 h-2.5 w-full text-[#C0503C]/45" />
                 </span>
               </h1>
@@ -609,7 +609,7 @@ export default async function Home({
           <div aria-hidden="true" className="vk-grain absolute inset-0 -z-10 opacity-20" />
           <Eyebrow light>{tr("Το επόμενο βήμα")}</Eyebrow>
           <h2 className="font-serif mx-auto mt-7 max-w-4xl text-[2.4rem] font-medium leading-[1.04] tracking-[-0.02em] sm:text-6xl lg:text-7xl">
-            {tr("Όλη η επιχείρησή σου, σε μία βιτρίνα.")}
+            {tr("Άνοιξε τη βιτρίνα σου σήμερα.")}
           </h2>
           <p className="mx-auto mt-7 max-w-xl text-[17px] leading-8 text-[#F7F2E8]/70">{tr("Πες μας για την επιχείρησή σου και κάνε το πρώτο βήμα στο ψηφιακό εμπόριο. Δεν θα το κάνεις μόνος σου.")}</p>
           <a href={businessUrl} className={`mt-10 ${primaryBtn}`}>

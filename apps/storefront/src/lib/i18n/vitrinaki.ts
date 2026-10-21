@@ -219,7 +219,7 @@ const en: Record<string, string> = {
   "από 40 €": "from €40",
 
   "Το vitrinaki σου, στο ψηφιακό εμπόριο.": "Your vitrinaki, in online retail.",
-  "Όλη η επιχείρηση σε ένα μέρος.": "Your whole business in one place.",
+  "Από την ιστοσελίδα ως την παραγγελία.": "From website to order.",
   "Δες τη βιτρίνα": "See the shop window",
   // Audiences
   "Παραγωγοί": "Producers",
@@ -329,7 +329,7 @@ const en: Record<string, string> = {
   "Ερωτήσεις": "Questions",
   "Όσα ρωτούν συνήθως πριν ξεκινήσουν.": "What people usually ask before they start.",
   "Το επόμενο βήμα": "The next step",
-  "Όλη η επιχείρησή σου, σε μία βιτρίνα.": "Your whole business, in one shop window.",
+  "Άνοιξε τη βιτρίνα σου σήμερα.": "Open your shop window today.",
   "Πες μας για την επιχείρησή σου και κάνε το πρώτο βήμα στο ψηφιακό εμπόριο. Δεν θα το κάνεις μόνος σου.": "Tell us about your business and take your first step into online commerce. You won't do it alone.",
 
   // Header and footer
