@@ -438,34 +438,6 @@ export default async function Home({
         </div>
       </section>
 
-      {/* Marketplace: products promoted from Vitrinaki shops, each with a way to the shop */}
-      <section id="marketplace" aria-labelledby="marketplace-title" className="scroll-mt-20">
-        <div className={`${WRAP} py-14 lg:py-20`}>
-          <Reveal className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
-            <div>
-              <Eyebrow>{tr("Marketplace")}</Eyebrow>
-              <h2 id="marketplace-title" className="mt-4 max-w-xl text-[1.9rem] font-extrabold leading-tight tracking-[-0.02em] text-[#1F3628] sm:text-4xl">{tr("Ανακάλυψε προϊόντα από ελληνικά καταστήματα.")}</h2>
-            </div>
-            <p className={`max-w-md text-[15px] leading-7 ${MUTED}`}>{tr("Προϊόντα που ξεχωρίσαμε από τις βιτρίνες του Vitrinaki. Άνοιξε ένα για να το δεις ή πήγαινε κατευθείαν στο κατάστημα.")}</p>
-          </Reveal>
-          {promoted.length ? (
-            <Reveal className="mt-8">
-              <PromotedMarket products={promoted} lang={lang} locale={locale} />
-            </Reveal>
-          ) : (
-            <Reveal className="mt-8 flex flex-col items-start gap-4 rounded-2xl border border-dashed border-[#2E4A37]/25 bg-white/50 p-6 sm:flex-row sm:items-center sm:justify-between sm:p-8">
-              <div>
-                <h3 className="text-lg font-bold text-[#1F3628]">{tr("Σύντομα εδώ, προϊόντα από τα καταστήματά μας.")}</h3>
-                <p className={`mt-1 text-[14.5px] leading-6 ${MUTED}`}>{tr("Άνοιξε τη βιτρίνα σου και τα προϊόντα σου μπορεί να είναι από τα πρώτα.")}</p>
-              </div>
-              <a href={businessUrl} className={`${primaryBtn} shrink-0`}>
-                {tr("Άνοιξε τη βιτρίνα σου")} <Arrow />
-              </a>
-            </Reveal>
-          )}
-        </div>
-      </section>
-
       {/* Live shops */}
       <section id="vitrina" className="scroll-mt-20 bg-[#2E4A37] text-[#F7F2E8]">
         <div className={`${WRAP} py-14 lg:py-20`}>
@@ -507,6 +479,34 @@ export default async function Home({
             <Reveal className="mt-10 rounded-2xl border border-dashed border-[#F7F2E8]/40 bg-[#F7F2E8]/[0.06] p-10 text-center">
               <h3 className="text-xl font-bold">{tr("Το πρώτο κατάστημα μπορεί να είναι το δικό σου.")}</h3>
               <p className="mt-2 text-sm text-[#F7F2E8]/80">{tr("Ξεκίνα σήμερα και άνοιξε τη βιτρίνα σου στο ψηφιακό εμπόριο.")}</p>
+            </Reveal>
+          )}
+        </div>
+      </section>
+
+      {/* Marketplace: products promoted from Vitrinaki shops, each with a way to the shop */}
+      <section id="marketplace" aria-labelledby="marketplace-title" className="scroll-mt-20">
+        <div className={`${WRAP} py-14 lg:py-20`}>
+          <Reveal className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+            <div>
+              <Eyebrow>{tr("Marketplace")}</Eyebrow>
+              <h2 id="marketplace-title" className="mt-4 max-w-xl text-[1.9rem] font-extrabold leading-tight tracking-[-0.02em] text-[#1F3628] sm:text-4xl">{tr("Ανακάλυψε προϊόντα από ελληνικά καταστήματα.")}</h2>
+            </div>
+            <p className={`max-w-md text-[15px] leading-7 ${MUTED}`}>{tr("Προϊόντα που ξεχωρίσαμε από τις βιτρίνες του Vitrinaki. Άνοιξε ένα για να το δεις ή πήγαινε κατευθείαν στο κατάστημα.")}</p>
+          </Reveal>
+          {promoted.length ? (
+            <Reveal className="mt-8">
+              <PromotedMarket products={promoted} lang={lang} locale={locale} />
+            </Reveal>
+          ) : (
+            <Reveal className="mt-8 flex flex-col items-start gap-4 rounded-2xl border border-dashed border-[#2E4A37]/25 bg-white/50 p-6 sm:flex-row sm:items-center sm:justify-between sm:p-8">
+              <div>
+                <h3 className="text-lg font-bold text-[#1F3628]">{tr("Σύντομα εδώ, προϊόντα από τα καταστήματά μας.")}</h3>
+                <p className={`mt-1 text-[14.5px] leading-6 ${MUTED}`}>{tr("Άνοιξε τη βιτρίνα σου και τα προϊόντα σου μπορεί να είναι από τα πρώτα.")}</p>
+              </div>
+              <a href={businessUrl} className={`${primaryBtn} shrink-0`}>
+                {tr("Άνοιξε τη βιτρίνα σου")} <Arrow />
+              </a>
             </Reveal>
           )}
         </div>
