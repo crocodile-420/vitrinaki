@@ -189,10 +189,10 @@ const MUTED = "text-[#2E4A37]/70"
 
 const audienceColors = ["#2E4A37", "#C0503C", "#265E8E", "#C0503C", "#2E4A37"]
 
-function Eyebrow({ children, light = false, center = false }: { children: React.ReactNode; light?: boolean; center?: boolean }) {
+function Eyebrow({ children, light = false, center = false, dot }: { children: React.ReactNode; light?: boolean; center?: boolean; dot?: string }) {
   return (
     <p className={`inline-flex items-center gap-2 ${center ? "justify-center" : ""} rounded-full border px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] ${light ? "border-white/15 bg-white/5 text-[#F7F2E8]/75" : "border-[#2E4A37]/15 bg-white/60 text-[#2E4A37]/70"}`}>
-      <span className={`h-1.5 w-1.5 rounded-full ${light ? "bg-[#D9806F]" : "bg-[#C0503C]"}`} />
+      <span className={`h-1.5 w-1.5 rounded-full ${dot ?? (light ? "bg-[#D9806F]" : "bg-[#C0503C]")}`} />
       {children}
     </p>
   )
@@ -513,21 +513,21 @@ export default async function Home({
       </section>
 
       {/* Philosophy */}
-      <section id="philosophy" className="relative isolate overflow-hidden bg-[#173A57] text-[#F7F2E8]">
-        <div aria-hidden="true" className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_60%_80%_at_20%_50%,#265E8E_0%,transparent_70%)]" />
+      <section id="philosophy" className="relative isolate overflow-hidden bg-[#A8432F] text-[#F7F2E8]">
+        <div aria-hidden="true" className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_60%_80%_at_20%_50%,#C0503C_0%,transparent_70%)]" />
         <div aria-hidden="true" className="vk-grain absolute inset-0 -z-10 opacity-20" />
         <OliveBranch className="pointer-events-none absolute -bottom-6 right-0 -z-10 w-[420px] text-[#F7F2E8]/10 lg:w-[620px]" />
         <span aria-hidden="true" className="font-serif pointer-events-none absolute -top-16 right-4 -z-10 text-[22rem] leading-none text-white/[0.04] sm:text-[34rem]">«</span>
         <div className={`${WRAP} py-14 lg:py-20`}>
           <Reveal>
-            <Eyebrow light>{tr("Η φιλοσοφία μας")}</Eyebrow>
+            <Eyebrow light dot="bg-[#F7F2E8]">{tr("Η φιλοσοφία μας")}</Eyebrow>
             <blockquote className="font-serif mt-8 max-w-5xl text-[2.9rem] font-medium italic leading-[1.02] tracking-[-0.02em] sm:text-7xl lg:text-[6.5rem]">
-              <span className="text-[#D9806F]">{tr("«Το επιχειρείν")}</span>
+              <span className="text-[#F6D3C6]">{tr("«Το επιχειρείν")}</span>
               <br />
               {tr("εστίν φιλοσοφείν.»")}
             </blockquote>
           </Reveal>
-          <Reveal delay={120} className="mt-10 grid max-w-4xl gap-6 text-[17px] leading-8 text-[#F7F2E8]/75 md:grid-cols-2 md:gap-10">
+          <Reveal delay={120} className="mt-10 grid max-w-4xl gap-6 text-[17px] leading-8 text-[#F7F2E8]/85 md:grid-cols-2 md:gap-10">
             <p>{tr("Το επιχειρείν δεν είναι μόνο η πώληση ενός προϊόντος. Είναι η σκέψη, η δημιουργία, η επιμονή και η αναζήτηση ενός καλύτερου τρόπου να προσφέρεις κάτι στον κόσμο.")}</p>
             <p>{tr("Η ιστορία κάθε επιχείρησης έχει αξία. Η τεχνολογία πρέπει να την αναδεικνύει, όχι να μπαίνει εμπόδιο. Γι' αυτό φτιάξαμε το Vitrinaki.")}</p>
           </Reveal>
@@ -617,20 +617,20 @@ export default async function Home({
 
       {/* About */}
       <section id="about" aria-labelledby="about-title" className="scroll-mt-20 px-4 py-14 sm:px-6 lg:py-20">
-        <Reveal className="relative isolate mx-auto grid max-w-[1280px] gap-10 overflow-hidden rounded-[2.5rem] bg-[#1a2e21] px-6 py-14 text-[#F7F2E8] sm:px-12 lg:grid-cols-[1fr_1.1fr] lg:items-center lg:gap-16 lg:px-16 lg:py-20">
-          <div aria-hidden="true" className="vk-glow absolute -left-20 -top-32 -z-10 h-96 w-96 rounded-full bg-[#C0503C]/35 blur-[100px]" />
-          <div aria-hidden="true" className="vk-glow absolute -bottom-40 -right-20 -z-10 h-96 w-96 rounded-full bg-[#265E8E]/40 blur-[100px] [animation-delay:-4s]" />
+        <Reveal className="relative isolate mx-auto grid max-w-[1280px] gap-10 overflow-hidden rounded-[2.5rem] bg-[#A8432F] px-6 py-14 text-[#F7F2E8] sm:px-12 lg:grid-cols-[1fr_1.1fr] lg:items-center lg:gap-16 lg:px-16 lg:py-20">
+          <div aria-hidden="true" className="vk-glow absolute -left-20 -top-32 -z-10 h-96 w-96 rounded-full bg-[#D9806F]/40 blur-[100px]" />
+          <div aria-hidden="true" className="vk-glow absolute -bottom-40 -right-20 -z-10 h-96 w-96 rounded-full bg-[#7A2E20]/50 blur-[100px] [animation-delay:-4s]" />
           <div aria-hidden="true" className="vk-grain absolute inset-0 -z-10 opacity-20" />
           <div>
-            <Eyebrow light>{tr("Σχετικά με εμάς")}</Eyebrow>
+            <Eyebrow light dot="bg-[#F7F2E8]">{tr("Σχετικά με εμάς")}</Eyebrow>
             <h2 id="about-title" className="font-serif mt-7 text-[2.4rem] font-medium leading-[1.04] tracking-[-0.02em] sm:text-6xl">
-              {tr("Σχετικά με το")} <span className="whitespace-nowrap">vitrinaki<span className="text-[#D9806F]">.gr</span></span>
+              {tr("Σχετικά με το")} <span className="whitespace-nowrap">vitrinaki<span className="text-[#F6D3C6]">.gr</span></span>
             </h2>
           </div>
-          <div className="text-[17px] leading-8 text-[#F7F2E8]/75">
+          <div className="text-[17px] leading-8 text-[#F7F2E8]/85">
             <p>{tr("Το vitrinaki.gr δίνει σε κάθε επιχείρηση τη δική της ψηφιακή βιτρίνα: ιστοσελίδα και e-shop με το όνομά της, και ένα Studio για προϊόντα, παραγγελίες και πελάτες.")}</p>
             <p className="mt-5">{tr("Το φτιάξαμε για τα μαγαζιά της γειτονιάς, τους παραγωγούς και τους δημιουργούς, ώστε να στέκονται online με τη δική τους ταυτότητα, χωρίς τεχνικές γνώσεις και με ανθρώπους δίπλα τους.")}</p>
-            <a href={businessUrl} className={`mt-9 ${primaryBtn}`}>
+            <a href={businessUrl} className={`mt-9 ${primaryBtn} !bg-[#F7F2E8] !text-[#A8432F] hover:!bg-white`}>
               {tr("Άνοιξε τη βιτρίνα σου")} <Arrow />
             </a>
           </div>
