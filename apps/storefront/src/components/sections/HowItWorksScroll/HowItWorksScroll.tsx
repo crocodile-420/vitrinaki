@@ -169,7 +169,7 @@ export function StoryMockup({ step, className = "" }: { step: number; className?
         <p className="text-[9px] font-bold uppercase tracking-[0.16em] text-[#2E4A37]/60">{tr("Template")}</p>
         <div className="mt-1.5 grid grid-cols-3 gap-1.5">
           {templates.map((t, i) => (
-            <span key={t.name} className={`rounded-md p-1 text-center ${i === 0 ? "bg-[#F4E1D9] ring-2 ring-[#C0503C]" : "bg-[#F4F1EA]"}`}>
+            <span key={t.name} className={`rounded-md p-1 text-center ${i === 0 ? "bg-[#F4E1D9] ring-2 ring-[#265E8E]" : "bg-[#F4F1EA]"}`}>
               <TemplateThumb layout={t.layout} accent={i === 0 ? c.accent : "#2E4A37"} />
               <span className="mt-1 block truncate text-[8px] font-semibold text-[#1F3628]">{tr(t.name)}</span>
             </span>
@@ -178,7 +178,7 @@ export function StoryMockup({ step, className = "" }: { step: number; className?
         <div className="mt-2 flex items-center gap-1.5">
           <span className="text-[8.5px] font-semibold text-[#2E4A37]/70">{tr("Χρώματα")}</span>
           {swatches.map((s) => (
-            <span key={s} className={`grid h-4 w-4 place-items-center rounded-full text-white ${s === c.accent ? "ring-2 ring-[#C0503C] ring-offset-1" : ""}`} style={{ background: s }}>
+            <span key={s} className={`grid h-4 w-4 place-items-center rounded-full text-white ${s === c.accent ? "ring-2 ring-[#265E8E] ring-offset-1" : ""}`} style={{ background: s }}>
               {s === c.accent ? <Check size={8} /> : null}
             </span>
           ))}
@@ -212,7 +212,7 @@ export function StoryMockup({ step, className = "" }: { step: number; className?
         </div>
         <div className="mt-2 flex items-center gap-1.5 rounded-md bg-[#F4F1EA] px-2 py-1.5">
           <span className="min-w-0 flex-1 truncate text-[9px] font-semibold text-[#1F3628]">vitrinaki.gr/mano</span>
-          <span className="shrink-0 rounded bg-[#C0503C] px-1.5 py-0.5 text-[8px] font-bold text-white">{tr("Αντιγραφή link")}</span>
+          <span className="shrink-0 rounded bg-[#265E8E] px-1.5 py-0.5 text-[8px] font-bold text-white">{tr("Αντιγραφή link")}</span>
         </div>
         <p className="mt-1.5 text-[8.5px] text-[#2E4A37]/65">{tr("ή στο δικό σου domain, π.χ. mano.gr")}</p>
       </div>
@@ -267,14 +267,14 @@ export function HowItWorksScroll({ intro }: { intro: React.ReactNode }) {
             >
               <div className={`transition-opacity duration-500 motion-reduce:transition-none ${active === i ? "lg:opacity-100" : "lg:opacity-35"}`}>
                 <span className="flex items-center gap-3">
-                  <span className={`grid h-11 w-11 place-items-center rounded-full border font-serif text-xl italic transition-colors duration-500 motion-reduce:transition-none ${active === i ? "border-[#C0503C] bg-[#C0503C] text-white" : "border-[#2E4A37]/15 bg-[#F7F2E8] text-[#C0503C]"}`}>{i + 1}</span>
+                  <span className={`grid h-11 w-11 place-items-center rounded-full border font-serif text-xl italic transition-colors duration-500 motion-reduce:transition-none ${active === i ? "border-[#265E8E] bg-[#265E8E] text-white" : "border-[#2E4A37]/15 bg-[#F7F2E8] text-[#265E8E]"}`}>{i + 1}</span>
                   <span className="text-[13px] font-semibold tracking-wide text-[#2E4A37]/60">{tr(step.label)}</span>
                 </span>
                 <h3 className="mt-4 font-serif text-[1.7rem] font-medium leading-tight text-[#1F3628] sm:text-3xl">{tr(step.title)}</h3>
                 <p className="mt-3 max-w-md text-[15px] leading-7 text-[#2E4A37]/75">{tr(step.text)}</p>
                 {step.key === "order" ? (
                   <p className="mt-4 inline-flex items-center gap-2 rounded-full border border-[#2E4A37]/15 bg-white/70 px-3 py-1 text-[12.5px] font-semibold text-[#1F3628]">
-                    <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-[#C0503C]" />
+                    <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-[#265E8E]" />
                     {tr("Πληρωμές με κάρτα")}
                   </p>
                 ) : null}
@@ -295,7 +295,7 @@ export function HowItWorksScroll({ intro }: { intro: React.ReactNode }) {
               {steps.map((step, i) => (
                 <span key={step.key} className="min-w-0">
                   <span className="block h-1 overflow-hidden rounded-full bg-[#2E4A37]/10">
-                    <span className={`block h-full rounded-full bg-[#C0503C] transition-[width] duration-500 motion-reduce:transition-none ${i <= active ? "w-full" : "w-0"}`} />
+                    <span className={`block h-full rounded-full bg-[#265E8E] transition-[width] duration-500 motion-reduce:transition-none ${i <= active ? "w-full" : "w-0"}`} />
                   </span>
                   <span className={`mt-1.5 block truncate text-[11px] font-semibold transition-colors duration-500 motion-reduce:transition-none ${i === active ? "text-[#1F3628]" : "text-[#2E4A37]/45"}`}>{tr(step.label)}</span>
                 </span>

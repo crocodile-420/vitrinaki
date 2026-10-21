@@ -329,6 +329,10 @@ const en: Record<string, string> = {
   "Ερωτήσεις": "Questions",
   "Όσα ρωτούν συνήθως πριν ξεκινήσουν.": "What people usually ask before they start.",
   "Το επόμενο βήμα": "The next step",
+  "Σχετικά με εμάς": "About us",
+  "Σχετικά με το": "About",
+  "Το vitrinaki.gr δίνει σε κάθε επιχείρηση τη δική της ψηφιακή βιτρίνα: ιστοσελίδα και e-shop με το όνομά της, και ένα Studio για προϊόντα, παραγγελίες και πελάτες.": "vitrinaki.gr gives every business its own digital shopfront: a website and e-shop under its own name, plus a Studio for products, orders and customers.",
+  "Το φτιάξαμε για τα μαγαζιά της γειτονιάς, τους παραγωγούς και τους δημιουργούς, ώστε να στέκονται online με τη δική τους ταυτότητα, χωρίς τεχνικές γνώσεις και με ανθρώπους δίπλα τους.": "We built it for neighbourhood shops, producers and makers, so they can stand online with their own identity, with no technical knowledge and with people by their side.",
   "Άνοιξε τη βιτρίνα σου σήμερα.": "Open your shop window today.",
   "Πες μας για την επιχείρησή σου και κάνε το πρώτο βήμα στο ψηφιακό εμπόριο. Δεν θα το κάνεις μόνος σου.": "Tell us about your business and take your first step into online commerce. You won't do it alone.",
 

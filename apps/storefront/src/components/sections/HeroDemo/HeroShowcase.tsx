@@ -65,7 +65,7 @@ export function HeroShowcase({ lang, scenes, active, onPick, playing, rotating, 
       {/* caption + controls sit under the frame, so they never cover the pictures */}
       <div className="mt-4 flex items-start justify-between gap-4">
         <p className="min-w-0 text-[13.5px] leading-snug text-[#1F3628]">
-          <span className="font-bold text-[#C0503C] tabular-nums">{String(active + 1).padStart(2, "0")}</span>
+          <span className="font-bold text-[#265E8E] tabular-nums">{String(active + 1).padStart(2, "0")}</span>
           <span className="mx-2 text-[#2E4A37]/30" aria-hidden="true">/</span>
           <span key={current.key} className="vk-fade inline">
             <span className="text-[#2E4A37]/60">{tr("Παράδειγμα")}: </span>
@@ -88,7 +88,7 @@ export function HeroShowcase({ lang, scenes, active, onPick, playing, rotating, 
                   {i === active ? (
                     <span
                       key={`${active}-${rotating}`}
-                      className={`block h-full w-full rounded-full bg-[#C0503C] ${rotating ? "vk-progress" : ""}`}
+                      className={`block h-full w-full rounded-full bg-[#265E8E] ${rotating ? "vk-progress" : ""}`}
                       style={rotating ? { animationDuration: `${SCENE_MS}ms` } : undefined}
                     />
                   ) : null}

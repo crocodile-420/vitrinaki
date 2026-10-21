@@ -187,12 +187,12 @@ function OliveSprig({ className = "" }: { className?: string }) {
 const WRAP = "mx-auto max-w-[1280px] px-5 sm:px-8 lg:px-12"
 const MUTED = "text-[#2E4A37]/70"
 
-const audienceColors = ["#2E4A37", "#C0503C", "#265E8E", "#265E8E", "#2E4A37"]
+const audienceColors = ["#2E4A37", "#C0503C", "#265E8E", "#C0503C", "#2E4A37"]
 
 function Eyebrow({ children, light = false, center = false }: { children: React.ReactNode; light?: boolean; center?: boolean }) {
   return (
     <p className={`inline-flex items-center gap-2 ${center ? "justify-center" : ""} rounded-full border px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] ${light ? "border-white/15 bg-white/5 text-[#F7F2E8]/75" : "border-[#2E4A37]/15 bg-white/60 text-[#2E4A37]/70"}`}>
-      <span className="h-1.5 w-1.5 rounded-full bg-[#C0503C]" />
+      <span className={`h-1.5 w-1.5 rounded-full ${light ? "bg-[#D9806F]" : "bg-[#C0503C]"}`} />
       {children}
     </p>
   )
@@ -280,7 +280,7 @@ export default async function Home({
           intro={
             <>
               <p className="mb-4 inline-flex items-center gap-2 text-[13px] font-semibold text-[#2E4A37]/75">
-                <span className="h-1.5 w-1.5 rounded-full bg-[#C0503C]" />
+                <span className="h-1.5 w-1.5 rounded-full bg-[#265E8E]" />
                 {tr("Για κάθε επιχείρηση, σε όλη την Ελλάδα")}
               </p>
               <h1 className="text-[2.15rem] font-extrabold leading-[1.05] tracking-[-0.03em] text-[#1F3628] sm:text-[3rem] lg:text-[2.6rem] xl:text-[3rem]">
@@ -407,11 +407,11 @@ export default async function Home({
                 ))}
               </ul>
             </Capability>
-            <Capability icon="layout" color="#C0503C" title="Όλη η επιχείρηση σε ένα Studio" text="Από ένα σημείο βλέπεις και διαχειρίζεσαι τα πάντα, μαζί με την ομάδα σου." tr={tr}>
+            <Capability icon="layout" color="#265E8E" title="Όλη η επιχείρηση σε ένα Studio" text="Από ένα σημείο βλέπεις και διαχειρίζεσαι τα πάντα, μαζί με την ομάδα σου." tr={tr}>
               <ul className="grid grid-cols-2 gap-1.5 text-[13px] font-semibold text-[#1F3628]">
                 {["Προϊόντα", "Παραγγελίες", "Απόθεμα", "Πληρωμές με κάρτα", "Courier", "Πόντοι επιβράβευσης", "Η βιτρίνα σου", "Ομάδα"].map((item) => (
                   <li key={item} className="flex items-center gap-1.5 rounded-lg bg-white px-2.5 py-1.5 ring-1 ring-[#2E4A37]/10">
-                    <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#C0503C]" />
+                    <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#265E8E]" />
                     <span className="truncate">{tr(item)}</span>
                   </li>
                 ))}
@@ -466,7 +466,7 @@ export default async function Home({
                         </div>
                         <h3 className="mt-1 text-xl font-bold text-[#1F3628]">{site.storeName}</h3>
                         <p className={`mt-1 line-clamp-2 text-[14px] leading-6 ${MUTED}`}>{site.description || site.tagline}</p>
-                        <span className="mt-auto inline-flex items-center gap-2 pt-4 text-sm font-semibold text-[#C0503C]">
+                        <span className="mt-auto inline-flex items-center gap-2 pt-4 text-sm font-semibold text-[#265E8E]">
                           {tr("Δες τη βιτρίνα")} <span aria-hidden="true" className="transition-transform group-hover:translate-x-1">→</span>
                         </span>
                       </div>
@@ -567,12 +567,12 @@ export default async function Home({
             <ul className="mt-6 grid gap-2.5 text-[14.5px] sm:grid-cols-2">
               {["Ιστοσελίδα & e-shop", "Απόθεμα & προϊόντα", "Παραγγελίες & πελάτες", "Πληρωμές με κάρτα", "Αποστολές με courier", "Υποστήριξη από ανθρώπους"].map((item) => (
                 <li key={item} className="flex items-center gap-2">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#C0503C" /><path d="m7.5 12 3 3 6-6" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#8DB8DE" /><path d="m7.5 12 3 3 6-6" stroke="#173A57" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
                   {tr(item)}
                 </li>
               ))}
             </ul>
-            <a href={businessUrl} className={`mt-8 ${primaryBtn}`}>
+            <a href={businessUrl} className={`mt-8 ${primaryBtn} !bg-[#F7F2E8] !text-[#173A57] hover:!bg-white`}>
               {tr("Άνοιξε τη βιτρίνα σου")} <Arrow />
             </a>
           </Reveal>
@@ -582,7 +582,7 @@ export default async function Home({
               {plans.map((plan) => (
                 <li key={plan.id} className="rounded-2xl bg-[#F7F2E8] p-5 text-[#1F3628]">
                   <p className="text-[17px] font-extrabold">{tr(plan.label)}</p>
-                  <p className="mt-0.5 text-[13px] font-semibold text-[#C0503C]">{tr(plan.team)}</p>
+                  <p className="mt-0.5 text-[13px] font-semibold text-[#265E8E]">{tr(plan.team)}</p>
                   <p className={`mt-2 text-[13.5px] leading-6 ${MUTED}`}>{tr(plan.text)}</p>
                 </li>
               ))}
@@ -605,7 +605,7 @@ export default async function Home({
                 <details className="group rounded-2xl border border-[#F7F2E8]/20 bg-[#F7F2E8] px-6 py-5 text-[#1F3628] transition open:shadow-[0_24px_55px_-30px_rgba(0,0,0,0.7)]">
                   <summary className="font-serif flex cursor-pointer list-none items-center justify-between gap-6 text-lg font-medium sm:text-xl [&::-webkit-details-marker]:hidden">
                     {tr(item.q)}
-                    <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-[#2E4A37]/[0.07] text-xl font-light transition duration-300 group-open:rotate-45 group-open:bg-[#C0503C] group-open:text-white" aria-hidden="true">+</span>
+                    <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-[#2E4A37]/[0.07] text-xl font-light transition duration-300 group-open:rotate-45 group-open:bg-[#265E8E] group-open:text-white" aria-hidden="true">+</span>
                   </summary>
                   <p className={`mt-4 max-w-2xl text-[15px] leading-7 ${MUTED}`}>{tr(item.a)}</p>
                 </details>
@@ -615,20 +615,25 @@ export default async function Home({
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="px-4 py-14 sm:px-6 lg:py-20">
-        <Reveal className="relative isolate mx-auto max-w-[1280px] overflow-hidden rounded-[2.5rem] bg-[#1a2e21] px-6 py-16 text-center text-[#F7F2E8] sm:px-12 lg:py-20">
+      {/* About */}
+      <section id="about" aria-labelledby="about-title" className="scroll-mt-20 px-4 py-14 sm:px-6 lg:py-20">
+        <Reveal className="relative isolate mx-auto grid max-w-[1280px] gap-10 overflow-hidden rounded-[2.5rem] bg-[#1a2e21] px-6 py-14 text-[#F7F2E8] sm:px-12 lg:grid-cols-[1fr_1.1fr] lg:items-center lg:gap-16 lg:px-16 lg:py-20">
           <div aria-hidden="true" className="vk-glow absolute -left-20 -top-32 -z-10 h-96 w-96 rounded-full bg-[#C0503C]/35 blur-[100px]" />
           <div aria-hidden="true" className="vk-glow absolute -bottom-40 -right-20 -z-10 h-96 w-96 rounded-full bg-[#265E8E]/40 blur-[100px] [animation-delay:-4s]" />
           <div aria-hidden="true" className="vk-grain absolute inset-0 -z-10 opacity-20" />
-          <Eyebrow light>{tr("Το επόμενο βήμα")}</Eyebrow>
-          <h2 className="font-serif mx-auto mt-7 max-w-4xl text-[2.4rem] font-medium leading-[1.04] tracking-[-0.02em] sm:text-6xl lg:text-7xl">
-            {tr("Άνοιξε τη βιτρίνα σου σήμερα.")}
-          </h2>
-          <p className="mx-auto mt-7 max-w-xl text-[17px] leading-8 text-[#F7F2E8]/70">{tr("Πες μας για την επιχείρησή σου και κάνε το πρώτο βήμα στο ψηφιακό εμπόριο. Δεν θα το κάνεις μόνος σου.")}</p>
-          <a href={businessUrl} className={`mt-10 ${primaryBtn}`}>
-            {tr("Άνοιξε τη βιτρίνα σου")} <Arrow />
-          </a>
+          <div>
+            <Eyebrow light>{tr("Σχετικά με εμάς")}</Eyebrow>
+            <h2 id="about-title" className="font-serif mt-7 text-[2.4rem] font-medium leading-[1.04] tracking-[-0.02em] sm:text-6xl">
+              {tr("Σχετικά με το")} <span className="whitespace-nowrap">vitrinaki<span className="text-[#D9806F]">.gr</span></span>
+            </h2>
+          </div>
+          <div className="text-[17px] leading-8 text-[#F7F2E8]/75">
+            <p>{tr("Το vitrinaki.gr δίνει σε κάθε επιχείρηση τη δική της ψηφιακή βιτρίνα: ιστοσελίδα και e-shop με το όνομά της, και ένα Studio για προϊόντα, παραγγελίες και πελάτες.")}</p>
+            <p className="mt-5">{tr("Το φτιάξαμε για τα μαγαζιά της γειτονιάς, τους παραγωγούς και τους δημιουργούς, ώστε να στέκονται online με τη δική τους ταυτότητα, χωρίς τεχνικές γνώσεις και με ανθρώπους δίπλα τους.")}</p>
+            <a href={businessUrl} className={`mt-9 ${primaryBtn}`}>
+              {tr("Άνοιξε τη βιτρίνα σου")} <Arrow />
+            </a>
+          </div>
         </Reveal>
       </section>
     </main>

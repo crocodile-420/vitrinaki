@@ -183,7 +183,7 @@ export function FeaturesMenu({ locale }: { locale: string }) {
           </div>
 
           <div className="relative isolate flex flex-col justify-between overflow-hidden rounded-2xl bg-[#2E4A37] p-6 ring-1 ring-[#F7F2E8]/10">
-            <div aria-hidden="true" className="absolute -right-16 -top-16 -z-10 h-48 w-48 rounded-full bg-[#C0503C]/35 blur-3xl" />
+            <div aria-hidden="true" className="absolute -right-16 -top-16 -z-10 h-48 w-48 rounded-full bg-[#265E8E]/35 blur-3xl" />
             <div aria-hidden="true" className="absolute -bottom-20 -left-10 -z-10 h-48 w-48 rounded-full bg-[#265E8E]/40 blur-3xl" />
             <div>
               <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#F2C9BE]">{tr("Ξεκίνα σήμερα")}</p>

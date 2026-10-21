@@ -9,6 +9,7 @@ const footerGroups = [
       { label: "Τι παίρνεις", href: "/#included" },
       { label: "Πώς ξεκινάς", href: "/#how-it-works" },
       { label: "Η φιλοσοφία μας", href: "/#philosophy" },
+      { label: "Σχετικά με εμάς", href: "/#about" },
     ],
   },
   {
