@@ -290,14 +290,14 @@ export default async function Home({
                 {tr("Για κάθε επιχείρηση, σε όλη την Ελλάδα")}
               </p>
               <h1 className="text-[2.15rem] font-extrabold leading-[1.05] tracking-[-0.03em] text-[#1F3628] sm:text-[3rem] lg:text-[2.6rem] xl:text-[3rem]">
-                {tr("Το vitrinaki σου, στο ψηφιακό εμπόριο.")}{" "}
+                {tr("Το όνειρό σου αξίζει μια βιτρίνα.")}{" "}
                 <span className="relative inline-block text-[#C0503C]">
-                  {tr("Από την ιστοσελίδα ως την παραγγελία.")}
+                  {tr("Άνοιξέ τη σήμερα.")}
                   <Swoosh className="absolute -bottom-2 left-0 h-2.5 w-full text-[#C0503C]/45" />
                 </span>
               </h1>
               <p className="mt-5 max-w-md text-[15px] leading-7 text-[#1F3628]/75 sm:text-[16px]">
-                {tr("Δημιούργησε εύκολα το δικό σου e-shop, πούλα τα προϊόντα σου, διαχειρίσου το απόθεμα και βρες περισσότερους πελάτες μέσα από το Vitrinaki.")}
+                {tr("Κάθε μεγάλη επιχείρηση ξεκίνησε από ένα μικρό μαγαζί. Φτιάξε την ιστοσελίδα και το e-shop σου, πούλα σε όλη την Ελλάδα και μεγάλωσε με ανθρώπους δίπλα σου.")}
               </p>
               <div className="mt-7 flex flex-wrap items-center gap-3">
                 <a href={businessUrl} className={primaryBtn}>

@@ -220,6 +220,9 @@ const en: Record<string, string> = {
 
   "Το vitrinaki σου, στο ψηφιακό εμπόριο.": "Your vitrinaki, in online retail.",
   "Από την ιστοσελίδα ως την παραγγελία.": "From website to order.",
+  "Το όνειρό σου αξίζει μια βιτρίνα.": "Your dream deserves a shop window.",
+  "Άνοιξέ τη σήμερα.": "Open it today.",
+  "Κάθε μεγάλη επιχείρηση ξεκίνησε από ένα μικρό μαγαζί. Φτιάξε την ιστοσελίδα και το e-shop σου, πούλα σε όλη την Ελλάδα και μεγάλωσε με ανθρώπους δίπλα σου.": "Every big business started as a small shop. Build your website and e-shop, sell all over Greece and grow with people by your side.",
   "Δες τη βιτρίνα": "See the shop window",
   // Audiences
   "Παραγωγοί": "Producers",
