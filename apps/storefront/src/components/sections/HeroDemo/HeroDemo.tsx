@@ -8,6 +8,7 @@ import { translator, type Lang } from "@/lib/i18n/vitrinaki"
 import { HeroShowcase, SCENE_MS, type Scene, showcaseCss } from "./HeroShowcase"
 import { palettes, sites } from "./sites"
 import { SitePreview } from "./SitePreview"
+import { CustomerScene, PackagingScene, RatingScene, WorldScene } from "./StoryScenes"
 
 const greekToLatin: Record<string, string> = {
   α: "a", ά: "a", β: "v", γ: "g", δ: "d", ε: "e", έ: "e", ζ: "z", η: "i", ή: "i", θ: "th", ι: "i", ί: "i", ϊ: "i", ΐ: "i",
@@ -167,6 +168,8 @@ function Hills({ className = "" }: { className?: string }) {
   )
 }
 
+const STORY_LENGTH = 5
+
 const fadeCss = `.vk-fade{animation:vkFade .6s ease both}@keyframes vkFade{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:none}}@media (prefers-reduced-motion:reduce){.vk-fade{animation:none}}`
 
 export function HeroDemo({ lang, intro }: { lang: Lang; intro: React.ReactNode }) {
@@ -174,20 +177,23 @@ export function HeroDemo({ lang, intro }: { lang: Lang; intro: React.ReactNode }
   const [name, setName] = useState("")
   const [paletteKey, setPaletteKey] = useState<string | null>(null)
   const [scene, setScene] = useState(0)
+  const [siteIdx, setSiteIdx] = useState(0)
   const [playing, setPlaying] = useState(true)
   const [hovered, setHovered] = useState(false)
   const [focused, setFocused] = useState(false)
   const [visible, setVisible] = useState(true)
   const heroRef = useRef<HTMLDivElement>(null)
 
-  // Typing a name or picking colours turns the example on screen into "your" website and holds
-  // it still; clearing them lets the examples rotate again.
+  // The hero tells a story: the product on its shop page, packaging, a happy customer, a good
+  // rating and orders from further away. Each round shows the next example shop. Typing a name
+  // or picking colours turns that shop into "your" website and holds it on screen; clearing them
+  // lets the story play again.
   const custom = name.trim() !== "" || paletteKey !== null
   const chosen = palettes.find((x) => x.key === paletteKey)
   const shown = sites.map((site, i) =>
-    custom && i === scene ? { ...site, name: name.trim() || site.name, slug: slugify(name) || site.slug, palette: chosen ?? site.palette } : site,
+    custom && i === siteIdx ? { ...site, name: name.trim() || site.name, slug: slugify(name) || site.slug, palette: chosen ?? site.palette } : site,
   )
-  const current = shown[scene]
+  const current = shown[siteIdx]
   const rotating = playing && !hovered && !focused && !custom && visible
 
   // no auto-rotation for people who ask for reduced motion (they can still press play)
@@ -217,9 +223,18 @@ export function HeroDemo({ lang, intro }: { lang: Lang; intro: React.ReactNode }
 
   useEffect(() => {
     if (!rotating) return
-    const timer = window.setTimeout(() => setScene((s) => (s + 1) % sites.length), SCENE_MS)
+    const timer = window.setTimeout(() => {
+      const next = (scene + 1) % STORY_LENGTH
+      if (next === 0) setSiteIdx((i) => (i + 1) % sites.length)
+      setScene(next)
+    }, SCENE_MS)
     return () => window.clearTimeout(timer)
   }, [rotating, scene])
+
+  // a name or colour only shows on the product page, so jump back to it
+  useEffect(() => {
+    if (custom) setScene(0)
+  }, [custom])
 
   // pause while the visitor points at or tabs into the showcase
   const hold = {
@@ -231,12 +246,13 @@ export function HeroDemo({ lang, intro }: { lang: Lang; intro: React.ReactNode }
     },
   }
 
-  const scenes: Scene[] = shown.map((site, i) => ({
-    key: site.key,
-    label: site.industry,
-    text: site.place,
-    content: <SitePreview site={site} lang={lang} eager={i === 0} className="h-full ring-0" />,
-  }))
+  const scenes: Scene[] = [
+    { key: "product", step: "Προϊόν", label: "Το προϊόν σου στη βιτρίνα σου", text: current.industry, content: <SitePreview site={current} lang={lang} eager className="h-full ring-0" /> },
+    { key: "packaging", step: "Συσκευασία", label: "Το τυλίγεις με φροντίδα", text: "έτοιμο για αποστολή", content: <PackagingScene lang={lang} /> },
+    { key: "customer", step: "Πελάτης", label: "Ο πελάτης το παραλαμβάνει", text: "και χαίρεται", content: <CustomerScene lang={lang} /> },
+    { key: "rating", step: "Αξιολόγηση", label: "Σε αξιολογεί με 5 αστέρια", text: "και φέρνει νέους πελάτες", content: <RatingScene lang={lang} /> },
+    { key: "world", step: "Ανάπτυξη", label: "Μεγαλώνεις", text: "με πελάτες στην Ελλάδα και στο εξωτερικό", content: <WorldScene lang={lang} /> },
+  ]
 
   return (
     <>

@@ -5,7 +5,7 @@ import { useState } from "react"
 
 import { translator, type Lang } from "@/lib/i18n/vitrinaki"
 
-export type Scene = { key: string; label: string; text: string; content: React.ReactNode }
+export type Scene = { key: string; step: string; label: string; text: string; content: React.ReactNode }
 
 export const SCENE_MS = 4500
 
@@ -20,7 +20,7 @@ export const showcaseCss = `
 @media (prefers-reduced-motion:reduce){.vk-scene{transition:none}.vk-zoom,.vk-scene[data-on] .vk-zoom{transform:none;transition:none}.vk-progress{animation:none}}
 `
 
-/* The hero's media: four scenes in one frame. Only scenes that have been shown (plus the next
+/* The hero's media: the story scenes in one frame, with a step bar above them. Only scenes that have been shown (plus the next
    one, preloaded) are mounted, so the page does not download every photo up front. */
 export function HeroShowcase({ lang, scenes, active, onPick, playing, rotating, onToggle, showToggle, className = "", ...hold }: {
   lang: Lang
@@ -42,7 +42,16 @@ export function HeroShowcase({ lang, scenes, active, onPick, playing, rotating, 
   const current = scenes[active]
 
   return (
-    <section aria-roledescription="carousel" aria-label={tr("Τι μπορείς να φτιάξεις με το Vitrinaki")} className={className} {...hold}>
+    <section aria-roledescription="carousel" aria-label={tr("Από το προϊόν ως τον πελάτη")} className={className} {...hold}>
+      {/* the journey at a glance: product, packaging, customer, rating, growth */}
+      <ol className="mb-4 grid grid-cols-5 gap-1.5 sm:gap-2" aria-hidden="true">
+        {scenes.map((scene, i) => (
+          <li key={scene.key} className="flex flex-col items-center gap-1.5 text-center">
+            <span className={`h-1 w-full rounded-full transition-colors duration-500 motion-reduce:transition-none ${i <= active ? "bg-[#C0503C]" : "bg-[#2E4A37]/15"}`} />
+            <span className={`text-[10.5px] font-semibold leading-tight transition-colors duration-500 sm:text-[12px] ${i === active ? "text-[#1F3628]" : "text-[#2E4A37]/45"}`}>{tr(scene.step)}</span>
+          </li>
+        ))}
+      </ol>
       <div className="relative isolate aspect-[3/2] overflow-hidden rounded-[1.25rem] bg-white shadow-[0_40px_80px_-40px_rgba(31,54,40,0.6),0_2px_8px_rgba(31,54,40,0.06)]">
         <div aria-live={rotating ? "off" : "polite"} className="absolute inset-0">
           {scenes.map((scene, i) => (
@@ -68,7 +77,6 @@ export function HeroShowcase({ lang, scenes, active, onPick, playing, rotating, 
           <span className="font-bold text-[#265E8E] tabular-nums">{String(active + 1).padStart(2, "0")}</span>
           <span className="mx-2 text-[#2E4A37]/30" aria-hidden="true">/</span>
           <span key={current.key} className="vk-fade inline">
-            <span className="text-[#2E4A37]/60">{tr("Παράδειγμα")}: </span>
             <span className="font-bold">{tr(current.label)}</span>
             <span className="text-[#2E4A37]/70"> · {tr(current.text)}</span>
           </span>
