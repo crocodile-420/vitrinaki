@@ -170,6 +170,54 @@ function Hills({ className = "" }: { className?: string }) {
 
 const STORY_LENGTH = 5
 
+/* Delivery routes on story-globe.webp (730 × 603): from Greece to five far-off customers. */
+const GREECE: [number, number] = [418, 243]
+const DESTINATIONS: [number, number][] = [[163, 222], [550, 230], [190, 405], [640, 455], [382, 170]]
+const ROUTE_GAP_S = 3
+
+const globeCss = `
+.vk-globe{animation:vkGlobe 50s ease-in-out infinite alternate;transform-origin:50% 50%}
+@keyframes vkGlobe{from{transform:rotate(-5deg) scale(1)}to{transform:rotate(5deg) scale(1.04)}}
+.vk-route{stroke-dasharray:1;stroke-dashoffset:1;opacity:0;animation:vkRoute ${DESTINATIONS.length * ROUTE_GAP_S}s linear infinite}
+@keyframes vkRoute{0%{stroke-dashoffset:1;opacity:1}14%{stroke-dashoffset:0;opacity:1}24%{stroke-dashoffset:0;opacity:1}30%,100%{stroke-dashoffset:0;opacity:0}}
+.vk-dest{opacity:0;transform-box:fill-box;transform-origin:center;animation:vkDest ${DESTINATIONS.length * ROUTE_GAP_S}s ease-out infinite}
+@keyframes vkDest{0%,12%{opacity:0;transform:scale(.4)}16%{opacity:1;transform:scale(1.25)}20%,24%{opacity:1;transform:scale(1)}30%,100%{opacity:0;transform:scale(1)}}
+@media (prefers-reduced-motion:reduce){.vk-globe{animation:none}.vk-route{animation:none;stroke-dashoffset:0;opacity:.7}.vk-dest{animation:none;opacity:.8}}
+`
+
+// a curved route that bows away from the globe's centre, like a flight path
+function arc([x1, y1]: [number, number], [x2, y2]: [number, number]) {
+  const mx = (x1 + x2) / 2
+  const my = (y1 + y2) / 2
+  const dx = x2 - x1
+  const dy = y2 - y1
+  const len = Math.hypot(dx, dy)
+  let nx = -dy / len
+  let ny = dx / len
+  if (nx * (mx - 365) + ny * (my - 300) < 0) [nx, ny] = [-nx, -ny]
+  const bow = len * 0.28
+  return `M${x1} ${y1}Q${(mx + nx * bow).toFixed(1)} ${(my + ny * bow).toFixed(1)} ${x2} ${y2}`
+}
+
+function GlobeBackdrop({ className = "" }: { className?: string }) {
+  return (
+    <div aria-hidden="true" className={className}>
+      <div className="vk-globe relative aspect-[730/603] w-full">
+        <img src="/home/story-globe.webp" alt="" width={730} height={603} decoding="async" className="absolute inset-0 h-full w-full opacity-90" />
+        <svg viewBox="0 0 730 603" className="absolute inset-0 h-full w-full" fill="none">
+          {DESTINATIONS.map((to, i) => (
+            <g key={i}>
+              <path d={arc(GREECE, to)} pathLength={1} stroke="#C0503C" strokeWidth="2.6" strokeLinecap="round" className="vk-route" style={{ animationDelay: `${i * ROUTE_GAP_S}s` }} />
+              <circle cx={to[0]} cy={to[1]} r="7" fill="#265E8E" stroke="#F7F2E8" strokeWidth="2.5" className="vk-dest" style={{ animationDelay: `${i * ROUTE_GAP_S}s` }} />
+            </g>
+          ))}
+          <circle cx={GREECE[0]} cy={GREECE[1]} r="8" fill="#C0503C" stroke="#F7F2E8" strokeWidth="3" />
+        </svg>
+      </div>
+    </div>
+  )
+}
+
 const fadeCss = `.vk-fade{animation:vkFade .6s ease both}@keyframes vkFade{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:none}}@media (prefers-reduced-motion:reduce){.vk-fade{animation:none}}`
 
 export function HeroDemo({ lang, intro }: { lang: Lang; intro: React.ReactNode }) {
@@ -256,18 +304,20 @@ export function HeroDemo({ lang, intro }: { lang: Lang; intro: React.ReactNode }
 
   return (
     <>
-      <style>{showcaseCss + fadeCss}</style>
+      <style>{showcaseCss + fadeCss + globeCss}</style>
       <div ref={heroRef} id="top" className="relative isolate scroll-mt-20 overflow-hidden bg-[#F5EEE1] text-[#1F3628]">
         {/* watercolour washes and the cypress / terracotta hills of the Greek landscape */}
         <div aria-hidden="true" className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_40%_45%_at_70%_30%,rgba(46,74,55,0.10),transparent_70%),radial-gradient(ellipse_30%_40%_at_92%_8%,rgba(38,94,142,0.08),transparent_70%),radial-gradient(ellipse_45%_40%_at_10%_0%,rgba(192,80,60,0.06),transparent_70%)]" />
-        {/* desktop panorama behind the story: Greece (left) and the globe (middle) */}
+        {/* desktop panorama: the Greek landscape under the copy */}
         <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 hidden lg:block">
           <img src="/home/story-greece.webp" alt="" width={799} height={544} decoding="async" className="absolute bottom-[20px] left-[-1.5%] w-[min(42%,600px)] [mask-image:linear-gradient(90deg,transparent,#000_8%,#000_78%,transparent),linear-gradient(180deg,transparent,#000_40%)] [mask-composite:intersect]" />
-          <img src="/home/story-globe.webp" alt="" width={730} height={603} decoding="async" className="absolute bottom-[-70px] left-[calc(50%-250px)] w-[min(34%,500px)]" />
         </div>
         <Hills className="absolute bottom-0 left-0 -z-10 h-[70px] w-full sm:h-[110px] lg:h-[150px]" />
         <div className="mx-auto grid max-w-[1280px] items-center gap-8 px-5 pb-14 pt-8 sm:px-8 sm:pb-20 lg:grid-cols-[minmax(0,0.82fr)_minmax(0,1.18fr)] lg:gap-12 lg:px-12 lg:pb-[260px] lg:pt-14 xl:gap-14">
           <div className="relative z-10">{intro}</div>
+          <div className="relative isolate">
+            {/* a large globe behind the story, turning slowly while delivery routes light up one by one */}
+            <GlobeBackdrop className="pointer-events-none absolute left-1/2 top-[62%] -z-10 hidden w-[135%] max-w-[980px] -translate-x-1/2 -translate-y-1/2 md:block" />
           <HeroShowcase
             lang={lang}
             scenes={scenes}
@@ -277,9 +327,10 @@ export function HeroDemo({ lang, intro }: { lang: Lang; intro: React.ReactNode }
             rotating={rotating}
             onToggle={() => setPlaying((v) => !v)}
             showToggle={!custom}
-            className="relative mx-auto w-full max-w-[720px] rounded-2xl bg-[#F5EEE1]/80 lg:max-w-none"
+            className="relative mx-auto w-full max-w-[720px] rounded-2xl lg:max-w-none"
             {...hold}
           />
+          </div>
         </div>
       </div>
       {/* Try it: name & colour, big enough to invite a click */}
