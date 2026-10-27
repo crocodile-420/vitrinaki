@@ -203,7 +203,7 @@ function GlobeBackdrop({ className = "" }: { className?: string }) {
   return (
     <div aria-hidden="true" className={className}>
       <div className="vk-globe relative aspect-[730/603] w-full">
-        <img src="/home/story-globe.webp" alt="" width={730} height={603} decoding="async" className="absolute inset-0 h-full w-full opacity-90" />
+        <img src="/home/story-globe.webp" alt="" width={730} height={603} decoding="async" className="absolute inset-0 h-full w-full opacity-80" />
         <svg viewBox="0 0 730 603" className="absolute inset-0 h-full w-full" fill="none">
           {DESTINATIONS.map((to, i) => (
             <g key={i}>
@@ -308,16 +308,15 @@ export function HeroDemo({ lang, intro }: { lang: Lang; intro: React.ReactNode }
       <div ref={heroRef} id="top" className="relative isolate scroll-mt-20 overflow-hidden bg-[#F5EEE1] text-[#1F3628]">
         {/* watercolour washes and the cypress / terracotta hills of the Greek landscape */}
         <div aria-hidden="true" className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_40%_45%_at_70%_30%,rgba(46,74,55,0.10),transparent_70%),radial-gradient(ellipse_30%_40%_at_92%_8%,rgba(38,94,142,0.08),transparent_70%),radial-gradient(ellipse_45%_40%_at_10%_0%,rgba(192,80,60,0.06),transparent_70%)]" />
-        {/* desktop panorama: the Greek landscape under the copy */}
+        {/* desktop panorama: the Greek landscape under the copy and the globe in the middle */}
         <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 hidden lg:block">
-          <img src="/home/story-greece.webp" alt="" width={799} height={544} decoding="async" className="absolute bottom-[20px] left-[-1.5%] w-[min(42%,600px)] [mask-image:linear-gradient(90deg,transparent,#000_8%,#000_78%,transparent),linear-gradient(180deg,transparent,#000_40%)] [mask-composite:intersect]" />
+          {/* a large globe in the middle of the hero, turning slowly while delivery routes light up one by one */}
+          <GlobeBackdrop className="absolute left-[53%] top-[52%] w-[min(48%,760px)] -translate-x-1/2 -translate-y-1/2" />
+          <img src="/home/story-greece.webp" alt="" width={799} height={544} decoding="async" className="absolute bottom-[20px] left-[-1.5%] w-[min(44%,640px)] [mask-image:linear-gradient(90deg,transparent,#000_8%,#000_78%,transparent),linear-gradient(180deg,transparent,#000_40%)] [mask-composite:intersect]" />
         </div>
         <Hills className="absolute bottom-0 left-0 -z-10 h-[70px] w-full sm:h-[110px] lg:h-[150px]" />
         <div className="mx-auto grid max-w-[1280px] items-center gap-8 px-5 pb-14 pt-8 sm:px-8 sm:pb-20 lg:grid-cols-[minmax(0,0.82fr)_minmax(0,1.18fr)] lg:gap-12 lg:px-12 lg:pb-[260px] lg:pt-14 xl:gap-14">
           <div className="relative z-10">{intro}</div>
-          <div className="relative isolate">
-            {/* a large globe behind the story, turning slowly while delivery routes light up one by one */}
-            <GlobeBackdrop className="pointer-events-none absolute left-1/2 top-[62%] -z-10 hidden w-[135%] max-w-[980px] -translate-x-1/2 -translate-y-1/2 md:block" />
           <HeroShowcase
             lang={lang}
             scenes={scenes}
@@ -330,7 +329,6 @@ export function HeroDemo({ lang, intro }: { lang: Lang; intro: React.ReactNode }
             className="relative mx-auto w-full max-w-[720px] rounded-2xl lg:max-w-none"
             {...hold}
           />
-          </div>
         </div>
       </div>
       {/* Try it: name & colour, big enough to invite a click */}
