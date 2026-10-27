@@ -187,12 +187,18 @@ function OliveSprig({ className = "" }: { className?: string }) {
 const WRAP = "mx-auto max-w-[1280px] px-5 sm:px-8 lg:px-12"
 const MUTED = "text-[#2E4A37]/70"
 
+const about = [
+  { title: "Ποιοι είμαστε", text: ["Είμαστε μια ομάδα ανθρώπων που μεγάλωσε ανάμεσα σε μαγαζιά της γειτονιάς, εργαστήρια και μικρούς παραγωγούς. Ξέρουμε πόση δουλειά, μεράκι και επιμονή χρειάζεται για να κρατήσεις ανοιχτή μια επιχείρηση.", "Φτιάξαμε το vitrinaki.gr γιατί είδαμε πολλούς από αυτούς να μένουν εκτός ψηφιακού κόσμου: τα εργαλεία ήταν ακριβά, πολύπλοκα ή απρόσωπα. Θέλαμε κάτι απλό, ελληνικό και ανθρώπινο."] },
+  { title: "Το όραμά μας", text: ["Κάθε επιχείρηση, όσο μικρή κι αν είναι, να έχει μια θέση στη μεγάλη βιτρίνα. Ο φούρνος της γειτονιάς, η κεραμίστρια, ο παραγωγός λαδιού και ο φυσικοθεραπευτής να στέκονται online με την ίδια αξιοπρέπεια με τα μεγάλα brands.", "Πιστεύουμε ότι το επιχειρείν είναι σκέψη και δημιουργία. Η τεχνολογία πρέπει να αναδεικνύει την ιστορία κάθε επιχείρησης, όχι να μπαίνει εμπόδιο ανάμεσα σε αυτήν και τους πελάτες της."] },
+  { title: "Τι προσφέρουμε στην κοινωνία μας", text: ["Δίνουμε στις τοπικές επιχειρήσεις τα εργαλεία να βρίσκουν πελάτες σε όλη την Ελλάδα: ιστοσελίδα, e-shop και διαχείριση σε ένα μέρος, χωρίς τεχνικές γνώσεις. Μέσα από το marketplace, προβάλλουμε τα προϊόντα τους και σε νέο κοινό.", "Δεν σε αφήνουμε μόνο σου: υπάρχουν άνθρωποι δίπλα σου σε κάθε βήμα. Γιατί όταν δυναμώνει το μαγαζί της γειτονιάς, δυναμώνει και η γειτονιά."] },
+]
+
 const audienceColors = ["#2E4A37", "#C0503C", "#265E8E", "#C0503C", "#2E4A37"]
 
-function Eyebrow({ children, light = false, center = false }: { children: React.ReactNode; light?: boolean; center?: boolean }) {
+function Eyebrow({ children, light = false, center = false, dot }: { children: React.ReactNode; light?: boolean; center?: boolean; dot?: string }) {
   return (
     <p className={`inline-flex items-center gap-2 ${center ? "justify-center" : ""} rounded-full border px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] ${light ? "border-white/15 bg-white/5 text-[#F7F2E8]/75" : "border-[#2E4A37]/15 bg-white/60 text-[#2E4A37]/70"}`}>
-      <span className={`h-1.5 w-1.5 rounded-full ${light ? "bg-[#D9806F]" : "bg-[#C0503C]"}`} />
+      <span className={`h-1.5 w-1.5 rounded-full ${dot ?? (light ? "bg-[#D9806F]" : "bg-[#C0503C]")}`} />
       {children}
     </p>
   )
@@ -284,14 +290,14 @@ export default async function Home({
                 {tr("Για κάθε επιχείρηση, σε όλη την Ελλάδα")}
               </p>
               <h1 className="text-[2.15rem] font-extrabold leading-[1.05] tracking-[-0.03em] text-[#1F3628] sm:text-[3rem] lg:text-[2.6rem] xl:text-[3rem]">
-                {tr("Το vitrinaki σου, στο ψηφιακό εμπόριο.")}{" "}
+                {tr("Το όνειρό σου αξίζει μια βιτρίνα.")}{" "}
                 <span className="relative inline-block text-[#C0503C]">
-                  {tr("Από την ιστοσελίδα ως την παραγγελία.")}
+                  {tr("Άνοιξέ τη σήμερα.")}
                   <Swoosh className="absolute -bottom-2 left-0 h-2.5 w-full text-[#C0503C]/45" />
                 </span>
               </h1>
               <p className="mt-5 max-w-md text-[15px] leading-7 text-[#1F3628]/75 sm:text-[16px]">
-                {tr("Δημιούργησε εύκολα το δικό σου e-shop, πούλα τα προϊόντα σου, διαχειρίσου το απόθεμα και βρες περισσότερους πελάτες μέσα από το Vitrinaki.")}
+                {tr("Κάθε μεγάλη επιχείρηση ξεκίνησε από ένα μικρό μαγαζί. Φτιάξε την ιστοσελίδα και το e-shop σου, πούλα σε όλη την Ελλάδα και μεγάλωσε με ανθρώπους δίπλα σου.")}
               </p>
               <div className="mt-7 flex flex-wrap items-center gap-3">
                 <a href={businessUrl} className={primaryBtn}>
@@ -315,7 +321,7 @@ export default async function Home({
       </section>
 
       {/* Try it: the visitor changes a sample shop live */}
-      <section id="try" aria-labelledby="try-title" className="scroll-mt-20 border-t border-[#2E4A37]/10 bg-[#EFE7D8]">
+      <section id="try" aria-labelledby="try-title" className="scroll-mt-20 border-t border-[#2E4A37]/10 bg-[#DDE6D8]">
         <div className={`${WRAP} py-14 lg:py-20`}>
           <Reveal className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
             <div>
@@ -337,7 +343,7 @@ export default async function Home({
       </section>
 
       {/* How it works: steps scroll, the shop mockup stays pinned and follows them */}
-      <section id="how-it-works" className="scroll-mt-20">
+      <section id="how-it-works" className="scroll-mt-20 bg-[#F3DCD2]">
         <div className={`${WRAP} py-14 lg:py-16`}>
           <HowItWorksScroll
             intro={
@@ -352,7 +358,7 @@ export default async function Home({
       </section>
 
       {/* All-in-one: the business tools under one roof */}
-      <section id="included" aria-labelledby="included-title" className="scroll-mt-20 border-t border-[#2E4A37]/10 bg-[#EFE7D8]">
+      <section id="included" aria-labelledby="included-title" className="scroll-mt-20 bg-[#DCE6F0]">
         <div className={`${WRAP} py-14 lg:py-20`}>
           <Reveal className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
             <div>
@@ -485,7 +491,7 @@ export default async function Home({
       </section>
 
       {/* Marketplace: products promoted from Vitrinaki shops, each with a way to the shop */}
-      <section id="marketplace" aria-labelledby="marketplace-title" className="scroll-mt-20">
+      <section id="marketplace" aria-labelledby="marketplace-title" className="scroll-mt-20 bg-[#DCE6F0]">
         <div className={`${WRAP} py-14 lg:py-20`}>
           <Reveal className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
             <div>
@@ -513,21 +519,21 @@ export default async function Home({
       </section>
 
       {/* Philosophy */}
-      <section id="philosophy" className="relative isolate overflow-hidden bg-[#173A57] text-[#F7F2E8]">
-        <div aria-hidden="true" className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_60%_80%_at_20%_50%,#265E8E_0%,transparent_70%)]" />
+      <section id="philosophy" className="relative isolate overflow-hidden bg-[#A8432F] text-[#F7F2E8]">
+        <div aria-hidden="true" className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_60%_80%_at_20%_50%,#C0503C_0%,transparent_70%)]" />
         <div aria-hidden="true" className="vk-grain absolute inset-0 -z-10 opacity-20" />
         <OliveBranch className="pointer-events-none absolute -bottom-6 right-0 -z-10 w-[420px] text-[#F7F2E8]/10 lg:w-[620px]" />
         <span aria-hidden="true" className="font-serif pointer-events-none absolute -top-16 right-4 -z-10 text-[22rem] leading-none text-white/[0.04] sm:text-[34rem]">«</span>
         <div className={`${WRAP} py-14 lg:py-20`}>
           <Reveal>
-            <Eyebrow light>{tr("Η φιλοσοφία μας")}</Eyebrow>
+            <Eyebrow light dot="bg-[#F7F2E8]">{tr("Η φιλοσοφία μας")}</Eyebrow>
             <blockquote className="font-serif mt-8 max-w-5xl text-[2.9rem] font-medium italic leading-[1.02] tracking-[-0.02em] sm:text-7xl lg:text-[6.5rem]">
-              <span className="text-[#D9806F]">{tr("«Το επιχειρείν")}</span>
+              <span className="text-[#F6D3C6]">{tr("«Το επιχειρείν")}</span>
               <br />
               {tr("εστίν φιλοσοφείν.»")}
             </blockquote>
           </Reveal>
-          <Reveal delay={120} className="mt-10 grid max-w-4xl gap-6 text-[17px] leading-8 text-[#F7F2E8]/75 md:grid-cols-2 md:gap-10">
+          <Reveal delay={120} className="mt-10 grid max-w-4xl gap-6 text-[17px] leading-8 text-[#F7F2E8]/85 md:grid-cols-2 md:gap-10">
             <p>{tr("Το επιχειρείν δεν είναι μόνο η πώληση ενός προϊόντος. Είναι η σκέψη, η δημιουργία, η επιμονή και η αναζήτηση ενός καλύτερου τρόπου να προσφέρεις κάτι στον κόσμο.")}</p>
             <p>{tr("Η ιστορία κάθε επιχείρησης έχει αξία. Η τεχνολογία πρέπει να την αναδεικνύει, όχι να μπαίνει εμπόδιο. Γι' αυτό φτιάξαμε το Vitrinaki.")}</p>
           </Reveal>
@@ -535,7 +541,7 @@ export default async function Home({
       </section>
 
       {/* Who it is for */}
-      <section id="for-whom" className="scroll-mt-20">
+      <section id="for-whom" className="scroll-mt-20 bg-[#DDE6D8]">
         <div className={`${WRAP} py-14 lg:py-20`}>
           <Reveal className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
             <h2 className="max-w-xl text-[1.9rem] font-extrabold leading-tight tracking-[-0.02em] text-[#1F3628] sm:text-4xl">{tr("Όλοι αξίζουν μια θέση στη μεγάλη βιτρίνα.")}</h2>
@@ -617,22 +623,23 @@ export default async function Home({
 
       {/* About */}
       <section id="about" aria-labelledby="about-title" className="scroll-mt-20 px-4 py-14 sm:px-6 lg:py-20">
-        <Reveal className="relative isolate mx-auto grid max-w-[1280px] gap-10 overflow-hidden rounded-[2.5rem] bg-[#1a2e21] px-6 py-14 text-[#F7F2E8] sm:px-12 lg:grid-cols-[1fr_1.1fr] lg:items-center lg:gap-16 lg:px-16 lg:py-20">
-          <div aria-hidden="true" className="vk-glow absolute -left-20 -top-32 -z-10 h-96 w-96 rounded-full bg-[#C0503C]/35 blur-[100px]" />
-          <div aria-hidden="true" className="vk-glow absolute -bottom-40 -right-20 -z-10 h-96 w-96 rounded-full bg-[#265E8E]/40 blur-[100px] [animation-delay:-4s]" />
+        <Reveal className="relative isolate mx-auto max-w-[1280px] overflow-hidden rounded-[2.5rem] bg-[#A8432F] px-6 py-14 text-[#F7F2E8] sm:px-12 lg:px-16 lg:py-20">
+          <div aria-hidden="true" className="vk-glow absolute -left-20 -top-32 -z-10 h-96 w-96 rounded-full bg-[#D9806F]/40 blur-[100px]" />
+          <div aria-hidden="true" className="vk-glow absolute -bottom-40 -right-20 -z-10 h-96 w-96 rounded-full bg-[#7A2E20]/50 blur-[100px] [animation-delay:-4s]" />
           <div aria-hidden="true" className="vk-grain absolute inset-0 -z-10 opacity-20" />
-          <div>
-            <Eyebrow light>{tr("Σχετικά με εμάς")}</Eyebrow>
-            <h2 id="about-title" className="font-serif mt-7 text-[2.4rem] font-medium leading-[1.04] tracking-[-0.02em] sm:text-6xl">
-              {tr("Σχετικά με το")} <span className="whitespace-nowrap">vitrinaki<span className="text-[#D9806F]">.gr</span></span>
-            </h2>
-          </div>
-          <div className="text-[17px] leading-8 text-[#F7F2E8]/75">
-            <p>{tr("Το vitrinaki.gr δίνει σε κάθε επιχείρηση τη δική της ψηφιακή βιτρίνα: ιστοσελίδα και e-shop με το όνομά της, και ένα Studio για προϊόντα, παραγγελίες και πελάτες.")}</p>
-            <p className="mt-5">{tr("Το φτιάξαμε για τα μαγαζιά της γειτονιάς, τους παραγωγούς και τους δημιουργούς, ώστε να στέκονται online με τη δική τους ταυτότητα, χωρίς τεχνικές γνώσεις και με ανθρώπους δίπλα τους.")}</p>
-            <a href={businessUrl} className={`mt-9 ${primaryBtn}`}>
-              {tr("Άνοιξε τη βιτρίνα σου")} <Arrow />
-            </a>
+          <Eyebrow light dot="bg-[#F7F2E8]">{tr("Σχετικά με εμάς")}</Eyebrow>
+          <h2 id="about-title" className="font-serif mt-7 text-[2.4rem] font-medium leading-[1.04] tracking-[-0.02em] sm:text-6xl">
+            {tr("Σχετικά με το")} <span className="whitespace-nowrap">vitrinaki<span className="text-[#F6D3C6]">.gr</span></span>
+          </h2>
+          <div className="mt-10 grid gap-8 border-t border-[#F7F2E8]/20 pt-8 md:grid-cols-3 md:gap-10">
+            {about.map((item) => (
+              <div key={item.title}>
+                <h3 className="font-serif text-2xl font-medium italic text-[#F6D3C6]">{tr(item.title)}</h3>
+                {item.text.map((p) => (
+                  <p key={p} className="mt-3 text-[16px] leading-7 text-[#F7F2E8]/85">{tr(p)}</p>
+                ))}
+              </div>
+            ))}
           </div>
         </Reveal>
       </section>

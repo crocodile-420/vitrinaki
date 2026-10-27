@@ -8,6 +8,7 @@ import { translator, type Lang } from "@/lib/i18n/vitrinaki"
 import { HeroShowcase, SCENE_MS, type Scene, showcaseCss } from "./HeroShowcase"
 import { palettes, sites } from "./sites"
 import { SitePreview } from "./SitePreview"
+import { CustomerScene, PackagingScene, RatingScene, WorldScene } from "./StoryScenes"
 
 const greekToLatin: Record<string, string> = {
   α: "a", ά: "a", β: "v", γ: "g", δ: "d", ε: "e", έ: "e", ζ: "z", η: "i", ή: "i", θ: "th", ι: "i", ί: "i", ϊ: "i", ΐ: "i",
@@ -156,16 +157,18 @@ export function StudioTable({ lang, className = "" }: { lang: Lang; className?: 
 }
 
 
-/* soft cypress / terracotta hills along the bottom of the hero */
+/* soft blue / cypress hills along the bottom of the hero */
 function Hills({ className = "" }: { className?: string }) {
   return (
     <svg viewBox="0 0 1440 150" preserveAspectRatio="none" className={className} aria-hidden="true">
-      <path d="M900 150C1010 70 1120 40 1250 36c80-3 140 4 190 12v102z" fill="#265E8E" fillOpacity=".85" />
-      <path d="M0 150V96c120-30 260-44 400-30 150 14 250 60 400 58 150-2 290-50 440-70 80-10 150-10 200-6v102z" fill="#2E4A37" />
+      <path d="M900 150C1010 70 1120 40 1250 36c80-3 140 4 190 12v102z" fill="#2E4A37" fillOpacity=".85" />
+      <path d="M0 150V96c120-30 260-44 400-30 150 14 250 60 400 58 150-2 290-50 440-70 80-10 150-10 200-6v102z" fill="#173A57" />
       <path d="M0 110c140-34 280-46 420-32 150 14 250 60 400 58 150-2 290-50 440-70" fill="none" stroke="#D9B26F" strokeOpacity=".5" strokeWidth="1.2" vectorEffect="non-scaling-stroke" />
     </svg>
   )
 }
+
+const STORY_LENGTH = 5
 
 const fadeCss = `.vk-fade{animation:vkFade .6s ease both}@keyframes vkFade{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:none}}@media (prefers-reduced-motion:reduce){.vk-fade{animation:none}}`
 
@@ -174,20 +177,23 @@ export function HeroDemo({ lang, intro }: { lang: Lang; intro: React.ReactNode }
   const [name, setName] = useState("")
   const [paletteKey, setPaletteKey] = useState<string | null>(null)
   const [scene, setScene] = useState(0)
+  const [siteIdx, setSiteIdx] = useState(0)
   const [playing, setPlaying] = useState(true)
   const [hovered, setHovered] = useState(false)
   const [focused, setFocused] = useState(false)
   const [visible, setVisible] = useState(true)
   const heroRef = useRef<HTMLDivElement>(null)
 
-  // Typing a name or picking colours turns the example on screen into "your" website and holds
-  // it still; clearing them lets the examples rotate again.
+  // The hero tells a story: the product on its shop page, packaging, a happy customer, a good
+  // rating and orders from further away. Each round shows the next example shop. Typing a name
+  // or picking colours turns that shop into "your" website and holds it on screen; clearing them
+  // lets the story play again.
   const custom = name.trim() !== "" || paletteKey !== null
   const chosen = palettes.find((x) => x.key === paletteKey)
   const shown = sites.map((site, i) =>
-    custom && i === scene ? { ...site, name: name.trim() || site.name, slug: slugify(name) || site.slug, palette: chosen ?? site.palette } : site,
+    custom && i === siteIdx ? { ...site, name: name.trim() || site.name, slug: slugify(name) || site.slug, palette: chosen ?? site.palette } : site,
   )
-  const current = shown[scene]
+  const current = shown[siteIdx]
   const rotating = playing && !hovered && !focused && !custom && visible
 
   // no auto-rotation for people who ask for reduced motion (they can still press play)
@@ -217,9 +223,18 @@ export function HeroDemo({ lang, intro }: { lang: Lang; intro: React.ReactNode }
 
   useEffect(() => {
     if (!rotating) return
-    const timer = window.setTimeout(() => setScene((s) => (s + 1) % sites.length), SCENE_MS)
+    const timer = window.setTimeout(() => {
+      const next = (scene + 1) % STORY_LENGTH
+      if (next === 0) setSiteIdx((i) => (i + 1) % sites.length)
+      setScene(next)
+    }, SCENE_MS)
     return () => window.clearTimeout(timer)
   }, [rotating, scene])
+
+  // a name or colour only shows on the product page, so jump back to it
+  useEffect(() => {
+    if (custom) setScene(0)
+  }, [custom])
 
   // pause while the visitor points at or tabs into the showcase
   const hold = {
@@ -231,12 +246,13 @@ export function HeroDemo({ lang, intro }: { lang: Lang; intro: React.ReactNode }
     },
   }
 
-  const scenes: Scene[] = shown.map((site, i) => ({
-    key: site.key,
-    label: site.industry,
-    text: site.place,
-    content: <SitePreview site={site} lang={lang} eager={i === 0} className="h-full ring-0" />,
-  }))
+  const scenes: Scene[] = [
+    { key: "product", step: "Προϊόν", label: "Το προϊόν σου στη βιτρίνα σου", text: current.industry, content: <SitePreview site={current} lang={lang} eager className="h-full ring-0" /> },
+    { key: "packaging", step: "Συσκευασία", label: "Το τυλίγεις με φροντίδα", text: "έτοιμο για αποστολή", content: <PackagingScene lang={lang} /> },
+    { key: "customer", step: "Πελάτης", label: "Ο πελάτης το παραλαμβάνει", text: "και χαίρεται", content: <CustomerScene lang={lang} /> },
+    { key: "rating", step: "Αξιολόγηση", label: "Σε αξιολογεί με 5 αστέρια", text: "και φέρνει νέους πελάτες", content: <RatingScene lang={lang} /> },
+    { key: "world", step: "Ανάπτυξη", label: "Μεγαλώνεις", text: "με πελάτες στην Ελλάδα και στο εξωτερικό", content: <WorldScene lang={lang} /> },
+  ]
 
   return (
     <>
@@ -244,8 +260,13 @@ export function HeroDemo({ lang, intro }: { lang: Lang; intro: React.ReactNode }
       <div ref={heroRef} id="top" className="relative isolate scroll-mt-20 overflow-hidden bg-[#F5EEE1] text-[#1F3628]">
         {/* watercolour washes and the cypress / terracotta hills of the Greek landscape */}
         <div aria-hidden="true" className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_40%_45%_at_70%_30%,rgba(46,74,55,0.10),transparent_70%),radial-gradient(ellipse_30%_40%_at_92%_8%,rgba(38,94,142,0.08),transparent_70%),radial-gradient(ellipse_45%_40%_at_10%_0%,rgba(192,80,60,0.06),transparent_70%)]" />
+        {/* desktop panorama behind the story: Greece (left) and the globe (middle) */}
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 hidden lg:block">
+          <img src="/home/story-greece.webp" alt="" width={799} height={544} decoding="async" className="absolute bottom-[20px] left-[-1.5%] w-[42%] [mask-image:linear-gradient(90deg,transparent,#000_8%,#000_78%,transparent),linear-gradient(180deg,transparent,#000_40%)] [mask-composite:intersect]" />
+          <img src="/home/story-globe.webp" alt="" width={730} height={603} decoding="async" className="absolute bottom-[70px] left-[36%] w-[27%] opacity-90" />
+        </div>
         <Hills className="absolute bottom-0 left-0 -z-10 h-[70px] w-full sm:h-[110px] lg:h-[150px]" />
-        <div className="mx-auto grid max-w-[1280px] items-center gap-8 px-5 pb-14 pt-8 sm:px-8 sm:pb-20 lg:grid-cols-[minmax(0,0.82fr)_minmax(0,1.18fr)] lg:gap-12 lg:px-12 lg:pb-24 lg:pt-14 xl:gap-14">
+        <div className="mx-auto grid max-w-[1280px] items-center gap-8 px-5 pb-14 pt-8 sm:px-8 sm:pb-20 lg:grid-cols-[minmax(0,0.82fr)_minmax(0,1.18fr)] lg:gap-12 lg:px-12 lg:pb-[260px] lg:pt-14 xl:gap-14">
           <div className="relative z-10">{intro}</div>
           <HeroShowcase
             lang={lang}
@@ -262,7 +283,7 @@ export function HeroDemo({ lang, intro }: { lang: Lang; intro: React.ReactNode }
         </div>
       </div>
       {/* Try it: name & colour, big enough to invite a click */}
-      <div className="relative overflow-hidden border-b border-[#F7F2E8]/10 bg-[#2E4A37] text-[#F7F2E8]">
+      <div className="relative overflow-hidden border-b border-[#F7F2E8]/10 bg-[#173A57] text-[#F7F2E8]">
         <div aria-hidden="true" className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-[#C0503C]/25 blur-3xl" />
         <div aria-hidden="true" className="pointer-events-none absolute -bottom-28 left-1/4 h-64 w-64 rounded-full bg-[#265E8E]/25 blur-3xl" />
         <div className="relative mx-auto grid max-w-[1280px] gap-6 px-5 py-10 sm:px-8 md:py-12 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:items-center lg:gap-12 lg:px-12">
