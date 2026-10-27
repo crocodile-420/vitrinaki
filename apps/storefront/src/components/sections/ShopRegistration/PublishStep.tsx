@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useId, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 
 import { useTranslator } from "@/lib/i18n/client"
 import { caps } from "@/lib/vitrinaki-start"
@@ -23,7 +23,7 @@ const PLANS = [
 // plans come with card payments), then publish or withdraw the public page.
 export function PublishStep({ locale, onExpired }: { locale: string; onExpired: () => void }) {
   const { tr } = useTranslator()
-  const uid = useId()
+  const uid = "vk-publish"
   const [billing, setBilling] = useState<Billing | null>(null)
   const [loading, setLoading] = useState(true)
   const [code, setCode] = useState("")

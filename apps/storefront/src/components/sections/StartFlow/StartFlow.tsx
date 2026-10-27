@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useId, useMemo, useRef, useState, type FormEvent } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from "react"
 
 type ReactNode = React.ReactNode
 
@@ -156,7 +156,7 @@ export function StartFlow({
   referralCode?: string
 }) {
   const { lang, tr } = useTranslator()
-  const uid = useId()
+  const uid = "vk-start"
   const ids = {
     name: `${uid}-name`, handle: `${uid}-handle`, email: `${uid}-email`, password: `${uid}-password`, terms: `${uid}-terms`,
     tagline: `${uid}-tagline`, story: `${uid}-story`, area: `${uid}-area`, city: `${uid}-city`, postal: `${uid}-postal`,

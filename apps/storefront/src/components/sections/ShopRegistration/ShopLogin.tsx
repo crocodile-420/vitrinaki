@@ -1,6 +1,6 @@
 "use client"
 
-import { useId, useState, type FormEvent } from "react"
+import { useState, type FormEvent } from "react"
 
 import { useTranslator } from "@/lib/i18n/client"
 import { caps } from "@/lib/vitrinaki-start"
@@ -11,7 +11,7 @@ import { Field, Icon, Notice, Spinner, inputCls, primaryBtn } from "./ui"
 // expired). Same email and password as at sign-up.
 export function ShopLogin({ startHref, notice, onLoggedIn }: { startHref: string; notice?: string; onLoggedIn: () => void }) {
   const { tr } = useTranslator()
-  const uid = useId()
+  const uid = "vk-login"
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [show, setShow] = useState(false)
