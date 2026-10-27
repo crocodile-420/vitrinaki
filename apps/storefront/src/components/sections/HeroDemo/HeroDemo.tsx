@@ -263,7 +263,7 @@ export function HeroDemo({ lang, intro }: { lang: Lang; intro: React.ReactNode }
         {/* desktop panorama behind the story: Greece (left) and the globe (middle) */}
         <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 hidden lg:block">
           <img src="/home/story-greece.webp" alt="" width={799} height={544} decoding="async" className="absolute bottom-[20px] left-[-1.5%] w-[min(42%,600px)] [mask-image:linear-gradient(90deg,transparent,#000_8%,#000_78%,transparent),linear-gradient(180deg,transparent,#000_40%)] [mask-composite:intersect]" />
-          <img src="/home/story-globe.webp" alt="" width={730} height={603} decoding="async" className="absolute bottom-[70px] left-[min(36%,calc(50%-180px))] w-[min(27%,420px)] opacity-90" />
+          <img src="/home/story-globe.webp" alt="" width={730} height={603} decoding="async" className="absolute bottom-[-70px] left-[calc(50%-250px)] w-[min(34%,500px)]" />
         </div>
         <Hills className="absolute bottom-0 left-0 -z-10 h-[70px] w-full sm:h-[110px] lg:h-[150px]" />
         <div className="mx-auto grid max-w-[1280px] items-center gap-8 px-5 pb-14 pt-8 sm:px-8 sm:pb-20 lg:grid-cols-[minmax(0,0.82fr)_minmax(0,1.18fr)] lg:gap-12 lg:px-12 lg:pb-[260px] lg:pt-14 xl:gap-14">
