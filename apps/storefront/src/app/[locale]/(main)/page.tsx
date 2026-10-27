@@ -343,7 +343,7 @@ export default async function Home({
       </section>
 
       {/* How it works: steps scroll, the shop mockup stays pinned and follows them */}
-      <section id="how-it-works" className="scroll-mt-20 bg-[#F3DCD2]">
+      <section id="how-it-works" className="scroll-mt-20 bg-[#DCE6F0]">
         <div className={`${WRAP} py-14 lg:py-16`}>
           <HowItWorksScroll
             intro={
@@ -358,7 +358,7 @@ export default async function Home({
       </section>
 
       {/* All-in-one: the business tools under one roof */}
-      <section id="included" aria-labelledby="included-title" className="scroll-mt-20 bg-[#DCE6F0]">
+      <section id="included" aria-labelledby="included-title" className="scroll-mt-20 bg-[#F3DCD2]">
         <div className={`${WRAP} py-14 lg:py-20`}>
           <Reveal className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
             <div>
