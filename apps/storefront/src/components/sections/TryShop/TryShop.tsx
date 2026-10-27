@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { useEffect, useId, useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 
 import { Browser, slugify } from "@/components/sections/HeroDemo/HeroDemo"
 import { paletteColors, templateLabels } from "@/lib/data/vitrinaki-storefronts"
@@ -206,7 +206,8 @@ const initial = {
 
 export function TryShop({ cta }: { cta: React.ReactNode }) {
   const { tr } = useTranslator()
-  const uid = useId()
+  // a fixed prefix (one TryShop per page) keeps the ids identical on the server and in the browser
+  const uid = "vk-try"
   const [tab, setTab] = useState<TabKey>("basics")
   const [cfg, setCfg] = useState(initial)
   const [logo, setLogo] = usePhoto()

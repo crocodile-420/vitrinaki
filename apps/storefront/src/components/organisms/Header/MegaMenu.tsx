@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { useCallback, useEffect, useId, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 
 import { useTranslator } from "@/lib/i18n/client"
 import { featureGroups, type FeatureIcon, type FeatureItem } from "./features"
@@ -81,7 +81,9 @@ const CLOSE_DELAY = 220
 export function FeaturesMenu({ locale }: { locale: string }) {
   const { tr } = useTranslator()
   const [open, setOpen] = useState(false)
-  const panelId = useId()
+  // fixed ids: there is one menu per page, and React's generated ids can differ between the
+  // server and the browser when a provider above (e.g. TalkJS) renders differently on each side
+  const panelId = "vk-features-menu"
   const triggerRef = useRef<HTMLButtonElement>(null)
   const panelRef = useRef<HTMLDivElement>(null)
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -218,7 +220,7 @@ export function MobileMenu({
   const { tr } = useTranslator()
   const [open, setOpen] = useState(false)
   const [section, setSection] = useState<string | null>(null)
-  const sheetId = useId()
+  const sheetId = "vk-mobile-menu"
   const buttonRef = useRef<HTMLButtonElement>(null)
   const pathname = usePathname()
 

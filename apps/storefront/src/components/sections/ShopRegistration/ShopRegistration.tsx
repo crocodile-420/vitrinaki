@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 
 import { useTranslator } from "@/lib/i18n/client"
 import {
@@ -99,7 +99,7 @@ async function api(path: string, body?: unknown) {
 
 export function ShopRegistration({ locale, session, startHref }: { locale: string; session: Session; startHref: string }) {
   const { lang, tr } = useTranslator()
-  const uid = useId()
+  const uid = "vk-register"
   const [loggedIn, setLoggedIn] = useState(Boolean(session))
   const [expiredNotice, setExpiredNotice] = useState("")
   const [data, setData] = useState<Payload | null>(null)
