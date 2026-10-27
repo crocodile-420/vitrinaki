@@ -199,6 +199,34 @@ function arc([x1, y1]: [number, number], [x2, y2]: [number, number]) {
   return `M${x1} ${y1}Q${(mx + nx * bow).toFixed(1)} ${(my + ny * bow).toFixed(1)} ${x2} ${y2}`
 }
 
+/* shopping bags and a parcel with the vitrinaki logo, filling the hero's lower right corner */
+function ShoppingBags({ className = "" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 340 300" className={className} aria-hidden="true">
+      <ellipse cx="180" cy="292" rx="150" ry="9" fill="#1F3628" opacity=".14" />
+      {/* cream bag at the back */}
+      <path d="M62 96c0-38 22-58 42-58s42 20 42 58" fill="none" stroke="#B88D5E" strokeWidth="6" strokeLinecap="round" />
+      <path d="M36 92h136l-8 196H44z" fill="#F3E9D8" />
+      <path d="M36 92h136l-2 16H38z" fill="#E6D6BC" />
+      <image href="/brand/vitrinaki-icon.png" x="66" y="150" width="48" height="46" />
+      <text x="90" y="222" textAnchor="middle" fontSize="13" fontWeight="800" fill="#2E4A37" fontFamily="inherit">vitrinaki<tspan fill="#C0503C">.gr</tspan></text>
+      {/* terracotta bag in front */}
+      <path d="M170 128c0-34 20-52 38-52s38 18 38 52" fill="none" stroke="#7A2E20" strokeWidth="6" strokeLinecap="round" />
+      <path d="M140 124h136l-6 168H146z" fill="#C0503C" />
+      <path d="M140 124h136l-1 14H141z" fill="#A8432F" />
+      <rect x="182" y="172" width="52" height="50" rx="12" fill="#F7F2E8" />
+      <image href="/brand/vitrinaki-icon.png" x="186" y="176" width="44" height="42" />
+      <text x="208" y="250" textAnchor="middle" fontSize="15" fontWeight="800" fill="#F7F2E8" fontFamily="inherit">vitrinaki.gr</text>
+      {/* parcel */}
+      <path d="M262 214h70v74h-70z" fill="#C79E6E" />
+      <path d="M256 204h82v14h-82z" fill="#B88D5E" />
+      <path d="M292 204h10v84h-10z" fill="#E7CFA8" />
+      <circle cx="297" cy="252" r="15" fill="#2E4A37" />
+      <text x="297" y="256" textAnchor="middle" fontSize="11" fontWeight="800" fill="#F7F2E8" fontFamily="inherit">v</text>
+    </svg>
+  )
+}
+
 function GlobeBackdrop({ className = "" }: { className?: string }) {
   return (
     <div aria-hidden="true" className={className}>
@@ -313,6 +341,7 @@ export function HeroDemo({ lang, intro }: { lang: Lang; intro: React.ReactNode }
           {/* a large globe in the middle of the hero, turning slowly while delivery routes light up one by one */}
           <GlobeBackdrop className="absolute left-[53%] top-[52%] w-[min(48%,760px)] -translate-x-1/2 -translate-y-1/2" />
           <img src="/home/story-greece.webp" alt="" width={799} height={544} decoding="async" className="absolute bottom-[20px] left-[-1.5%] w-[min(44%,640px)] [mask-image:linear-gradient(90deg,transparent,#000_8%,#000_78%,transparent),linear-gradient(180deg,transparent,#000_40%)] [mask-composite:intersect]" />
+          <ShoppingBags className="absolute bottom-[108px] right-[1.5%] w-[min(14%,240px)]" />
         </div>
         <Hills className="absolute bottom-0 left-0 -z-10 h-[70px] w-full sm:h-[110px] lg:h-[150px]" />
         <div className="mx-auto grid max-w-[1280px] items-center gap-8 px-5 pb-14 pt-8 sm:px-8 sm:pb-20 lg:grid-cols-[minmax(0,0.82fr)_minmax(0,1.18fr)] lg:gap-12 lg:px-12 lg:pb-[260px] lg:pt-14 xl:gap-14">
