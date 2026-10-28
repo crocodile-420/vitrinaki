@@ -10,7 +10,7 @@ export const dynamic = "force-dynamic"
 // the shop's profile via the backend's /vendor/vitrinaki/start route.
 const ALLOWED = new Set([
   "step", "businessType", "businessTypeOther", "palette", "logoUrl", "tagline", "story", "area", "city", "postalCode",
-  "contactPhone", "contactEmail", "whatsapp", "viberSameAsWhatsapp", "instagram", "facebook", "photos",
+  "contactPhone", "contactEmail", "whatsapp", "viberSameAsWhatsapp", "instagram", "facebook", "photos", "introVideo",
 ])
 
 export async function POST(request: NextRequest) {

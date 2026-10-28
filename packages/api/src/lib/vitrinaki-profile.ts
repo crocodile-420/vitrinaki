@@ -3,8 +3,15 @@
 // drives the storefront layout. The PRIVATE part (legal/invoicing + owner)
 // lives in the vitrinaki_seller_private table and is never served publicly.
 
-export const BUSINESS_TYPES = ["retail", "crafts", "food", "beauty", "services", "portfolio", "other"] as const
+export const BUSINESS_TYPES = [
+  "retail", "crafts", "food", "beauty", "fitness", "lessons", "health", "professional", "events", "services", "portfolio", "other",
+] as const
 export type BusinessType = (typeof BUSINESS_TYPES)[number]
+
+// Kinds of business that sell their time by appointment: their page leads with
+// the price list and the booking, and their Studio wizard asks for services.
+export const APPOINTMENT_TYPES: readonly BusinessType[] = ["beauty", "fitness", "lessons", "health", "professional", "events", "services"]
+export const isAppointmentType = (type: string | null | undefined) => APPOINTMENT_TYPES.includes(type as BusinessType)
 
 export const LEGAL_FORMS = ["individual", "oe", "ee", "ike", "ae", "other"] as const
 export const LANGUAGE_CODES = ["el", "en", "de", "fr", "it", "es", "ru", "bg", "sq", "tr", "zh", "ar"] as const
@@ -18,6 +25,11 @@ export const TEMPLATE_FOR_TYPE: Record<BusinessType, "atelier" | "local" | "serv
   crafts: "atelier",
   food: "local",
   beauty: "services",
+  fitness: "services",
+  lessons: "services",
+  health: "services",
+  professional: "services",
+  events: "services",
   services: "services",
   portfolio: "services",
   other: "atelier",
@@ -32,6 +44,8 @@ export type PublicProfile = {
   businessType: BusinessType | ""
   businessTypeOther: string
   story: string
+  // Video introduction: a YouTube/Vimeo link or an uploaded video file.
+  introVideo: string
   whatsapp: string
   viber: string
   address: { street: string; area: string; city: string; postalCode: string; showMap: boolean; hideStreet: boolean }
@@ -91,6 +105,7 @@ export const emptyPublicProfile = (): PublicProfile => ({
   businessType: "",
   businessTypeOther: "",
   story: "",
+  introVideo: "",
   whatsapp: "",
   viber: "",
   address: { street: "", area: "", city: "", postalCode: "", showMap: false, hideStreet: false },
@@ -188,6 +203,8 @@ export function normalizePublicProfile(input: unknown, errors: FieldErrors = {})
   p.businessType = pick(raw.businessType, BUSINESS_TYPES, "")
   p.businessTypeOther = str(raw.businessTypeOther, 80)
   p.story = str(raw.story, 4000)
+  p.introVideo = str(raw.introVideo, 500)
+  if (p.introVideo && !isHttpUrl(p.introVideo)) errors["profile.introVideo"] = "Βάλε σύνδεσμο από YouTube ή Vimeo, ή ανέβασε ένα βίντεο."
 
   p.whatsapp = str(raw.whatsapp, 30)
   if (p.whatsapp && !isMessengerPhone(p.whatsapp)) errors["profile.whatsapp"] = "Μη έγκυρος αριθμός WhatsApp (π.χ. 69XXXXXXXX ή +30…)."
@@ -377,13 +394,13 @@ export function profileChecklist(profile: PublicProfile, basics: Basics, priv: P
     { id: "socials", label: "Social media", done: Object.values(profile.socials).some(Boolean), step: "contact" },
   ]
   if (t !== "portfolio") {
-    items.push({ id: "location", label: t === "services" ? "Περιοχή εξυπηρέτησης" : "Διεύθυνση / περιοχή", done: Boolean(profile.address.city || profile.address.area || profile.services.serviceArea), step: "location" })
+    items.push({ id: "location", label: t === "services" || t === "professional" ? "Περιοχή εξυπηρέτησης" : "Διεύθυνση / περιοχή", done: Boolean(profile.address.city || profile.address.area || profile.services.serviceArea), step: "location" })
     items.push({ id: "hours", label: "Ωράριο", done: profile.hoursEnabled || profile.byAppointment || Boolean(profile.hoursNote), step: "location" })
   }
   if (t === "food") items.push({ id: "food", label: "Προέλευση & πιστοποιήσεις", done: Boolean(profile.food.region || profile.food.origin || profile.food.certifications.length), step: "food" })
   if (t === "crafts") items.push({ id: "crafts", label: "Υλικά & κατασκευή", done: Boolean(profile.crafts.materials), step: "crafts" })
   if (t === "retail") items.push({ id: "retail", label: "Τι πουλάς", done: Boolean(profile.retail.categories), step: "retail" })
-  if (t === "services" || t === "beauty") items.push({ id: "services", label: "Υπηρεσίες & τιμές", done: profile.services.items.length > 0, step: "services" })
+  if (isAppointmentType(t)) items.push({ id: "services", label: "Υπηρεσίες & τιμές", done: profile.services.items.length > 0, step: "services" })
   if (t === "portfolio") {
     items.push({ id: "projects", label: "Έργα (portfolio)", done: profile.portfolio.projects.length > 0, step: "portfolio" })
     items.push({ id: "skills", label: "Δεξιότητες", done: profile.portfolio.skills.length > 0, step: "portfolio" })
@@ -423,6 +440,7 @@ export function publicProfileView(input: unknown) {
     businessType: p.businessType || null,
     businessTypeOther: p.businessType === "other" ? p.businessTypeOther : "",
     story: p.story,
+    introVideo: isHttpUrl(p.introVideo) ? p.introVideo : "",
     whatsapp: p.whatsapp ? normalizePhone(p.whatsapp) : "",
     viber: p.viber ? normalizePhone(p.viber) : "",
     address: {

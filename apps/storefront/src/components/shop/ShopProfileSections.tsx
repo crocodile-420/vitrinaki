@@ -17,6 +17,11 @@ export const SECTION_ORDER: Record<BusinessType | "legacy", string[]> = {
   crafts: ["catalog", "craft", "story", "delivery", "contact"],
   retail: ["catalog", "visit", "delivery", "story", "contact"],
   beauty: ["services", "visit", "story", "catalog", "contact"],
+  fitness: ["services", "visit", "story", "catalog", "contact"],
+  lessons: ["services", "story", "visit", "catalog", "contact"],
+  health: ["services", "story", "visit", "catalog", "contact"],
+  professional: ["services", "story", "area", "catalog", "contact"],
+  events: ["services", "story", "visit", "catalog", "contact"],
   services: ["services", "area", "story", "catalog", "contact"],
   portfolio: ["projects", "skills", "story", "services", "contact"],
   other: ["catalog", "story", "visit", "delivery", "contact"],
@@ -29,9 +34,23 @@ export const HERO_COPY: Record<BusinessType, { eyebrow: string; cta: string; cta
   crafts: { eyebrow: "Χειροποίητα", cta: "Δες τη συλλογή", ctaHref: "#catalog", secondary: "Πώς τα φτιάχνουμε", secondaryHref: "#craft" },
   retail: { eyebrow: "Το κατάστημα", cta: "Δες τη συλλογή", ctaHref: "#catalog", secondary: "Επισκέψου μας", secondaryHref: "#visit" },
   beauty: { eyebrow: "Ομορφιά & ευεξία", cta: "Δες τις υπηρεσίες", ctaHref: "#services", secondary: "Ζήτησε ραντεβού", secondaryHref: "#contact" },
+  fitness: { eyebrow: "Γυμναστική", cta: "Δες τα προγράμματα", ctaHref: "#services", secondary: "Κλείσε προπόνηση", secondaryHref: "#contact" },
+  lessons: { eyebrow: "Μαθήματα", cta: "Δες τα μαθήματα", ctaHref: "#services", secondary: "Κλείσε μάθημα", secondaryHref: "#contact" },
+  health: { eyebrow: "Υγεία & θεραπεία", cta: "Δες τις υπηρεσίες", ctaHref: "#services", secondary: "Κλείσε ραντεβού", secondaryHref: "#contact" },
+  professional: { eyebrow: "Επαγγελματικές υπηρεσίες", cta: "Δες τις υπηρεσίες", ctaHref: "#services", secondary: "Κλείσε συνάντηση", secondaryHref: "#contact" },
+  events: { eyebrow: "Εκδηλώσεις", cta: "Δες τις προτάσεις μας", ctaHref: "#services", secondary: "Ζήτησε προσφορά", secondaryHref: "#contact" },
   services: { eyebrow: "Υπηρεσίες", cta: "Δες τις υπηρεσίες", ctaHref: "#services", secondary: "Ζήτησε προσφορά", secondaryHref: "#contact" },
   portfolio: { eyebrow: "Portfolio", cta: "Δες τα έργα", ctaHref: "#projects", secondary: "Ας συνεργαστούμε", secondaryHref: "#contact" },
   other: { eyebrow: "Καλώς ήρθες", cta: "Δες τη συλλογή", ctaHref: "#catalog", secondary: "Επικοινωνία", secondaryHref: "#contact" },
+}
+
+// Heading of the price list, in the words of each kind of business.
+const SERVICES_TITLE: Partial<Record<BusinessType, string>> = {
+  fitness: "Προγράμματα & τιμές",
+  lessons: "Μαθήματα & τιμές",
+  health: "Συνεδρίες & τιμές",
+  professional: "Υπηρεσίες & αμοιβές",
+  events: "Πακέτα & τιμές",
 }
 
 export const CERT_LABELS: Record<string, string> = {
@@ -144,7 +163,7 @@ export function ServicesSection({ p, colors, tr, soft = false, booking = false }
       <div className="flex flex-wrap items-end justify-between gap-4 border-b pb-4" style={{ borderColor: `${colors.ink}1f` }}>
         <div>
           <Eyebrow colors={colors}>{tr("Τιμοκατάλογος")}</Eyebrow>
-          <h2 className="font-serif mt-3 text-3xl font-bold sm:text-4xl">{tr("Υπηρεσίες & τιμές")}</h2>
+          <h2 className="font-serif mt-3 text-3xl font-bold sm:text-4xl">{tr(SERVICES_TITLE[p.businessType as BusinessType] || "Υπηρεσίες & τιμές")}</h2>
           {p.beauty.specialties ? <p className="mt-2 opacity-70">{tr("Ειδικότητες")}: {p.beauty.specialties}</p> : null}
         </div>
         {booking ? <a href="#booking" style={{ background: soft ? colors.page : colors.soft }} className="rounded-full px-3 py-1.5 text-xs font-bold hover:opacity-80">{tr("Online κρατήσεις")} →</a> : null}

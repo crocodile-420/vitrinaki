@@ -8,7 +8,7 @@ import type { StorefrontStyle } from "./vitrinaki-storefront-style"
 
 export const MAX_PHOTOS = 8
 
-type Palette = "forest" | "terracotta" | "ocean" | "plum"
+type Palette = "forest" | "terracotta" | "ocean" | "plum" | "indigo" | "sage" | "graphite"
 export type StylePreset = { palette: Palette; style: StorefrontStyle }
 
 // Three looks per kind of business; «Δοκίμασε άλλο στυλ» moves to the next one.
@@ -32,6 +32,31 @@ export const STYLE_PRESETS: Record<BusinessType, StylePreset[]> = {
     { palette: "plum", style: { font: "modern", corners: "round", buttons: "solid", theme: "light" } },
     { palette: "terracotta", style: { font: "classic", corners: "soft", buttons: "outline", theme: "light" } },
     { palette: "forest", style: { font: "minimal", corners: "round", buttons: "solid", theme: "dark" } },
+  ],
+  fitness: [
+    { palette: "indigo", style: { font: "modern", corners: "round", buttons: "solid", theme: "dark" } },
+    { palette: "terracotta", style: { font: "modern", corners: "soft", buttons: "solid", theme: "light" } },
+    { palette: "ocean", style: { font: "minimal", corners: "sharp", buttons: "solid", theme: "light" } },
+  ],
+  lessons: [
+    { palette: "indigo", style: { font: "modern", corners: "round", buttons: "solid", theme: "light" } },
+    { palette: "forest", style: { font: "classic", corners: "soft", buttons: "solid", theme: "light" } },
+    { palette: "terracotta", style: { font: "modern", corners: "round", buttons: "outline", theme: "light" } },
+  ],
+  health: [
+    { palette: "sage", style: { font: "modern", corners: "round", buttons: "solid", theme: "light" } },
+    { palette: "ocean", style: { font: "minimal", corners: "soft", buttons: "solid", theme: "light" } },
+    { palette: "plum", style: { font: "classic", corners: "round", buttons: "outline", theme: "light" } },
+  ],
+  professional: [
+    { palette: "graphite", style: { font: "classic", corners: "sharp", buttons: "solid", theme: "light" } },
+    { palette: "ocean", style: { font: "modern", corners: "soft", buttons: "solid", theme: "light" } },
+    { palette: "sage", style: { font: "minimal", corners: "sharp", buttons: "outline", theme: "light" } },
+  ],
+  events: [
+    { palette: "plum", style: { font: "classic", corners: "round", buttons: "solid", theme: "light" } },
+    { palette: "graphite", style: { font: "classic", corners: "sharp", buttons: "solid", theme: "dark" } },
+    { palette: "terracotta", style: { font: "modern", corners: "soft", buttons: "solid", theme: "light" } },
   ],
   services: [
     { palette: "ocean", style: { font: "modern", corners: "soft", buttons: "solid", theme: "light" } },
@@ -86,6 +111,51 @@ export const DEFAULT_TEXTS: Record<BusinessType, { tagline: string; description:
       { title: "Ο χώρος μας", body: "Ένας ήσυχος, φροντισμένος χώρος για να χαλαρώσεις." },
       { title: "Η δουλειά μας", body: "Κάθε υπηρεσία γίνεται με προσοχή και με προϊόντα που εμπιστευόμαστε." },
       { title: "Κλείσε ραντεβού", body: "Πάρε τηλέφωνο ή στείλε μήνυμα και βρίσκουμε την ώρα που σε βολεύει." },
+    ],
+  },
+  fitness: {
+    tagline: "Προπόνηση στα μέτρα σου, με σωστή καθοδήγηση",
+    description: "Ατομικά και ομαδικά προγράμματα για κάθε επίπεδο. Κλείσε την πρώτη σου προπόνηση και ξεκίνα σήμερα.",
+    sections: [
+      { title: "Για κάθε επίπεδο", body: "Από την πρώτη σου προπόνηση μέχρι τον επόμενο στόχο σου, σε προσέχουμε σε κάθε βήμα." },
+      { title: "Ο χώρος μας", body: "Ένας καθαρός, φιλικός χώρος με ό,τι χρειάζεσαι για να γυμναστείς σωστά." },
+      { title: "Κλείσε προπόνηση", body: "Διάλεξε μέρα και ώρα που σε βολεύει. Η πρώτη γνωριμία είναι χωρίς δέσμευση." },
+    ],
+  },
+  lessons: {
+    tagline: "Μαθήματα με υπομονή, μέθοδο και αποτέλεσμα",
+    description: "Ιδιαίτερα και ομαδικά μαθήματα, δια ζώσης ή online, προσαρμοσμένα στο επίπεδο και στους στόχους κάθε μαθητή.",
+    sections: [
+      { title: "Πώς διδάσκω", body: "Ξεκινάμε από το επίπεδο του μαθητή και προχωράμε με σταθερό ρυθμό και ξεκάθαρο πρόγραμμα." },
+      { title: "Δια ζώσης ή online", body: "Μαθήματα στον χώρο μας, στο σπίτι σου ή online, όπως σε βολεύει." },
+      { title: "Μάθημα γνωριμίας", body: "Γνωριζόμαστε, βλέπουμε τι χρειάζεσαι και φτιάχνουμε μαζί το πρόγραμμα." },
+    ],
+  },
+  health: {
+    tagline: "Φροντίδα με γνώση και ανθρώπινη ματιά",
+    description: "Ατομικές συνεδρίες κατόπιν ραντεβού, στον χώρο μας ή online, με σεβασμό και εχεμύθεια.",
+    sections: [
+      { title: "Πώς μπορώ να βοηθήσω", body: "Κάθε συνεδρία ξεκινά από αυτό που χρειάζεσαι εσύ, με σεβασμό και εχεμύθεια." },
+      { title: "Ο χώρος", body: "Ένας ήσυχος, φιλόξενος χώρος, για να νιώθεις άνετα από την πρώτη στιγμή." },
+      { title: "Κλείσε ραντεβού", body: "Επικοινώνησε μαζί μου ή κλείσε online την ώρα που σε βολεύει." },
+    ],
+  },
+  professional: {
+    tagline: "Σωστή συμβουλή, την ώρα που τη χρειάζεσαι",
+    description: "Υπηρεσίες για ιδιώτες και επιχειρήσεις, με συνέπεια, διαφάνεια και προσωπική εξυπηρέτηση.",
+    sections: [
+      { title: "Τι αναλαμβάνω", body: "Από την πρώτη συζήτηση μέχρι την ολοκλήρωση, ξέρεις πάντα τι γίνεται και πόσο κοστίζει." },
+      { title: "Με εμπειρία", body: "Χρόνια δουλειάς με ιδιώτες και επιχειρήσεις, με προσοχή σε κάθε λεπτομέρεια." },
+      { title: "Κλείσε μια συνάντηση", body: "Γράψε μου ή κλείσε ραντεβού, από κοντά ή online." },
+    ],
+  },
+  events: {
+    tagline: "Η μέρα σας, όπως την ονειρεύεστε",
+    description: "Χώρος και υπηρεσίες για γάμους, βαπτίσεις, γενέθλια και εταιρικές εκδηλώσεις. Ζητήστε προσφορά ή κλείστε μια επίσκεψη.",
+    sections: [
+      { title: "Ο χώρος μας", body: "Ένας χώρος που προσαρμόζεται στη δική σας γιορτή, από μικρές συγκεντρώσεις μέχρι μεγάλες εκδηλώσεις." },
+      { title: "Όλα οργανωμένα", body: "Μενού, στολισμός, μουσική: σας βοηθάμε σε κάθε λεπτομέρεια για να απολαύσετε τη μέρα σας." },
+      { title: "Κλείστε μια επίσκεψη", body: "Ελάτε να δείτε τον χώρο από κοντά ή ζητήστε προσφορά για την ημερομηνία σας." },
     ],
   },
   services: {

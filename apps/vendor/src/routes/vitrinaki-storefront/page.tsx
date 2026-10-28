@@ -28,7 +28,7 @@ type StorefrontForm = {
   tagline: string
   description: string
   template: "atelier" | "local" | "services"
-  palette: "forest" | "terracotta" | "ocean" | "plum"
+  palette: "forest" | "terracotta" | "ocean" | "plum" | "indigo" | "sage" | "graphite"
   style: StorefrontStyle
   contactEmail: string
   contactPhone: string
@@ -76,6 +76,9 @@ const palettes = [
   { value: "terracotta", label: "Κεραμιδί", color: "#b95232" },
   { value: "ocean", label: "Ωκεανός", color: "#1e7184" },
   { value: "plum", label: "Δαμασκηνί", color: "#7e4b78" },
+  { value: "indigo", label: "Λουλακί", color: "#4B44C4" },
+  { value: "sage", label: "Φασκόμηλο", color: "#3B786A" },
+  { value: "graphite", label: "Γραφίτης", color: "#3A4352" },
 ] as const
 const templates = [
   { value: "atelier", label: "Atelier", text: "Προϊόντα και brand" },

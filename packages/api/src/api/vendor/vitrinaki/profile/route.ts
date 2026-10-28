@@ -26,7 +26,7 @@ import type VitrinakiPrivateModuleService from "../../../../modules/vitrinaki-pr
 
 type SellerRequest = AuthenticatedMedusaRequest & { seller_context?: { seller_id?: string } }
 
-const palettes = new Set(["forest", "terracotta", "ocean", "plum"])
+const palettes = new Set(["forest", "terracotta", "ocean", "plum", "indigo", "sage", "graphite"])
 const text = (value: unknown, limit: number) => (typeof value === "string" ? value.trim().slice(0, limit) : "")
 
 async function loadSeller(req: SellerRequest) {

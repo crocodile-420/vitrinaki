@@ -1,4 +1,4 @@
-import { autoBuildStorefront, presetFor, STYLE_PRESETS } from "../vitrinaki-autobuild"
+import { autoBuildStorefront, DEFAULT_TEXTS, presetFor, STYLE_PRESETS } from "../vitrinaki-autobuild"
 
 describe("vitrinaki auto build", () => {
   it("picks the look for the kind of business and cycles through the presets", () => {
@@ -29,5 +29,19 @@ describe("vitrinaki auto build", () => {
     const again = autoBuildStorefront(first, { businessType: "retail", photos: ["https://x/1.jpg", "https://x/2.jpg", "https://x/3.jpg"], preset: 1 })
     expect(again.sections).toHaveLength(2)
     expect(again.palette).toBe(STYLE_PRESETS.retail[1].palette)
+  })
+})
+
+describe("appointment kinds of business", () => {
+  it("have their own looks and texts", () => {
+    for (const type of ["fitness", "lessons", "health", "professional", "events"] as const) {
+      const shop = autoBuildStorefront({}, { businessType: type, photos: ["https://x/1.jpg", "https://x/2.jpg"], preset: 0 })
+      expect(shop.template).toBe("services")
+      expect(shop.tagline).toBe(DEFAULT_TEXTS[type].tagline)
+      expect(STYLE_PRESETS[type]).toHaveLength(3)
+    }
+    expect(presetFor("fitness", 0).palette).toBe("indigo")
+    expect(presetFor("health", 0).palette).toBe("sage")
+    expect(presetFor("professional", 0).palette).toBe("graphite")
   })
 })

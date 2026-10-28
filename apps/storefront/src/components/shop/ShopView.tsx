@@ -6,6 +6,8 @@ import { ShopFooter, ShopHeader } from "@/components/shop/ShopChrome"
 import { ShopImage } from "@/components/shop/ShopImage"
 import { ShopProductCard } from "@/components/shop/ShopProductCard"
 import type { ShopResponse } from "@/components/shop/shop-data"
+import { isAppointmentType } from "@/components/shop/business-types"
+import { ShopVideo } from "@/components/shop/ShopVideo"
 import { shopStyle, styleAttrs, themedColors } from "@/components/shop/shop-style"
 import {
   AreaSection,
@@ -64,8 +66,8 @@ export function ShopView({
   const type = profile?.businessType || null
   const template = storefront.template
   // Sellers without a Studio profile keep the template-based page.
-  const isServices = type ? ["services", "beauty", "portfolio"].includes(type) : template === "services"
-  const productFirst = !type || !["services", "beauty", "portfolio"].includes(type)
+  const isServices = type ? isAppointmentType(type) || type === "portfolio" : template === "services"
+  const productFirst = !type || !isServices
   const featured = template === "atelier" && productFirst && offers.length > 4 ? offers.slice(0, 3) : []
   const rest = featured.length ? offers.slice(3) : offers
   const whatsapp = profile?.whatsapp ? intlNumber(profile.whatsapp) : ""
@@ -113,7 +115,7 @@ export function ShopView({
       if (profile.crafts.madeToOrder) heroFacts.push(tr("Κατά παραγγελία"))
       if (profile.crafts.customOrders) heroFacts.push(tr("Εξατομίκευση"))
     }
-    if (type === "services" || type === "beauty") {
+    if (isAppointmentType(type)) {
       if (profile.services.atClient) heroFacts.push(tr("Ερχόμαστε σε εσένα"))
       if (profile.services.online) heroFacts.push(tr("Και online"))
       if (profile.byAppointment) heroFacts.push(tr("Κατόπιν ραντεβού"))
@@ -173,7 +175,7 @@ export function ShopView({
         )}
       </section>
     ),
-    story: (soft) => (profile?.story || storefront.description || seller.description || (storefront.sections || []).length || !profile) ? (
+    story: (soft) => (profile?.story || profile?.introVideo || storefront.description || seller.description || (storefront.sections || []).length || !profile) ? (
       <section key="story" id="about" style={soft ? { background: colors.soft } : undefined} className="scroll-mt-20">
         <div className="mx-auto grid max-w-6xl gap-10 px-5 py-14 sm:px-8 sm:py-20 lg:grid-cols-[0.8fr_1.2fr]">
           <div>
@@ -181,6 +183,9 @@ export function ShopView({
             <h2 className="font-serif mt-3 text-3xl font-bold sm:text-4xl">{profile?.story ? tr(type === "portfolio" ? "Η διαδρομή μου" : "Η ιστορία μας") : storefront.storeName}</h2>
           </div>
           <div className="space-y-8">
+            {profile?.introVideo ? (
+              <ShopVideo url={profile.introVideo} title={`${tr("Βίντεο παρουσίασης")}: ${storefront.storeName}`} accent={colors.accent} onAccent={colors.onAccent || "#fff"} linkLabel={tr("Δες το βίντεο παρουσίασης")} />
+            ) : null}
             <p className="whitespace-pre-line text-lg leading-8 opacity-80">{profile?.story || storefront.description || seller.description || storefront.tagline}</p>
             {profile?.credentials ? <p style={{ background: soft ? colors.page : colors.soft }} className="rounded-2xl p-5 leading-7"><span className="font-bold">{tr("Εμπειρία & διακρίσεις")}: </span>{profile.credentials}</p> : null}
             {profile ? <LanguagesLine p={profile} tr={tr} /> : null}

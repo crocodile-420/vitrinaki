@@ -4,7 +4,7 @@ export type DirectoryStorefront = {
   tagline: string
   description: string
   template: "atelier" | "local" | "services"
-  palette: "forest" | "terracotta" | "ocean" | "plum"
+  palette: "forest" | "terracotta" | "ocean" | "plum" | "indigo" | "sage" | "graphite"
   businessType?: string | null
   logo: string | null
   banner: string | null
@@ -35,6 +35,11 @@ export const paletteColors = {
   terracotta: { page: "#FBF4EE", ink: "#5E2E24", accent: "#C0503C", soft: "#F4E1D9" },
   ocean: { page: "#F3F6F9", ink: "#1B3F5E", accent: "#265E8E", soft: "#DDE8F2" },
   plum: { page: "#f8f3f8", ink: "#593756", accent: "#7e4b78", soft: "#efe2ee" },
+  // Looks for professionals by appointment: λουλακί (fitness, lessons),
+  // φασκόμηλο (health), γραφίτης (freelancers).
+  indigo: { page: "#F5F5FB", ink: "#25225A", accent: "#4B44C4", soft: "#E3E2F6" },
+  sage: { page: "#F4F7F5", ink: "#21413A", accent: "#3B786A", soft: "#DCEAE4" },
+  graphite: { page: "#F6F5F2", ink: "#23262B", accent: "#3A4352", soft: "#E5E5E1" },
 } as const
 
 export const templateLabels = {
