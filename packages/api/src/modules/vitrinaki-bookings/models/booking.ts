@@ -14,6 +14,11 @@ import { model } from "@medusajs/framework/utils"
 //   cancelled  cancelled by the shop or the customer
 //   completed  took place
 //   no_show    the customer did not come
+//
+// A shop with several resources (vehicles, drivers, trainers, chairs, rooms:
+// see src/lib/vitrinaki-bookings.ts) takes one booking per resource at a
+// time; resource_id says which one, resource_name keeps its name as booked.
+// details holds the trip of a transfer (pickup, destination, passengers…).
 const Booking = model
   .define("vitrinaki_booking", {
     id: model.id({ prefix: "vkbk" }).primaryKey(),
@@ -34,6 +39,9 @@ const Booking = model
     shop_note: model.text().nullable(),
     cancel_token: model.text().unique(),
     cancelled_by: model.text().nullable(),
+    resource_id: model.text().nullable(),
+    resource_name: model.text().nullable(),
+    details: model.json().nullable(),
   })
   .indexes([
     { on: ["seller_id", "start_at"], where: "deleted_at IS NULL" },

@@ -3,11 +3,16 @@ import { randomBytes } from "crypto"
 import { isEmail, isGreekPhone, normalizePhone, WEEK_DAYS, type DayHours, type PublicProfile } from "./vitrinaki-profile"
 
 // Online bookings for service businesses (trainers, physiotherapists, tattoo
-// artists…). Each shop keeps its rules in seller.metadata.vitrinaki_bookings:
-// which services can be booked and for how long, the weekly schedule, days
-// off and a few limits. The bookings themselves live in the
-// vitrinaki-bookings module. One booking at a time per shop: a slot is free
-// when no pending or confirmed booking (plus the buffer) overlaps it.
+// artists, transfers…). Each shop keeps its rules in
+// seller.metadata.vitrinaki_bookings: which services can be booked and for how
+// long, the weekly schedule, days off and a few limits. The bookings
+// themselves live in the vitrinaki-bookings module.
+//
+// Capacity: a shop without resources takes one booking at a time (a slot is
+// free when no pending or confirmed booking, plus the buffer, overlaps it). A
+// shop with resources (vehicles, drivers, trainers, chairs, rooms) takes one
+// booking per resource at a time, and each booking gets one of the resources
+// that can do its service.
 //
 // All times are Greek local time (Europe/Athens); the database stores UTC.
 
@@ -20,6 +25,8 @@ export const SLOT_STEPS = [10, 15, 20, 30, 45, 60] as const
 export const MIN_DURATION = 5
 export const MAX_DURATION = 8 * 60
 export const MAX_ACTIVE_PER_CONTACT = 3
+export const MAX_RESOURCES = 30
+export const MAX_PASSENGERS = 60
 
 export type WeekDay = (typeof WEEK_DAYS)[number]
 export type BookingStatus = "pending" | "confirmed" | "cancelled" | "declined" | "completed" | "no_show"
@@ -33,7 +40,12 @@ export type BookingService = {
   price: string
   description: string
   active: boolean
+  // Resources that can do this service; empty: all of them.
+  resourceIds: string[]
 }
+
+// A vehicle, a driver, a trainer, a chair, a room: one booking at a time each.
+export type BookingResource = { id: string; name: string; active: boolean }
 
 export type DayOff = { from: string; to: string; note: string }
 
@@ -50,6 +62,11 @@ export type BookingSettings = {
   cancelHours: number
   daysOff: DayOff[]
   note: string
+  resources: BookingResource[]
+  // What the shop calls its resources («Όχημα», «Trainer»…), for its Studio.
+  resourceLabel: string
+  // Transfers and taxis: the booking form asks for the trip.
+  tripDetails: boolean
 }
 
 const day = (open: string, close: string): DayHours => ({ closed: false, open, close, open2: "", close2: "" })
@@ -77,6 +94,9 @@ export const DEFAULT_BOOKINGS: BookingSettings = {
   cancelHours: 24,
   daysOff: [],
   note: "",
+  resources: [],
+  resourceLabel: "",
+  tripDetails: false,
 }
 
 const str = (value: unknown, limit: number) => (typeof value === "string" ? value.trim().slice(0, limit) : "")
@@ -95,6 +115,7 @@ export const fromMinutes = (minutes: number) =>
   `${String(Math.floor(minutes / 60)).padStart(2, "0")}:${String(minutes % 60).padStart(2, "0")}`
 
 export const newServiceId = () => `svc_${randomBytes(4).toString("hex")}`
+export const newResourceId = () => `res_${randomBytes(4).toString("hex")}`
 export const newCancelToken = () => randomBytes(24).toString("base64url")
 
 // «45'», «45 λεπτά», «1 ώρα», «1,5 ώρες», «1h30», «90 min» → minutes.
@@ -154,6 +175,7 @@ export function validateService(input: unknown): { service: BookingService } | {
       price: str(raw.price, 40),
       description: str(raw.description, 400),
       active: raw.active !== false,
+      resourceIds: Array.isArray(raw.resourceIds) ? raw.resourceIds.filter((v): v is string => typeof v === "string").slice(0, MAX_RESOURCES) : [],
     },
   }
 }
@@ -164,6 +186,20 @@ const inRange = (n: number, min: number, max: number) => Number.isInteger(n) && 
 export function validateBookingSettings(input: unknown): { settings: BookingSettings } | { error: string } {
   if (!input || typeof input !== "object") return { error: "Μη έγκυρες ρυθμίσεις." }
   const raw = input as Record<string, unknown>
+
+  const resourceList = raw.resources === undefined ? [] : raw.resources
+  if (!Array.isArray(resourceList)) return { error: "Μη έγκυρη λίστα πόρων." }
+  if (resourceList.length > MAX_RESOURCES) return { error: `Μέχρι ${MAX_RESOURCES} οχήματα, άτομα ή χώροι.` }
+  const resources: BookingResource[] = []
+  for (const item of resourceList) {
+    const res = obj(item)
+    const name = str(res.name, 60)
+    if (!name) return { error: "Κάθε όχημα, άτομο ή χώρος χρειάζεται όνομα." }
+    let id = typeof res.id === "string" && /^[a-z0-9_]{3,40}$/i.test(res.id) ? res.id : newResourceId()
+    if (resources.some((r) => r.id === id)) id = newResourceId()
+    resources.push({ id, name, active: res.active !== false })
+  }
+  const resourceIds = new Set(resources.map((r) => r.id))
 
   const list = raw.services === undefined ? [] : raw.services
   if (!Array.isArray(list)) return { error: "Μη έγκυρη λίστα υπηρεσιών." }
@@ -176,7 +212,7 @@ export function validateBookingSettings(input: unknown): { settings: BookingSett
     let service = result.service
     if (seen.has(service.id)) service = { ...service, id: newServiceId() }
     seen.add(service.id)
-    services.push(service)
+    services.push({ ...service, resourceIds: service.resourceIds.filter((id) => resourceIds.has(id)) })
   }
 
   const scheduleRaw = raw.schedule === undefined ? defaultSchedule() : obj(raw.schedule)
@@ -233,6 +269,9 @@ export function validateBookingSettings(input: unknown): { settings: BookingSett
       cancelHours,
       daysOff,
       note: str(raw.note, 500),
+      resources,
+      resourceLabel: str(raw.resourceLabel, 30),
+      tripDetails: raw.tripDetails === true,
     },
   }
 }
@@ -252,7 +291,7 @@ export function readBookingSettings(metadata: unknown): BookingSettings | null {
 // First visit to the Studio page: start from what the shop already told us in
 // its profile (services with a readable duration, opening hours).
 export function suggestedSettings(profile: Partial<PublicProfile> | null | undefined): BookingSettings {
-  const settings: BookingSettings = { ...DEFAULT_BOOKINGS, schedule: defaultSchedule(), services: [], daysOff: [] }
+  const settings: BookingSettings = { ...DEFAULT_BOOKINGS, schedule: defaultSchedule(), services: [], daysOff: [], resources: [] }
   const items = profile?.services?.items || []
   settings.services = items.slice(0, MAX_SERVICES).map((item) => ({
     id: newServiceId(),
@@ -261,6 +300,7 @@ export function suggestedSettings(profile: Partial<PublicProfile> | null | undef
     price: String(item.price || "").slice(0, 40),
     description: String(item.description || "").slice(0, 400),
     active: true,
+    resourceIds: [],
   })).filter((s) => s.name)
   if (profile?.hoursEnabled && profile.hours) {
     const schedule = {} as Record<WeekDay, DayHours>
@@ -287,6 +327,7 @@ export const publicBookings = (settings: BookingSettings | null) =>
         cancelHours: settings.cancelHours,
         autoConfirm: settings.autoConfirm,
         note: settings.note,
+        tripDetails: settings.tripDetails,
       }
     : { enabled: false as const }
 
@@ -352,10 +393,38 @@ export const isDayOff = (settings: BookingSettings, date: string) =>
 
 // ---------- free slots ----------
 
-export type Busy = { start: Date; end: Date }
+export type Busy = { start: Date; end: Date; resourceId?: string | null }
 
-const overlaps = (start: number, end: number, busy: Busy[], bufferMs: number) =>
-  busy.some((b) => start < b.end.getTime() + bufferMs && b.start.getTime() < end + bufferMs)
+const overlapping = (start: number, end: number, busy: Busy[], bufferMs: number) =>
+  busy.filter((b) => start < b.end.getTime() + bufferMs && b.start.getTime() < end + bufferMs)
+
+// Which resources a service can use: null when the shop has none (one booking
+// at a time), otherwise all active resources and those that do the service.
+export type ResourcePool = { all: string[]; candidates: string[] } | null
+
+export function resourcePool(settings: Pick<BookingSettings, "resources"> | null | undefined, service?: Pick<BookingService, "resourceIds"> | null): ResourcePool {
+  const all = (settings?.resources || []).filter((r) => r.active).map((r) => r.id)
+  if (!all.length) return null
+  const chosen = (service?.resourceIds || []).filter((id) => all.includes(id))
+  return { all, candidates: chosen.length ? chosen : all }
+}
+
+// Whether [start, end) can take one more booking, and on which resource. A
+// booking without a resource (made before the shop added resources, or on a
+// resource since removed) still takes up one of them.
+export function assignResource(input: { pool: ResourcePool; start: number; end: number; busy: Busy[]; bufferMs: number; prefer?: string | null }):
+  | { free: false }
+  | { free: true; resourceId: string | null } {
+  const { pool, start, end, busy, bufferMs, prefer } = input
+  const clash = overlapping(start, end, busy, bufferMs)
+  if (!pool) return clash.length ? { free: false } : { free: true, resourceId: null }
+  const used = new Set(clash.map((b) => b.resourceId).filter((id): id is string => Boolean(id) && pool.all.includes(id as string)))
+  const unassigned = clash.length - clash.filter((b) => b.resourceId && pool.all.includes(b.resourceId)).length
+  const freeAll = pool.all.filter((id) => !used.has(id))
+  const freeCandidates = pool.candidates.filter((id) => !used.has(id))
+  if (!freeCandidates.length || freeAll.length - unassigned <= 0) return { free: false }
+  return { free: true, resourceId: prefer && freeCandidates.includes(prefer) ? prefer : freeCandidates[0] }
+}
 
 // The start times («09:30») a service can be booked at on one day.
 export function freeSlots(input: {
@@ -364,8 +433,10 @@ export function freeSlots(input: {
   date: string
   busy: Busy[]
   now: Date
+  pool?: ResourcePool
 }): string[] {
   const { settings, durationMinutes, date, busy, now } = input
+  const pool = input.pool ?? null
   const today = localDate(now)
   if (date < today || date > addDays(today, settings.maxDaysAhead)) return []
   if (isDayOff(settings, date)) return []
@@ -383,7 +454,7 @@ export function freeSlots(input: {
       const start = localToUtc(date, t).getTime()
       if (start < earliest) continue
       const end = start + durationMinutes * 60000
-      if (overlaps(start, end, busy, bufferMs)) continue
+      if (!assignResource({ pool, start, end, busy, bufferMs }).free) continue
       slots.push(fromMinutes(t))
     }
   }
@@ -411,3 +482,38 @@ export function validateContact(input: unknown): { contact: BookingContact } | {
 // A shopper may cancel online until `cancelHours` before the start.
 export const canCustomerCancel = (settings: BookingSettings | null, startsAt: Date, now: Date) =>
   startsAt.getTime() - now.getTime() >= (settings?.cancelHours ?? DEFAULT_BOOKINGS.cancelHours) * 3600000
+
+// ---------- the trip (transfers, taxis) ----------
+
+export type TripDetails = {
+  pickup: string
+  dropoff: string
+  passengers: number
+  luggage: number | null
+  flight: string
+  returnDate: string
+  returnTime: string
+}
+
+// Asked when the shop has «Στοιχεία διαδρομής» on. The return leg is kept as
+// a request for the shop to book, not as a second slot.
+export function validateTrip(input: unknown, start?: { date: string; time: string }): { trip: TripDetails } | { error: string } {
+  const raw = obj(input)
+  const pickup = str(raw.pickup, 200)
+  if (pickup.length < 3) return { error: "Γράψε από πού θα σε παραλάβουμε." }
+  const dropoff = str(raw.dropoff, 200)
+  if (dropoff.length < 3) return { error: "Γράψε πού πηγαίνεις." }
+  const passengers = toInt(raw.passengers)
+  if (!(passengers >= 1 && passengers <= MAX_PASSENGERS)) return { error: `Τα άτομα πρέπει να είναι από 1 έως ${MAX_PASSENGERS}.` }
+  const luggageRaw = raw.luggage === undefined || raw.luggage === null || raw.luggage === "" ? null : toInt(raw.luggage)
+  if (luggageRaw !== null && !(luggageRaw >= 0 && luggageRaw <= 99)) return { error: "Μη έγκυρος αριθμός αποσκευών." }
+  const returnDate = str(raw.returnDate, 10)
+  const returnTime = str(raw.returnTime, 5)
+  if (returnDate || returnTime) {
+    if (!isDate(returnDate) || !isTime(returnTime)) return { error: "Γράψε μέρα και ώρα για την επιστροφή." }
+    if (start && `${returnDate} ${returnTime}` <= `${start.date} ${start.time}`) return { error: "Η επιστροφή πρέπει να είναι μετά την παραλαβή." }
+  }
+  return {
+    trip: { pickup, dropoff, passengers, luggage: luggageRaw, flight: str(raw.flight, 20).toUpperCase(), returnDate, returnTime },
+  }
+}

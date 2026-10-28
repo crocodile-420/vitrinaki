@@ -215,6 +215,7 @@ export function ShopView({
         autoConfirm={bookings.autoConfirm}
         note={bookings.note}
         cancelHours={bookings.cancelHours}
+        tripDetails={Boolean(bookings.tripDetails)}
         colors={colors}
         soft={soft}
         manageBase={`${paths.home === "/" ? "" : paths.home}/booking`}

@@ -12,6 +12,9 @@ import {
   parseDurationMinutes,
   publicBookings,
   readBookingSettings,
+  resourcePool,
+  assignResource,
+  validateTrip,
   suggestedSettings,
   validateBookingSettings,
   validateContact,
@@ -19,7 +22,7 @@ import {
   type BookingSettings,
 } from "../vitrinaki-bookings"
 
-const service = { id: "svc_1", name: "Φυσικοθεραπεία", durationMinutes: 60, price: "40€", description: "", active: true }
+const service = { id: "svc_1", name: "Φυσικοθεραπεία", durationMinutes: 60, price: "40€", description: "", active: true, resourceIds: [] as string[] }
 const settings = (patch: Partial<BookingSettings> = {}): BookingSettings => {
   const result = validateBookingSettings({ enabled: true, services: [service], ...patch })
   if ("error" in result) throw new Error(result.error)
@@ -160,6 +163,62 @@ describe("vitrinaki bookings", () => {
       expect(freeSlots({ settings: s, durationMinutes: 60, date: "2026-10-20", busy: [], now })).toEqual([])
       expect(freeSlots({ settings: s, durationMinutes: 60, date: "2026-11-05", busy: [], now })).toEqual([])
       expect(freeSlots({ settings: s, durationMinutes: 60, date: "2026-10-30", busy: [], now }).length).toBeGreaterThan(0)
+    })
+  })
+
+  describe("resources (vehicles, drivers, trainers)", () => {
+    const now = new Date("2026-10-21T04:00:00Z")
+    const at = (h: number) => localToUtc("2026-10-22", h * 60)
+    const fleet = (patch: Partial<BookingSettings> = {}) =>
+      settings({
+        resources: [
+          { id: "res_car1", name: "Mercedes Vito", active: true },
+          { id: "res_car2", name: "Skoda Octavia", active: true },
+          { id: "res_old", name: "Παλιό", active: false },
+        ],
+        ...patch,
+      } as any)
+
+    it("keeps the resources and the services' choices that exist", () => {
+      const s = fleet({ services: [{ ...service, resourceIds: ["res_car1", "res_gone"] }] } as any)
+      expect(s.resources).toHaveLength(3)
+      expect(s.services[0].resourceIds).toEqual(["res_car1"])
+      expect(resourcePool(s, s.services[0])).toEqual({ all: ["res_car1", "res_car2"], candidates: ["res_car1"] })
+      expect(resourcePool(settings(), service)).toBeNull()
+      expect("error" in validateBookingSettings({ resources: [{ name: "" }] })).toBe(true)
+    })
+
+    it("takes one booking per resource at the same time", () => {
+      const s = fleet()
+      const pool = resourcePool(s, service)
+      const one = [{ start: at(10), end: at(11), resourceId: "res_car1" }]
+      expect(freeSlots({ settings: s, durationMinutes: 60, date: "2026-10-22", busy: one, now, pool })).toContain("10:00")
+      expect(assignResource({ pool, start: at(10).getTime(), end: at(11).getTime(), busy: one, bufferMs: 0 })).toEqual({ free: true, resourceId: "res_car2" })
+      const two = [...one, { start: at(10), end: at(11), resourceId: "res_car2" }]
+      expect(freeSlots({ settings: s, durationMinutes: 60, date: "2026-10-22", busy: two, now, pool })).not.toContain("10:00")
+      // Without resources, one booking fills the slot as before.
+      expect(freeSlots({ settings: settings(), durationMinutes: 60, date: "2026-10-22", busy: one, now })).not.toContain("10:00")
+    })
+
+    it("counts bookings without a resource and limits a service to its resources", () => {
+      const s = fleet()
+      const unassigned = [{ start: at(10), end: at(11), resourceId: null }]
+      expect(assignResource({ pool: resourcePool(s, service), start: at(10).getTime(), end: at(11).getTime(), busy: unassigned, bufferMs: 0 }).free).toBe(true)
+      const both = [...unassigned, { start: at(10), end: at(11), resourceId: "res_car1" }]
+      expect(assignResource({ pool: resourcePool(s, service), start: at(10).getTime(), end: at(11).getTime(), busy: both, bufferMs: 0 }).free).toBe(false)
+      const vanOnly = resourcePool(s, { resourceIds: ["res_car1"] })
+      const vanBusy = [{ start: at(10), end: at(11), resourceId: "res_car1" }]
+      expect(assignResource({ pool: vanOnly, start: at(10).getTime(), end: at(11).getTime(), busy: vanBusy, bufferMs: 0 }).free).toBe(false)
+      expect(assignResource({ pool: resourcePool(s, service), start: at(10).getTime(), end: at(11).getTime(), busy: [], bufferMs: 0, prefer: "res_car2" })).toEqual({ free: true, resourceId: "res_car2" })
+    })
+
+    it("checks the trip of a transfer", () => {
+      const ok = validateTrip({ pickup: "Αεροδρόμιο Ηρακλείου", dropoff: "Χερσόνησος, Hotel Aldemar", passengers: "4", luggage: 3, flight: "a3 123" }, { date: "2026-10-22", time: "10:00" })
+      expect("trip" in ok && ok.trip).toMatchObject({ passengers: 4, luggage: 3, flight: "A3 123", returnDate: "" })
+      expect("error" in validateTrip({ pickup: "", dropoff: "Χανιά", passengers: 2 })).toBe(true)
+      expect("error" in validateTrip({ pickup: "Λιμάνι", dropoff: "Χανιά", passengers: 0 })).toBe(true)
+      expect("error" in validateTrip({ pickup: "Λιμάνι", dropoff: "Χανιά", passengers: 2, returnDate: "2026-10-21", returnTime: "09:00" }, { date: "2026-10-22", time: "10:00" })).toBe(true)
+      expect(publicBookings(fleet({ tripDetails: true } as any))).toMatchObject({ tripDetails: true })
     })
   })
 

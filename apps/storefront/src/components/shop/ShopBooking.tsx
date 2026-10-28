@@ -7,6 +7,7 @@ import {
   getBookingDays,
   type BookingDay,
   type BookingService,
+  type BookingTrip,
   type CustomerBooking,
 } from "@/lib/data/bookings"
 import { useTranslator } from "@/lib/i18n/client"
@@ -14,8 +15,10 @@ import { useTranslator } from "@/lib/i18n/client"
 import type { ShopColors } from "./ShopProductCard"
 
 // The shop page's booking box: service → day → time → details. Free times
-// come from the backend (the shop's hours minus booked appointments); the
-// backend checks the chosen time again when the booking is sent.
+// come from the backend (the shop's hours minus booked appointments, per
+// vehicle/trainer/room when the shop has several); the backend checks the
+// chosen time again when the booking is sent. Transfers and taxis also ask
+// for the trip.
 
 type Props = {
   sellerId: string
@@ -23,6 +26,8 @@ type Props = {
   autoConfirm: boolean
   note: string
   cancelHours: number
+  // Transfers and taxis: ask for pickup, destination, passengers…
+  tripDetails?: boolean
   colors: ShopColors
   soft?: boolean
   // Where «Το ραντεβού μου» lives for this shop ("/…/booking").
@@ -41,7 +46,24 @@ const durationText = (minutes: number, tr: (s: string) => string) => {
   return m ? `${h} ${tr("ώρ.")} ${m} ${tr("λ.")}` : `${h} ${tr(h === 1 ? "ώρα" : "ώρες")}`
 }
 
-export function ShopBooking({ sellerId, services, autoConfirm, note, cancelHours, colors, soft = false, manageBase }: Props) {
+// Pickup → destination, people, luggage, flight and return, as one block.
+export function TripSummary({ trip, tr }: { trip: BookingTrip; tr: (s: string) => string }) {
+  const facts = [
+    `${tr("Άτομα")}: ${trip.passengers}`,
+    trip.luggage !== null && trip.luggage !== undefined && trip.luggage !== "" ? `${tr("Αποσκευές")}: ${trip.luggage}` : "",
+    trip.flight ? `${tr("Πτήση")}: ${trip.flight}` : "",
+    trip.returnDate && trip.returnTime ? `${tr("Επιστροφή")}: ${trip.returnDate.split("-").reverse().join("/")} ${trip.returnTime}` : "",
+  ].filter(Boolean)
+  return (
+    <div className="mt-3 space-y-1 leading-7" data-testid="booking-trip">
+      <p><span className="font-bold">{tr("Από")}:</span> {trip.pickup}</p>
+      <p><span className="font-bold">{tr("Προς")}:</span> {trip.dropoff}</p>
+      <p className="opacity-75">{facts.join(" · ")}</p>
+    </div>
+  )
+}
+
+export function ShopBooking({ sellerId, services, autoConfirm, note, cancelHours, tripDetails = false, colors, soft = false, manageBase }: Props) {
   const { lang, tr } = useTranslator()
   const locale = lang === "en" ? "en-GB" : "el-GR"
   const dateText = (date: string, opts: Intl.DateTimeFormatOptions) => new Intl.DateTimeFormat(locale, { timeZone: "UTC", ...opts }).format(parse(date))
@@ -55,6 +77,8 @@ export function ShopBooking({ sellerId, services, autoConfirm, note, cancelHours
   const [date, setDate] = useState("")
   const [time, setTime] = useState("")
   const [contact, setContact] = useState({ name: "", phone: "", email: "", note: "" })
+  const [trip, setTrip] = useState({ pickup: "", dropoff: "", passengers: "1", luggage: "", flight: "", returnDate: "", returnTime: "" })
+  const [withReturn, setWithReturn] = useState(false)
   const [consent, setConsent] = useState(false)
   const [website, setWebsite] = useState("")
   const [error, setError] = useState("")
@@ -105,11 +129,19 @@ export function ShopBooking({ sellerId, services, autoConfirm, note, cancelHours
     event.preventDefault()
     setError("")
     if (!service || !date || !time) return setError(tr("Διάλεξε υπηρεσία, μέρα και ώρα."))
+    if (tripDetails) {
+      if (trip.pickup.trim().length < 3) return setError(tr("Γράψε από πού θα σε παραλάβουμε."))
+      if (trip.dropoff.trim().length < 3) return setError(tr("Γράψε πού πηγαίνεις."))
+      if (withReturn && (!trip.returnDate || !trip.returnTime)) return setError(tr("Γράψε μέρα και ώρα για την επιστροφή."))
+    }
     if (contact.name.trim().length < 2) return setError(tr("Γράψε το ονοματεπώνυμό σου."))
     if (!contact.phone.trim()) return setError(tr("Γράψε ένα τηλέφωνο για να σε βρει η επιχείρηση."))
     if (!consent) return setError(tr("Χρειάζεται η συγκατάθεσή σου για να σταλούν τα στοιχεία σου στην επιχείρηση."))
     startTransition(async () => {
-      const result = await createBooking({ sellerId, serviceId: service.id, date, time, contact, consent, website })
+      const tripInput = tripDetails
+        ? { ...trip, luggage: trip.luggage || null, returnDate: withReturn ? trip.returnDate : "", returnTime: withReturn ? trip.returnTime : "" }
+        : null
+      const result = await createBooking({ sellerId, serviceId: service.id, date, time, contact, consent, website, trip: tripInput })
       if (result.ok) {
         setDone({ booking: result.booking, token: result.token })
         return
@@ -137,6 +169,7 @@ export function ShopBooking({ sellerId, services, autoConfirm, note, cancelHours
               {dateText(b.date, { weekday: "long", day: "numeric", month: "long" })}, {b.time}
             </h2>
             <p className="mt-2 text-lg opacity-80">{b.service_name} · {durationText(b.duration_minutes, tr)}{b.price ? ` · ${b.price}` : ""}</p>
+            {b.details?.trip ? <TripSummary trip={b.details.trip} tr={tr} /> : null}
             <p className="mt-5 leading-7 opacity-80">
               {tr(confirmed
                 ? "Σε περιμένουμε! Αν χρειαστεί κάποια αλλαγή, η επιχείρηση θα επικοινωνήσει μαζί σου."
@@ -161,7 +194,7 @@ export function ShopBooking({ sellerId, services, autoConfirm, note, cancelHours
     <section id="booking" style={soft ? { background: colors.soft } : undefined} className="scroll-mt-20" data-testid="shop-booking">
       <div className="mx-auto max-w-6xl px-5 py-14 sm:px-8 sm:py-20">
         <p style={{ color: colors.accent }} className="text-xs font-bold uppercase tracking-[0.22em]">{tr("Online κρατήσεις")}</p>
-        <h2 className="font-serif mt-3 text-3xl font-bold sm:text-4xl">{tr("Κλείσε ραντεβού")}</h2>
+        <h2 className="font-serif mt-3 text-3xl font-bold sm:text-4xl">{tr(tripDetails ? "Κλείσε τη διαδρομή σου" : "Κλείσε ραντεβού")}</h2>
         <p className="mt-3 max-w-2xl leading-7 opacity-75">
           {tr(autoConfirm ? "Διάλεξε υπηρεσία, μέρα και ώρα. Το ραντεβού κλείνει αμέσως." : "Διάλεξε υπηρεσία, μέρα και ώρα. Η επιχείρηση θα επιβεβαιώσει το ραντεβού σου.")}
         </p>
@@ -285,13 +318,55 @@ export function ShopBooking({ sellerId, services, autoConfirm, note, cancelHours
           </div>
 
           <fieldset className={service && time ? "" : "pointer-events-none opacity-40"} disabled={!service || !time}>
-            <legend className="text-sm font-bold uppercase tracking-wider opacity-60">3 · {tr("Τα στοιχεία σου")}</legend>
+            <legend className="text-sm font-bold uppercase tracking-wider opacity-60">3 · {tr(tripDetails ? "Η διαδρομή και τα στοιχεία σου" : "Τα στοιχεία σου")}</legend>
             {service && time ? (
               <p style={{ background: card }} className="mt-3 rounded-2xl p-4 font-semibold" data-testid="booking-summary">
                 {service.name} · {dateText(date, { weekday: "long", day: "numeric", month: "long" })}, {time}
               </p>
             ) : null}
             <div className="mt-4 space-y-3">
+              {tripDetails ? (
+                <div className="space-y-3" data-testid="booking-trip-fields">
+                  <label className="block">
+                    <span className="text-sm font-semibold">{tr("Σημείο παραλαβής")}</span>
+                    <input className={`${field} mt-1`} style={fieldStyle} maxLength={200} placeholder={tr("π.χ. Αεροδρόμιο Ηρακλείου")} value={trip.pickup} onChange={(e) => setTrip({ ...trip, pickup: e.target.value })} data-testid="booking-pickup" />
+                  </label>
+                  <label className="block">
+                    <span className="text-sm font-semibold">{tr("Προορισμός")}</span>
+                    <input className={`${field} mt-1`} style={fieldStyle} maxLength={200} placeholder={tr("π.χ. ξενοδοχείο ή διεύθυνση")} value={trip.dropoff} onChange={(e) => setTrip({ ...trip, dropoff: e.target.value })} data-testid="booking-dropoff" />
+                  </label>
+                  <div className="grid grid-cols-3 gap-3">
+                    <label className="block">
+                      <span className="text-sm font-semibold">{tr("Άτομα")}</span>
+                      <input className={`${field} mt-1`} style={fieldStyle} type="number" min={1} max={60} inputMode="numeric" value={trip.passengers} onChange={(e) => setTrip({ ...trip, passengers: e.target.value })} data-testid="booking-passengers" />
+                    </label>
+                    <label className="block">
+                      <span className="text-sm font-semibold">{tr("Αποσκευές")}</span>
+                      <input className={`${field} mt-1`} style={fieldStyle} type="number" min={0} max={99} inputMode="numeric" value={trip.luggage} onChange={(e) => setTrip({ ...trip, luggage: e.target.value })} />
+                    </label>
+                    <label className="block">
+                      <span className="text-sm font-semibold">{tr("Πτήση")}</span>
+                      <input className={`${field} mt-1`} style={fieldStyle} maxLength={20} placeholder="A3 123" value={trip.flight} onChange={(e) => setTrip({ ...trip, flight: e.target.value })} />
+                    </label>
+                  </div>
+                  <label className="flex items-center gap-3 text-sm font-semibold">
+                    <input type="checkbox" checked={withReturn} onChange={(e) => setWithReturn(e.target.checked)} className="h-4 w-4" style={{ accentColor: colors.accent }} />
+                    {tr("Θέλω και επιστροφή")}
+                  </label>
+                  {withReturn ? (
+                    <div className="grid grid-cols-2 gap-3">
+                      <label className="block">
+                        <span className="text-sm font-semibold">{tr("Μέρα επιστροφής")}</span>
+                        <input className={`${field} mt-1`} style={fieldStyle} type="date" min={date || today} value={trip.returnDate} onChange={(e) => setTrip({ ...trip, returnDate: e.target.value })} />
+                      </label>
+                      <label className="block">
+                        <span className="text-sm font-semibold">{tr("Ώρα")}</span>
+                        <input className={`${field} mt-1`} style={fieldStyle} type="time" value={trip.returnTime} onChange={(e) => setTrip({ ...trip, returnTime: e.target.value })} />
+                      </label>
+                    </div>
+                  ) : null}
+                </div>
+              ) : null}
               <label className="block">
                 <span className="text-sm font-semibold">{tr("Ονοματεπώνυμο")}</span>
                 <input className={`${field} mt-1`} style={fieldStyle} autoComplete="name" value={contact.name} onChange={(e) => setContact({ ...contact, name: e.target.value })} data-testid="booking-name" />

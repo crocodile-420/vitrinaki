@@ -13,8 +13,9 @@ import {
   readBookingSettings,
   toMinutes,
   validateContact,
+  validateTrip,
 } from "../../../../lib/vitrinaki-bookings"
-import { vendorBookingView } from "../../../../lib/vitrinaki-bookings-store"
+import { resourceChoice, vendorBookingView } from "../../../../lib/vitrinaki-bookings-store"
 import { loadSeller } from "../../../../lib/stripe-connect-seller"
 import { VITRINAKI_BOOKINGS_MODULE } from "../../../../modules/vitrinaki-bookings"
 import type VitrinakiBookingsModuleService from "../../../../modules/vitrinaki-bookings/service"
@@ -75,6 +76,10 @@ export async function POST(req: SellerRequest, res: MedusaResponse) {
   if (!isDate(date) || !/^([01]\d|2[0-3]):[0-5]\d$/.test(time)) return res.status(400).json({ message: "Διάλεξε μέρα και ώρα." })
   const contact = validateContact(body.contact ?? body)
   if ("error" in contact) return res.status(400).json({ message: contact.error })
+  // The shop fills the trip when it has one to note; it is not required here.
+  const trip = body.trip && typeof body.trip === "object" ? validateTrip(body.trip, { date, time }) : null
+  if (trip && "error" in trip) return res.status(400).json({ message: trip.error })
+  const resourceId = typeof body.resource_id === "string" && body.resource_id ? body.resource_id : null
 
   const start = localToUtc(date, toMinutes(time))
   const module = req.scope.resolve<VitrinakiBookingsModuleService>(VITRINAKI_BOOKINGS_MODULE)
@@ -98,11 +103,14 @@ export async function POST(req: SellerRequest, res: MedusaResponse) {
       cancel_token: newCancelToken(),
       buffer_minutes: settings?.bufferMinutes ?? DEFAULT_BOOKINGS.bufferMinutes,
       allow_overlap: body.force === true,
+      details: trip ? { trip: trip.trip } : null,
+      // A resource the shop picked must be free; otherwise any that does the service.
+      resources: resourceChoice(settings, resourceId ? null : service, resourceId, Boolean(resourceId)),
     })
     return res.status(201).json({ booking: vendorBookingView(await module.retrieveBooking(id)) })
   } catch (error) {
     if (error instanceof MedusaError && error.type === MedusaError.Types.NOT_ALLOWED) {
-      return res.status(409).json({ message: "Υπάρχει ήδη ραντεβού εκείνη την ώρα.", overlap: true })
+      return res.status(409).json({ message: resourceId ? "Αυτό το όχημα, άτομο ή χώρος είναι πιασμένο εκείνη την ώρα." : "Υπάρχει ήδη ραντεβού εκείνη την ώρα.", overlap: true })
     }
     throw error
   }

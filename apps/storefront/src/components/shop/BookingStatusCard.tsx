@@ -5,6 +5,7 @@ import { useState, useTransition } from "react"
 import { cancelBookingByToken, type CustomerBooking } from "@/lib/data/bookings"
 import { useTranslator } from "@/lib/i18n/client"
 
+import { TripSummary } from "./ShopBooking"
 import type { ShopColors } from "./ShopProductCard"
 
 const STATUS_TEXT: Record<CustomerBooking["status"], { title: string; text: string }> = {
@@ -57,6 +58,7 @@ export function BookingStatusCard({
         <p className="mt-2 text-lg opacity-80">
           {booking.service_name} · {booking.time}–{booking.end_time}{booking.price ? ` · ${booking.price}` : ""}
         </p>
+        {booking.details?.trip ? <TripSummary trip={booking.details.trip} tr={tr} /> : null}
         <div style={{ background: colors.page }} className="mt-6 rounded-2xl p-5">
           <p className="font-bold" data-testid="booking-status-title">{tr(status.title)}</p>
           <p className="mt-1 leading-7 opacity-75">{tr(status.text)}</p>

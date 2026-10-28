@@ -1,7 +1,7 @@
 import type { MedusaContainer } from "@medusajs/framework/types"
 import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 
-import { localDate, localTime, readBookingSettings, type BookingSettings } from "./vitrinaki-bookings"
+import { localDate, localTime, readBookingSettings, resourcePool, type BookingService, type BookingSettings } from "./vitrinaki-bookings"
 
 export type BookingShop = {
   id: string
@@ -50,6 +50,24 @@ export async function loadBookingShop(scope: MedusaContainer, sellerId: string):
 }
 
 const iso = (value: unknown) => new Date(value as string).toISOString()
+const details = (value: unknown) => (value && typeof value === "object" && !Array.isArray(value) ? value : null)
+
+// What the bookings module needs to place a booking of this service: the
+// shop's resources for it and their names. `prefer` goes first when free;
+// with `only`, the booking must go on it (a resource the shop picked).
+export function resourceChoice(
+  settings: BookingSettings | null | undefined,
+  service?: Pick<BookingService, "resourceIds"> | null,
+  prefer?: string | null,
+  only = false
+) {
+  const pool = resourcePool(settings, service)
+  return {
+    pool: pool && only && prefer && pool.all.includes(prefer) ? { all: pool.all, candidates: [prefer] } : pool,
+    names: Object.fromEntries((settings?.resources || []).map((r) => [r.id, r.name])),
+    prefer: prefer ?? null,
+  }
+}
 
 // What the Studio sees of a booking.
 export function vendorBookingView(row: any) {
@@ -73,6 +91,9 @@ export function vendorBookingView(row: any) {
     customer_note: row.customer_note || "",
     shop_note: row.shop_note || "",
     cancelled_by: row.cancelled_by || null,
+    resource_id: row.resource_id || null,
+    resource_name: row.resource_name || "",
+    details: details(row.details),
     created_at: iso(row.created_at),
   }
 }
@@ -92,6 +113,7 @@ export function customerBookingView(row: any, shop: Pick<BookingShop, "id" | "na
     end_time: localTime(new Date(row.end_at)),
     status: row.status,
     customer_name: row.customer_name,
+    details: details(row.details),
     can_cancel: canCancel,
   }
 }
