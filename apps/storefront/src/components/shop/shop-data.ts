@@ -10,7 +10,8 @@ export type ShopSection = {
   imageUrl?: string | null
 }
 
-export type BusinessType = "retail" | "crafts" | "food" | "beauty" | "services" | "portfolio" | "other"
+export type BusinessType =
+  | "retail" | "crafts" | "food" | "beauty" | "fitness" | "lessons" | "health" | "professional" | "events" | "services" | "portfolio" | "other"
 export type ShopDay = { closed: boolean; open: string; close: string; open2: string; close2: string }
 
 // Public part of the Studio store profile (see packages/api/src/lib/vitrinaki-profile.ts).
@@ -18,6 +19,7 @@ export type ShopProfile = {
   businessType: BusinessType | null
   businessTypeOther: string
   story: string
+  introVideo?: string
   whatsapp: string
   viber: string
   address: { street: string; area: string; city: string; postalCode: string; showMap: boolean }
@@ -52,7 +54,7 @@ export type ShopResponse = {
     tagline: string
     description: string
     template: "atelier" | "local" | "services"
-    palette: "forest" | "terracotta" | "ocean" | "plum"
+    palette: "forest" | "terracotta" | "ocean" | "plum" | "indigo" | "sage" | "graphite"
     contactEmail?: string | null
     contactPhone?: string | null
     customDomain?: string | null

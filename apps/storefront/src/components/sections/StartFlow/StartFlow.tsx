@@ -9,6 +9,7 @@ import {
   BUSINESS_TYPES,
   HANDLE_MAX,
   MAX_PHOTOS,
+  MAX_VIDEO_MB,
   OPTIONAL_STEPS,
   PASSWORD_MIN,
   TAGLINE_IDEAS,
@@ -57,6 +58,11 @@ function Icon({ name, size = 18, className = "" }: { name: string; size?: number
     drop: <path d="M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11Z" />,
     tool: <path d="M14.5 6.5a4 4 0 0 0 5 5L12 19a2.1 2.1 0 0 1-3-3l7.5-7.5a4 4 0 0 1-2-2Zm0 0L17 4" />,
     brief: <><rect x="3" y="7" width="18" height="13" rx="2" /><path d="M9 7V5h6v2M3 12h18" /></>,
+    fitness: <path d="M6.5 7v10M17.5 7v10M3.5 9.5v5M20.5 9.5v5M6.5 12h11" />,
+    book: <><path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H11v16H5.5A1.5 1.5 0 0 1 4 18.5v-13ZM20 5.5A1.5 1.5 0 0 0 18.5 4H13v16h5.5a1.5 1.5 0 0 0 1.5-1.5v-13Z" /></>,
+    heart: <path d="M12 20s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.2a4.3 4.3 0 0 1 7.5 2.6C19.5 15.4 12 20 12 20Z" />,
+    party: <><path d="M4 20 9 7l8 8-13 5Z" /><path d="M14 4v2M19 9h2M17.5 5.5 16 7M12 10c1-2 3-3 5-2" /></>,
+    camera: <><path d="M4 8h3l1.5-2.5h7L17 8h3v11H4V8Z" /><circle cx="12" cy="13.5" r="3.2" /></>,
     dots: <><circle cx="6" cy="12" r="1.3" /><circle cx="12" cy="12" r="1.3" /><circle cx="18" cy="12" r="1.3" /></>,
     upload: <><path d="M12 15V4M7.5 8.5 12 4l4.5 4.5" /><path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3" /></>,
     copy: <><rect x="8" y="8" width="12" height="12" rx="2" /><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" /></>,
@@ -165,7 +171,7 @@ export function StartFlow({
   const uid = "vk-start"
   const ids = {
     name: `${uid}-name`, handle: `${uid}-handle`, email: `${uid}-email`, password: `${uid}-password`, terms: `${uid}-terms`,
-    tagline: `${uid}-tagline`, story: `${uid}-story`, area: `${uid}-area`, city: `${uid}-city`, postal: `${uid}-postal`,
+    tagline: `${uid}-tagline`, story: `${uid}-story`, video: `${uid}-video`, area: `${uid}-area`, city: `${uid}-city`, postal: `${uid}-postal`,
     phone: `${uid}-phone`, whatsapp: `${uid}-whatsapp`, cemail: `${uid}-cemail`, instagram: `${uid}-ig`, facebook: `${uid}-fb`, other: `${uid}-other`,
   }
 
@@ -197,6 +203,8 @@ export function StartFlow({
   const [logoBusy, setLogoBusy] = useState(false)
   const [photos, setPhotos] = useState<string[]>([])
   const [photosBusy, setPhotosBusy] = useState(0)
+  const [introVideo, setIntroVideo] = useState("")
+  const [videoBusy, setVideoBusy] = useState(false)
   // The shop as built at the end («Στήνεται μόνο του»), and its look.
   const [built, setBuilt] = useState<ShopResponse | null>(null)
   const [preset, setPreset] = useState(0)
@@ -386,7 +394,7 @@ export function StartFlow({
       case "type":
         return businessType ? { businessType, businessTypeOther: businessType === "other" ? businessTypeOther.trim() : "" } : null
       case "photos":
-        return photos.length || logoUrl ? { photos, logoUrl } : null
+        return photos.length || logoUrl || introVideo.trim() ? { photos, logoUrl, introVideo: introVideo.trim() } : null
       case "story":
         return tagline.trim() || story.trim() ? { tagline: tagline.trim(), story: story.trim() } : null
       case "location":
@@ -491,6 +499,30 @@ export function StartFlow({
       } finally {
         setPhotosBusy((n) => Math.max(0, n - 1))
       }
+    }
+  }
+
+  async function uploadVideo(file: File | undefined) {
+    if (!file) return
+    setStepErrors({})
+    if (file.size > MAX_VIDEO_MB * 1024 * 1024) {
+      setStepErrors({ introVideo: tr("Το βίντεο είναι μεγαλύτερο από 50 MB. Ανέβασέ το στο YouTube και βάλε εδώ τον σύνδεσμο.") })
+      return
+    }
+    setVideoBusy(true)
+    try {
+      const form = new FormData()
+      form.append("file", file)
+      form.append("kind", "video")
+      form.append("lang", lang)
+      const response = await fetch(`${API}/logo`, { method: "POST", body: form })
+      const body = await response.json().catch(() => ({}))
+      if (!response.ok || !body.url) throw new Error(body.message || tr("Δεν ανέβηκε το βίντεο. Δοκίμασε ξανά."))
+      setIntroVideo(body.url)
+    } catch (error) {
+      setStepErrors({ introVideo: error instanceof Error ? error.message : tr("Δεν ανέβηκε το βίντεο. Δοκίμασε ξανά.") })
+    } finally {
+      setVideoBusy(false)
     }
   }
 
@@ -957,6 +989,33 @@ export function StartFlow({
               </div>
               {stepErrors.logoUrl ? <p className="mt-1.5 text-[13px] font-medium text-[#B2432F]" role="alert">{stepErrors.logoUrl}</p> : null}
             </div>
+            <Field
+              id={ids.video}
+              label={tr("Βίντεο παρουσίασης")}
+              optional={tr("(προαιρετικό)")}
+              hint={tr("Λίγα λεπτά όπου συστήνεσαι στους πελάτες σου. Βάλε σύνδεσμο από YouTube ή Vimeo, ή ανέβασε ένα βίντεο έως 50 MB.")}
+              error={stepErrors.introVideo}
+            >
+              <div className="flex flex-wrap gap-2">
+                <input
+                  id={ids.video}
+                  type="url"
+                  inputMode="url"
+                  maxLength={500}
+                  value={introVideo}
+                  onChange={(e) => setIntroVideo(e.target.value)}
+                  placeholder="https://youtube.com/…"
+                  aria-describedby={describedBy(ids.video, stepErrors.introVideo, true)}
+                  aria-invalid={Boolean(stepErrors.introVideo) || undefined}
+                  className={`${inputCls(Boolean(stepErrors.introVideo))} min-w-0 flex-1`}
+                />
+                <label className="inline-flex shrink-0 cursor-pointer items-center gap-1.5 rounded-xl border border-[#2E4A37]/25 bg-white px-3.5 text-[13.5px] font-semibold text-[#1F3628] transition focus-within:ring-4 focus-within:ring-[#2E4A37]/15 hover:border-[#2E4A37]">
+                  {videoBusy ? <Spinner /> : <Icon name="upload" size={16} />}
+                  {videoBusy ? tr("Ανεβαίνει…") : tr("Ανέβασε βίντεο")}
+                  <input type="file" accept="video/mp4,video/webm,video/quicktime" disabled={videoBusy} onChange={(e) => { void uploadVideo(e.target.files?.[0]); e.target.value = "" }} className="sr-only" />
+                </label>
+              </div>
+            </Field>
           </div>
         )
       case "story": {
@@ -1108,7 +1167,7 @@ export function StartFlow({
           <button type="button" onClick={next} disabled={saving} className={ghostBtn}>
             {tr("Αργότερα")}
           </button>
-          <button type="submit" disabled={saving || logoBusy || photosBusy > 0} aria-busy={saving} className={`${primaryBtn} sm:min-w-[11rem]`}>
+          <button type="submit" disabled={saving || logoBusy || photosBusy > 0 || videoBusy} aria-busy={saving} className={`${primaryBtn} sm:min-w-[11rem]`}>
             {saving ? <><Spinner />{tr("Αποθήκευση…")}</> : <>{stepIndex === OPTIONAL_STEPS.length - 1 ? tr("Ολοκλήρωση") : tr("Συνέχεια")} <Icon name="arrow" size={18} /></>}
           </button>
         </div>

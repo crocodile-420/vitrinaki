@@ -7,7 +7,7 @@ export type PublicStorefront = {
   tagline?: string
   description?: string
   template?: "atelier" | "local" | "services"
-  palette?: "forest" | "terracotta" | "ocean" | "plum"
+  palette?: "forest" | "terracotta" | "ocean" | "plum" | "indigo" | "sage" | "graphite"
   contactEmail?: string
   contactPhone?: string
   isPublished?: boolean

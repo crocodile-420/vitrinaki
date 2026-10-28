@@ -14,6 +14,7 @@ import {
   SECTION_ORDER,
   STEP_META,
   SUGGESTIONS,
+  isAppointmentType,
   isEmail,
   isGreekMobile,
   isGreekPhone,
@@ -67,6 +68,7 @@ type Profile = {
   businessType: BusinessType | ""
   businessTypeOther: string
   story: string
+  introVideo?: string
   whatsapp: string
   viber: string
   address: { street: string; area: string; city: string; postalCode: string; showMap: boolean; hideStreet: boolean }
@@ -307,7 +309,10 @@ export default function VitrinakiProfilePage() {
             <Field label="Η ιστορία σου" optional hint="Ποιος είσαι, πώς ξεκίνησες, τι σε κάνει διαφορετικό. Οι πελάτες το διαβάζουν!">
               <textarea rows={6} className={inputCls} maxLength={4000} value={profile.story} placeholder={suggestion?.story} onChange={(e) => setP({ story: e.target.value })} />
             </Field>
-            <Field label={type === "portfolio" || type === "services" ? "Σπουδές, πιστοποιήσεις, εμπειρία" : "Βραβεία, διακρίσεις, πιστοποιήσεις"} optional>
+            <Field label="Βίντεο παρουσίασης" optional error={err("profile.introVideo")} hint="Σύνδεσμος από YouTube ή Vimeo όπου συστήνεσαι. Εμφανίζεται δίπλα στην ιστορία σου.">
+              <input className={inputCls} type="url" inputMode="url" maxLength={500} value={profile.introVideo || ""} onChange={(e) => setP({ introVideo: e.target.value })} placeholder="https://youtube.com/…" />
+            </Field>
+            <Field label={type === "portfolio" || (isAppointmentType(type) && type !== "beauty") ? "Σπουδές, πιστοποιήσεις, εμπειρία" : "Βραβεία, διακρίσεις, πιστοποιήσεις"} optional>
               <input className={inputCls} maxLength={600} value={profile.credentials} onChange={(e) => setP({ credentials: e.target.value })} placeholder="π.χ. Πτυχίο ΤΕΙ Γραφιστικής, 12 χρόνια εμπειρία" />
             </Field>
           </div>
@@ -358,13 +363,13 @@ export default function VitrinakiProfilePage() {
       case "location":
         return (
           <div className="space-y-5">
-            {type === "services" || type === "beauty" ? (
+            {isAppointmentType(type) ? (
               <div className="grid gap-3 sm:grid-cols-2">
                 <Toggle checked={profile.services.atClient} onChange={(v) => setP({ services: { ...profile.services, atClient: v } })} label="Έρχομαι στον πελάτη" hint="Κατ' οίκον ή στον χώρο του." />
                 <Toggle checked={profile.services.online} onChange={(v) => setP({ services: { ...profile.services, online: v } })} label="Εξυπηρετώ και online" />
               </div>
             ) : null}
-            {type === "services" || type === "beauty" ? (
+            {isAppointmentType(type) ? (
               <Field label="Περιοχή εξυπηρέτησης" optional><input className={inputCls} value={profile.services.serviceArea} onChange={(e) => setP({ services: { ...profile.services, serviceArea: e.target.value } })} placeholder="π.χ. Βόρεια προάστια Αθήνας" /></Field>
             ) : null}
             <div className="grid gap-4 sm:grid-cols-2">
@@ -667,7 +672,7 @@ function Completion({ value }: { value: number }) {
 function visibleSections(profile: Profile): string[] {
   const type = profile.businessType || "other"
   const has: Record<string, boolean> = {
-    catalog: !["services", "portfolio", "beauty"].includes(type),
+    catalog: type !== "portfolio" && !isAppointmentType(type),
     origin: Boolean(profile.food.region || profile.food.origin || profile.food.certifications.length),
     craft: Boolean(profile.crafts.materials || profile.crafts.techniques || profile.crafts.madeToOrder),
     story: Boolean(profile.story),
@@ -701,7 +706,7 @@ function LivePreview({ profile, basics }: { profile: Profile; basics: Basics }) 
           <p className="mt-1 font-serif text-lg font-bold leading-tight">{basics.tagline || suggestion?.tagline || "Το κεντρικό σου μήνυμα"}</p>
           <p className="mt-1 line-clamp-2 text-xs opacity-75">{basics.description || suggestion?.description || ""}</p>
           <div className="mt-3 flex flex-wrap gap-1.5">
-            <span className="rounded-full px-3 py-1 text-[10px] font-bold text-white" style={{ background: palette.color }}>{["services", "beauty"].includes(profile.businessType) ? "Ζήτησε ραντεβού" : profile.businessType === "portfolio" ? "Δες τα έργα" : "Δες τα προϊόντα"}</span>
+            <span className="rounded-full px-3 py-1 text-[10px] font-bold text-white" style={{ background: palette.color }}>{isAppointmentType(profile.businessType) ? "Ζήτησε ραντεβού" : profile.businessType === "portfolio" ? "Δες τα έργα" : "Δες τα προϊόντα"}</span>
             {profile.whatsapp ? <span className="rounded-full border px-3 py-1 text-[10px] font-bold" style={{ borderColor: palette.color }}>WhatsApp</span> : null}
           </div>
         </div>

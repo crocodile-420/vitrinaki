@@ -38,10 +38,11 @@ type Patch = Partial<{
   instagram: string
   facebook: string
   photos: string[]
+  introVideo: string
 }>
 
 const STEPS: Record<string, string> = { type: "type", look: "look", photos: "look", story: "basics", location: "location", contact: "contact" }
-const PALETTES = new Set(["forest", "terracotta", "ocean"])
+const PALETTES = new Set(["forest", "terracotta", "ocean", "plum", "indigo", "sage", "graphite"])
 const has = (body: Patch, key: keyof Patch) => Object.prototype.hasOwnProperty.call(body, key)
 const text = (value: unknown, limit: number) => (typeof value === "string" ? value.trim().slice(0, limit) : "")
 
@@ -73,6 +74,7 @@ export async function POST(req: SellerRequest, res: MedusaResponse) {
     merged.businessTypeOther = type === "other" ? text(body.businessTypeOther, 80) : ""
   }
   if (has(body, "story")) merged.story = text(body.story, 4000)
+  if (has(body, "introVideo")) merged.introVideo = text(body.introVideo, 500)
   if (has(body, "area") || has(body, "city") || has(body, "postalCode")) {
     const postalCode = text(body.postalCode, 10).replace(/\s+/g, "")
     merged.address = {
@@ -103,6 +105,7 @@ export async function POST(req: SellerRequest, res: MedusaResponse) {
     "profile.address.postalCode": "postalCode",
     "profile.socials.instagram": "instagram",
     "profile.socials.facebook": "facebook",
+    "profile.introVideo": "introVideo",
   }
   for (const [key, message] of Object.entries(profileErrors)) {
     if (errorKey[key]) errors[errorKey[key]] = message

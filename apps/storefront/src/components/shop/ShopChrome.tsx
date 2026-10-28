@@ -6,6 +6,7 @@ import { translator, type Lang } from "@/lib/i18n/vitrinaki"
 import type { ShopColors } from "./ShopProductCard"
 import { ShopImage } from "./ShopImage"
 import type { ShopResponse } from "./shop-data"
+import { isAppointmentType } from "./business-types"
 import { shopInitials } from "./shop-style"
 
 const platformUrl = (process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3100").replace(/\/+$/, "")
@@ -26,10 +27,10 @@ export function ShopHeader({
   const tr = translator(lang)
   const { storefront, seller } = shop
   const type = shop.profile?.businessType
-  const isServices = type ? ["services", "beauty", "portfolio"].includes(type) : storefront.template === "services"
+  const isServices = type ? isAppointmentType(type) || type === "portfolio" : storefront.template === "services"
   const firstNav = type === "portfolio"
     ? { href: "#projects", label: "Έργα", show: Boolean(shop.profile?.portfolio.projects.length) }
-    : type === "services" || type === "beauty"
+    : isAppointmentType(type)
       ? { href: "#services", label: "Υπηρεσίες", show: Boolean(shop.profile?.services.items.length) }
       : { href: "#catalog", label: isServices ? "Υπηρεσίες" : "Συλλογή", show: true }
   return (

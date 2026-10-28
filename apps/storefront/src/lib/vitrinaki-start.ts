@@ -81,8 +81,9 @@ export function passwordStrength(password: string, email = ""): 0 | 1 | 2 | 3 {
 
 // ---------- optional steps ----------
 
-export type BusinessType = "retail" | "crafts" | "food" | "beauty" | "services" | "portfolio" | "other"
-export type Palette = "forest" | "terracotta" | "ocean"
+export type BusinessType =
+  | "retail" | "crafts" | "food" | "beauty" | "fitness" | "lessons" | "health" | "professional" | "events" | "services" | "portfolio" | "other"
+export type Palette = "forest" | "terracotta" | "ocean" | "indigo" | "sage" | "graphite"
 export type Template = "atelier" | "local" | "services"
 
 // Same types (and order) as the Studio store-profile wizard.
@@ -90,20 +91,29 @@ export const BUSINESS_TYPES: { value: BusinessType; label: string; hint: string;
   { value: "retail", label: "Κατάστημα / Λιανική", hint: "Ρούχα, δώρα, είδη σπιτιού", icon: "store" },
   { value: "crafts", label: "Χειροποίητα", hint: "Κόσμημα, κεραμική, ξύλο", icon: "hand" },
   { value: "food", label: "Τρόφιμα & τοπικά", hint: "Λάδι, μέλι, κρασί, γλυκά", icon: "leaf" },
-  { value: "beauty", label: "Ομορφιά & ευεξία", hint: "Κομμωτήριο, αισθητική, γυμναστική", icon: "drop" },
-  { value: "services", label: "Υπηρεσίες", hint: "Τεχνικός, δάσκαλος, σύμβουλος", icon: "tool" },
-  { value: "portfolio", label: "Portfolio", hint: "Φωτογράφος, designer, freelancer", icon: "brief" },
+  { value: "beauty", label: "Ομορφιά & περιποίηση", hint: "Κομμωτήριο, αισθητική, νύχια, μασάζ", icon: "drop" },
+  { value: "fitness", label: "Γυμναστική & χορός", hint: "Personal trainer, γιόγκα, pilates, χορός", icon: "fitness" },
+  { value: "lessons", label: "Μαθήματα", hint: "Καθηγητής, φροντιστήριο, μουσική, γλώσσες", icon: "book" },
+  { value: "health", label: "Υγεία & θεραπεία", hint: "Ψυχολόγος, διατροφολόγος, φυσικοθεραπευτής", icon: "heart" },
+  { value: "professional", label: "Ελεύθεροι επαγγελματίες", hint: "Λογιστής, δικηγόρος, σύμβουλος, μεσίτης", icon: "brief" },
+  { value: "events", label: "Εκδηλώσεις & χώροι", hint: "Αίθουσα εκδηλώσεων, catering, DJ, γάμοι", icon: "party" },
+  { value: "services", label: "Τεχνικοί & υπηρεσίες", hint: "Ηλεκτρολόγος, υδραυλικός, συνεργείο", icon: "tool" },
+  { value: "portfolio", label: "Portfolio", hint: "Φωτογράφος, designer, αρχιτέκτονας", icon: "camera" },
   { value: "other", label: "Κάτι άλλο", hint: "Πες μας με δυο λέξεις", icon: "dots" },
 ]
 
 export const TEMPLATE_FOR_TYPE: Record<BusinessType, Template> = {
-  retail: "atelier", crafts: "atelier", food: "local", beauty: "services", services: "services", portfolio: "services", other: "atelier",
+  retail: "atelier", crafts: "atelier", food: "local", beauty: "services", fitness: "services", lessons: "services",
+  health: "services", professional: "services", events: "services", services: "services", portfolio: "services", other: "atelier",
 }
 
 export const PALETTES: { value: Palette; label: string; color: string; soft: string; page: string; ink: string }[] = [
   { value: "forest", label: "Κυπαρισσί", color: "#2E4A37", soft: "#E6ECE3", page: "#F7F2E8", ink: "#2E4A37" },
   { value: "terracotta", label: "Κεραμιδί", color: "#C0503C", soft: "#F4E1D9", page: "#FBF4EE", ink: "#5E2E24" },
   { value: "ocean", label: "Μπλε", color: "#265E8E", soft: "#DDE8F2", page: "#F3F6F9", ink: "#1B3F5E" },
+  { value: "indigo", label: "Λουλακί", color: "#4B44C4", soft: "#E3E2F6", page: "#F5F5FB", ink: "#25225A" },
+  { value: "sage", label: "Φασκόμηλο", color: "#3B786A", soft: "#DCEAE4", page: "#F4F7F5", ink: "#21413A" },
+  { value: "graphite", label: "Γραφίτης", color: "#3A4352", soft: "#E5E5E1", page: "#F6F5F2", ink: "#23262B" },
 ]
 
 // One-click tagline ideas per type (same copy as the Studio wizard).
@@ -112,6 +122,11 @@ export const TAGLINE_IDEAS: Record<BusinessType, string> = {
   crafts: "Χειροποίητα κομμάτια, φτιαγμένα ένα-ένα",
   food: "Από τον τόπο μας, κατευθείαν στο τραπέζι σου",
   beauty: "Χρόνος για σένα, με επαγγελματική φροντίδα",
+  fitness: "Προπόνηση στα μέτρα σου, με σωστή καθοδήγηση",
+  lessons: "Μαθήματα με υπομονή, μέθοδο και αποτέλεσμα",
+  health: "Φροντίδα με γνώση και ανθρώπινη ματιά",
+  professional: "Σωστή συμβουλή, την ώρα που τη χρειάζεσαι",
+  events: "Η μέρα σας, όπως την ονειρεύεστε",
   services: "Αξιόπιστη δουλειά, καθαρές τιμές",
   portfolio: "Ιδέες που γίνονται έργα",
   other: "Καλώς ήρθες στη βιτρίνα μας",
@@ -119,6 +134,7 @@ export const TAGLINE_IDEAS: Record<BusinessType, string> = {
 
 export const OPTIONAL_STEPS = ["type", "story", "photos", "location", "contact"] as const
 export const MAX_PHOTOS = 8
+export const MAX_VIDEO_MB = 50
 export type OptionalStep = (typeof OPTIONAL_STEPS)[number]
 
 // ---------- API shapes (storefront route handlers) ----------

@@ -5,6 +5,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useTranslator } from "@/lib/i18n/client"
 import {
   BUSINESS_TYPES,
+  isAppointmentType,
   CERTIFICATIONS,
   DAYS,
   LANGUAGES,
@@ -45,6 +46,7 @@ type Profile = {
   businessType: BusinessType | ""
   businessTypeOther: string
   story: string
+  introVideo?: string
   whatsapp: string
   viber: string
   address: { street: string; area: string; city: string; postalCode: string; showMap: boolean; hideStreet: boolean }
@@ -385,7 +387,10 @@ export function ShopRegistration({ locale, session, startHref }: { locale: strin
             <Field id={id("story")} label={tr("Η ιστορία και το όραμά σου")} optional={opt} hint={tr("Ποιος είσαι, πώς ξεκίνησες, τι σε κάνει διαφορετικό. Οι πελάτες το διαβάζουν!")}>
               <textarea id={id("story")} rows={6} className={inputCls()} maxLength={4000} value={profile.story} placeholder={suggestion ? tr(suggestion.story) : ""} onChange={(e) => setP({ story: e.target.value })} />
             </Field>
-            <Field id={id("credentials")} label={type === "portfolio" || type === "services" ? tr("Σπουδές, πιστοποιήσεις, εμπειρία") : tr("Βραβεία, διακρίσεις, πιστοποιήσεις")} optional={opt}>
+            <Field id={id("introVideo")} label={tr("Βίντεο παρουσίασης")} optional={opt} error={err("profile.introVideo")} hint={tr("Σύνδεσμος από YouTube ή Vimeo όπου συστήνεσαι. Εμφανίζεται δίπλα στην ιστορία σου.")}>
+              <input id={id("introVideo")} type="url" inputMode="url" className={inputCls(Boolean(err("profile.introVideo")))} maxLength={500} value={profile.introVideo || ""} onChange={(e) => setP({ introVideo: e.target.value })} placeholder="https://youtube.com/…" />
+            </Field>
+            <Field id={id("credentials")} label={type === "portfolio" || (isAppointmentType(type) && type !== "beauty") ? tr("Σπουδές, πιστοποιήσεις, εμπειρία") : tr("Βραβεία, διακρίσεις, πιστοποιήσεις")} optional={opt}>
               <input id={id("credentials")} className={inputCls()} maxLength={600} value={profile.credentials} onChange={(e) => setP({ credentials: e.target.value })} placeholder={tr("π.χ. Πτυχίο ΤΕΙ Γραφιστικής, 12 χρόνια εμπειρία")} />
             </Field>
           </div>
@@ -444,7 +449,7 @@ export function ShopRegistration({ locale, session, startHref }: { locale: strin
       case "location":
         return (
           <div className="space-y-5">
-            {type === "services" || type === "beauty" ? (
+            {isAppointmentType(type) ? (
               <>
                 <div className="grid gap-3 sm:grid-cols-2">
                   <Toggle checked={profile.services.atClient} onChange={(v) => setP({ services: { ...profile.services, atClient: v } })} label={tr("Έρχομαι στον πελάτη")} hint={tr("Κατ' οίκον ή στον χώρο του.")} />
@@ -889,7 +894,7 @@ function Completion({ value, label }: { value: number; label: string }) {
 function visibleSections(profile: Profile): string[] {
   const type = profile.businessType || "other"
   const has: Record<string, boolean> = {
-    catalog: !["services", "portfolio", "beauty"].includes(type),
+    catalog: type !== "portfolio" && !isAppointmentType(type),
     origin: Boolean(profile.food.region || profile.food.origin || profile.food.certifications.length),
     craft: Boolean(profile.crafts.materials || profile.crafts.techniques || profile.crafts.madeToOrder),
     story: Boolean(profile.story),
