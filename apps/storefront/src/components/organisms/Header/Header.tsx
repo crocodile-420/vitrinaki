@@ -13,7 +13,7 @@ const navigation = [
   { label: "Καταστήματα", href: "/#vitrina" },
   // Shown from xl up; below that they stay in the mobile menu so the bar never overflows.
   { label: "Για ποιον", href: "/#for-whom", wide: true },
-  { label: "Συνδρομή", href: "/#pricing", wide: true },
+  { label: "Συνδρομή", href: "/pricing", wide: true },
   { label: "Ερωτήσεις", href: "/#faq" },
 ]
 

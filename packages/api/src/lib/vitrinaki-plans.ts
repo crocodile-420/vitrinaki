@@ -47,3 +47,23 @@ export const memberLimitFor = (subscription: any, now = Date.now()) =>
 
 export const memberLimitMessage = (limit: number) =>
   `Το πακέτο σου επιτρέπει έως ${limit} ${limit === 1 ? "άτομο" : "άτομα"}. Αναβάθμισε για να προσθέσεις κι άλλους.`
+
+// Env vars holding the Stripe Price ID of each one-off setup service.
+export const SETUP_PRICE_ENV = {
+  assisted: "STRIPE_PRICE_SETUP_ASSISTED",
+  done_for_you: "STRIPE_PRICE_SETUP_DONE_FOR_YOU",
+} as const
+
+export type PublicPrice = { amount: number; currency: string; interval: "month" | "year" | null }
+
+// What the public pricing page may show of a Stripe Price: the amount in cents,
+// the currency and the billing interval. null for an archived or metered price.
+export function toPublicPrice(price: any): PublicPrice | null {
+  if (!price || price.active === false || typeof price.unit_amount !== "number") return null
+  const interval = price.recurring?.interval
+  return {
+    amount: price.unit_amount,
+    currency: String(price.currency || "eur"),
+    interval: interval === "month" || interval === "year" ? interval : null,
+  }
+}

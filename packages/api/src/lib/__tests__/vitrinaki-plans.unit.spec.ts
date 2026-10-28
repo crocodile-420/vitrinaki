@@ -1,4 +1,4 @@
-import { activePlanId, availablePlanIntervals, memberLimitFor, memberLimitMessage } from "../vitrinaki-plans"
+import { activePlanId, availablePlanIntervals, memberLimitFor, memberLimitMessage, toPublicPrice } from "../vitrinaki-plans"
 
 describe("vitrinaki plans", () => {
   const now = Date.parse("2026-10-20T12:00:00Z")
@@ -30,5 +30,14 @@ describe("vitrinaki plans", () => {
 
   it("explains the limit in Greek", () => {
     expect(memberLimitMessage(15)).toBe("Το πακέτο σου επιτρέπει έως 15 άτομα. Αναβάθμισε για να προσθέσεις κι άλλους.")
+  })
+
+  it("keeps only the public parts of a Stripe price", () => {
+    expect(toPublicPrice({ id: "price_1", active: true, unit_amount: 1900, currency: "eur", recurring: { interval: "month" }, metadata: { x: 1 } }))
+      .toEqual({ amount: 1900, currency: "eur", interval: "month" })
+    expect(toPublicPrice({ active: true, unit_amount: 9900, currency: "eur", recurring: null })).toEqual({ amount: 9900, currency: "eur", interval: null })
+    expect(toPublicPrice({ active: false, unit_amount: 1900, currency: "eur" })).toBeNull()
+    expect(toPublicPrice({ active: true, unit_amount: null, currency: "eur" })).toBeNull()
+    expect(toPublicPrice(null)).toBeNull()
   })
 })

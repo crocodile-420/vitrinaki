@@ -595,6 +595,9 @@ export default async function Home({
               ))}
             </ul>
             <p className="mt-4 text-[13px] leading-6 text-[#F7F2E8]/70">{tr("Οι τιμές οριστικοποιούνται. Πριν ξεκινήσεις θα ξέρεις ακριβώς τι πληρώνεις. Ήρθες με σύσταση από άλλο κατάστημα; Ο πρώτος σου μήνας είναι δωρεάν.")}</p>
+            <Link href={`/${locale}/pricing`} className="group mt-5 inline-flex items-center gap-2 text-[15px] font-semibold text-[#F7F2E8] underline decoration-[#8DB8DE] decoration-2 underline-offset-[6px] hover:decoration-[#F7F2E8]">
+              {tr("Δες αναλυτικά τα πακέτα")} <Arrow />
+            </Link>
           </Reveal>
         </div>
       </section>
