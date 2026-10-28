@@ -7,12 +7,45 @@ export type PlanId = (typeof PLAN_IDS)[number]
 
 export const isPlanId = (value: unknown): value is PlanId => PLAN_IDS.includes(value as PlanId)
 
+// Two ways to pay, both charged every month:
+// - "year": a 12-month commitment at the lower monthly price. Its Stripe Price
+//   is a monthly recurring price; cancelling takes effect when the 12 months end.
+// - "month": no commitment, at the higher monthly price, plus a one-off
+//   activation fee on the first invoice (STRIPE_PRICE_<PLAN>_ACTIVATION).
+// The ids stay "month"/"year" because stored subscriptions already use them.
+export const COMMITMENT_MONTHS = 12
+
 // Env vars holding the Stripe Price ID of each plan and billing interval.
 export const PLAN_PRICE_ENV: Record<PlanId, { month: string; year: string }> = {
   starter: { month: "STRIPE_PRICE_STARTER_MONTHLY", year: "STRIPE_PRICE_STARTER_YEARLY" },
   growth: { month: "STRIPE_PRICE_GROWTH_MONTHLY", year: "STRIPE_PRICE_GROWTH_YEARLY" },
   pro: { month: "STRIPE_PRICE_PRO_MONTHLY", year: "STRIPE_PRICE_PRO_YEARLY" },
   business: { month: "STRIPE_PRICE_BUSINESS_MONTHLY", year: "STRIPE_PRICE_BUSINESS_YEARLY" },
+}
+
+// One-off activation fee for the no-commitment option, per plan (optional).
+export const PLAN_ACTIVATION_ENV: Record<PlanId, string> = {
+  starter: "STRIPE_PRICE_STARTER_ACTIVATION",
+  growth: "STRIPE_PRICE_GROWTH_ACTIVATION",
+  pro: "STRIPE_PRICE_PRO_ACTIVATION",
+  business: "STRIPE_PRICE_BUSINESS_ACTIVATION",
+}
+
+// When a 12-month commitment that started at `start` ends.
+export function commitmentEnd(start: Date, months = COMMITMENT_MONTHS) {
+  const end = new Date(start.getTime())
+  end.setUTCMonth(end.getUTCMonth() + months)
+  return end
+}
+
+// A committed subscription the customer asked to cancel at the end of the
+// current month: the cancellation is moved to the end of the commitment.
+// Returns the unix time to cancel at, or null when nothing needs to change.
+export function commitmentCancelAt(subscription: any, commitmentEndIso: string | null | undefined): number | null {
+  if (!subscription?.cancel_at_period_end || !commitmentEndIso) return null
+  const end = Math.floor(new Date(commitmentEndIso).getTime() / 1000)
+  const periodEnd = Number(subscription.current_period_end || 0)
+  return Number.isFinite(end) && end > periodEnd ? end : null
 }
 
 // Billing intervals that have a Stripe Price configured, per plan.

@@ -2,7 +2,7 @@ import type { AuthenticatedMedusaRequest, MedusaResponse } from "@medusajs/frame
 import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 import { updateSellersWorkflow } from "@mercurjs/core/workflows"
 
-import { isPlanId, PLAN_PRICE_ENV } from "../../../../../lib/vitrinaki-plans"
+import { COMMITMENT_MONTHS, isPlanId, PLAN_ACTIVATION_ENV, PLAN_PRICE_ENV } from "../../../../../lib/vitrinaki-plans"
 
 type SellerRequest = AuthenticatedMedusaRequest & { seller_context?: { seller_id?: string } }
 
@@ -46,6 +46,15 @@ export async function POST(req: SellerRequest, res: MedusaResponse) {
     "subscription_data[metadata][plan_id]": planId,
     "subscription_data[metadata][billing_interval]": interval,
   })
+  // No commitment: the one-off activation fee goes on the first invoice.
+  // 12-month commitment: recorded on the subscription; the webhook keeps any
+  // cancellation from taking effect before the commitment ends.
+  const activationPriceId = interval === "month" ? process.env[PLAN_ACTIVATION_ENV[planId]] : undefined
+  if (activationPriceId) {
+    form.set("line_items[1][price]", activationPriceId)
+    form.set("line_items[1][quantity]", "1")
+  }
+  if (interval === "year") form.set("subscription_data[metadata][commitment_months]", String(COMMITMENT_MONTHS))
   if (seller.email) form.set("customer_email", seller.email)
   if (current?.stripeCustomerId) {
     form.delete("customer_email")

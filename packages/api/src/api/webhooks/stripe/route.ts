@@ -2,7 +2,7 @@ import type { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
 import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 import { updateSellersWorkflow } from "@mercurjs/core/workflows"
 import { verifyStripeSignature as verifySignature } from "../../../lib/stripe-connect"
-import { isPlanId } from "../../../lib/vitrinaki-plans"
+import { commitmentCancelAt, commitmentEnd, isPlanId } from "../../../lib/vitrinaki-plans"
 import { isQualifyingPayment } from "../../../lib/vitrinaki-referral"
 import { applyPendingReferralRewards, qualifyReferral } from "../../../lib/vitrinaki-referral-rewards"
 
@@ -88,8 +88,28 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
   } else if (event.type === "invoice.paid") status = "active"
   else if (event.type === "invoice.payment_failed") status = "past_due"
 
+  // 12-month commitment: remember when it ends, and if the customer cancels
+  // before then, move the cancellation to that date.
+  const committed = Number(subscriptionMetadata.commitment_months || 0) > 0
+  const commitmentEndsAt = committed
+    ? subscription.commitmentEnd || (subObject && object.start_date ? commitmentEnd(new Date(Number(object.start_date) * 1000), Number(subscriptionMetadata.commitment_months)).toISOString() : null)
+    : subscription.commitmentEnd || null
+  const cancelAt = subObject ? commitmentCancelAt(object, commitmentEndsAt) : null
+  if (cancelAt && subscriptionId && process.env.STRIPE_SECRET_KEY) {
+    const response = await fetch(`https://api.stripe.com/v1/subscriptions/${encodeURIComponent(subscriptionId)}`, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${process.env.STRIPE_SECRET_KEY}`, "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({ cancel_at_period_end: "false", cancel_at: String(cancelAt) }),
+    })
+    if (!response.ok) {
+      req.scope.resolve(ContainerRegistrationKeys.LOGGER).error(`[vitrinaki/billing] could not keep the commitment of ${subscriptionId}: ${response.status}`)
+    }
+  }
+
   const nextSubscription = {
     ...subscription,
+    commitmentEnd: commitmentEndsAt,
+    cancelAt: subObject ? fromUnix(cancelAt ?? object.cancel_at) : subscription.cancelAt || null,
     status,
     planId: isPlanId(subscriptionMetadata.plan_id) ? subscriptionMetadata.plan_id : subscription.planId,
     interval: ["month", "year"].includes(String(subscriptionMetadata.billing_interval)) ? subscriptionMetadata.billing_interval : subscription.interval,

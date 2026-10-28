@@ -2,7 +2,9 @@ export type PlanId = "starter" | "growth" | "pro" | "business"
 
 export type PlanPrice = { amount: number; currency: string; interval: "month" | "year" | null }
 
-export type PublicPlan = { id: PlanId; memberLimit: number; month: PlanPrice | null; year: PlanPrice | null }
+// "year": monthly price with a 12-month commitment. "month": monthly price
+// without commitment, plus the one-off `activation` fee.
+export type PublicPlan = { id: PlanId; memberLimit: number; month: PlanPrice | null; year: PlanPrice | null; activation?: PlanPrice | null }
 
 export type PublicPricing = {
   plans: PublicPlan[]

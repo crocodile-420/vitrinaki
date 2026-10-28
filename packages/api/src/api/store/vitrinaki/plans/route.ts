@@ -1,8 +1,10 @@
 import type { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
 
-import { PLAN_IDS, PLAN_MEMBER_LIMITS, PLAN_PRICE_ENV, SETUP_PRICE_ENV, toPublicPrice, type PublicPrice } from "../../../../lib/vitrinaki-plans"
+import { PLAN_ACTIVATION_ENV, PLAN_IDS, PLAN_MEMBER_LIMITS, PLAN_PRICE_ENV, SETUP_PRICE_ENV, toPublicPrice, type PublicPrice } from "../../../../lib/vitrinaki-plans"
 
-// The public pricing page: each plan's team size and its Stripe prices, plus the
+// The public pricing page: each plan's team size and its Stripe prices ("year":
+// the monthly price with a 12-month commitment; "month": the monthly price
+// without commitment, plus its one-off activation fee), plus the
 // one-off setup services. Prices are read from Stripe (never kept in code) and
 // cached for a few minutes; a price that is not configured comes back as null.
 const CACHE_MS = 10 * 60 * 1000
@@ -30,6 +32,7 @@ export async function GET(_req: MedusaRequest, res: MedusaResponse) {
     memberLimit: PLAN_MEMBER_LIMITS[id],
     month: await stripePrice(process.env[PLAN_PRICE_ENV[id].month]),
     year: await stripePrice(process.env[PLAN_PRICE_ENV[id].year]),
+    activation: await stripePrice(process.env[PLAN_ACTIVATION_ENV[id]]),
   })))
   const [assisted, doneForYou] = await Promise.all([
     stripePrice(process.env[SETUP_PRICE_ENV.assisted]),

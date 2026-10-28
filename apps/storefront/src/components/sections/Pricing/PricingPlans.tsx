@@ -5,6 +5,7 @@ import { useState } from "react"
 import { formatMoney, type PlanId, type PlanPrice, type PublicPlan } from "@/lib/data/vitrinaki-plans"
 import { useTranslator } from "@/lib/i18n/client"
 
+// "year": 12-month commitment, billed monthly. "month": no commitment, plus a one-off activation fee.
 type Interval = "month" | "year"
 
 // Plans differ only in team size (enforced in the Studio) and in the help that
@@ -24,13 +25,13 @@ export function PricingPlans({ plans, startHref }: { plans: PublicPlan[]; startH
   const { tr } = useTranslator()
   const hasMonth = plans.some((p) => p.month)
   const hasYear = plans.some((p) => p.year)
-  const [interval, setInterval] = useState<Interval>(hasMonth || !hasYear ? "month" : "year")
+  const [interval, setInterval] = useState<Interval>(hasYear || !hasMonth ? "year" : "month")
 
   return (
     <div>
       {hasMonth && hasYear ? (
-        <div role="group" aria-label={tr("Περίοδος χρέωσης")} className="mx-auto mb-8 flex w-fit rounded-full bg-[#F7F2E8]/10 p-1 ring-1 ring-[#F7F2E8]/15">
-          {(["month", "year"] as const).map((value) => (
+        <div role="group" aria-label={tr("Τρόπος συνδρομής")} className="mx-auto mb-8 flex w-fit rounded-full bg-[#F7F2E8]/10 p-1 ring-1 ring-[#F7F2E8]/15">
+          {(["year", "month"] as const).map((value) => (
             <button
               key={value}
               type="button"
@@ -38,7 +39,7 @@ export function PricingPlans({ plans, startHref }: { plans: PublicPlan[]; startH
               onClick={() => setInterval(value)}
               className={`min-h-10 rounded-full px-5 text-[14px] font-semibold transition ${interval === value ? "bg-[#F7F2E8] text-[#173A57]" : "text-[#F7F2E8]/80 hover:text-[#F7F2E8]"}`}
             >
-              {tr(value === "month" ? "Μηνιαία" : "Ετήσια")}
+              {tr(value === "year" ? "Με δέσμευση 12 μηνών" : "Χωρίς δέσμευση")}
             </button>
           ))}
         </div>
@@ -61,7 +62,7 @@ export function PricingPlans({ plans, startHref }: { plans: PublicPlan[]; startH
               <p className="text-xl font-extrabold">{tr(copy.label)}</p>
               <p className="mt-0.5 text-[13px] font-semibold text-[#265E8E]">{tr(team(plan.memberLimit))}</p>
               <p className="mt-2 min-h-12 text-[14px] leading-6 text-[#2E4A37]/70">{tr(copy.text)}</p>
-              <PriceBlock month={plan.month} year={plan.year} interval={interval} tr={tr} />
+              <PriceBlock month={plan.month} year={plan.year} activation={plan.activation || null} interval={interval} tr={tr} />
               <ul className="mt-5 flex-1 space-y-2 border-t border-[#2E4A37]/10 pt-5 text-[14px]">
                 {copy.points.map((point) => (
                   <li key={point} className="flex gap-2">
@@ -84,7 +85,7 @@ export function PricingPlans({ plans, startHref }: { plans: PublicPlan[]; startH
   )
 }
 
-function PriceBlock({ month, year, interval, tr }: { month: PlanPrice | null; year: PlanPrice | null; interval: Interval; tr: (s: string) => string }) {
+function PriceBlock({ month, year, activation, interval, tr }: { month: PlanPrice | null; year: PlanPrice | null; activation: PlanPrice | null; interval: Interval; tr: (s: string) => string }) {
   const price = interval === "month" ? month : year
   if (!price) {
     return (
@@ -93,24 +94,24 @@ function PriceBlock({ month, year, interval, tr }: { month: PlanPrice | null; ye
       </div>
     )
   }
-  if (interval === "month") {
-    return (
-      <p className="mt-5 flex items-baseline gap-1.5">
-        <span className="text-[2.2rem] font-extrabold leading-none tracking-[-0.02em] text-[#173A57]">{formatMoney(price.amount, price.currency)}</span>
-        <span className="text-[14px] text-[#2E4A37]/70">{tr("/ μήνα")}</span>
-      </p>
-    )
-  }
-  const saving = month && month.currency === price.currency ? Math.round((1 - price.amount / (month.amount * 12)) * 100) : 0
+  const saving = interval === "year" && month && month.currency === price.currency ? Math.round((1 - price.amount / month.amount) * 100) : 0
   return (
     <div className="mt-5">
       <p className="flex items-baseline gap-1.5">
-        <span className="text-[2.2rem] font-extrabold leading-none tracking-[-0.02em] text-[#173A57]">{formatMoney(Math.round(price.amount / 12), price.currency)}</span>
+        <span className="text-[2.2rem] font-extrabold leading-none tracking-[-0.02em] text-[#173A57]">{formatMoney(price.amount, price.currency)}</span>
         <span className="text-[14px] text-[#2E4A37]/70">{tr("/ μήνα")}</span>
       </p>
-      <p className="mt-1.5 text-[13px] text-[#2E4A37]/70">
-        {formatMoney(price.amount, price.currency)} {tr("τον χρόνο")}
-        {saving > 0 ? <span className="ml-2 rounded-full bg-[#F3DCD2] px-2 py-0.5 font-semibold text-[#A8432F]">−{saving}%</span> : null}
+      <p className="mt-1.5 text-[13px] leading-5 text-[#2E4A37]/70">
+        {interval === "year" ? (
+          <>
+            {tr("Δέσμευση 12 μηνών, χρέωση κάθε μήνα")}
+            {saving > 0 ? <span className="ml-2 whitespace-nowrap rounded-full bg-[#F3DCD2] px-2 py-0.5 font-semibold text-[#A8432F]">−{saving}%</span> : null}
+          </>
+        ) : activation ? (
+          <>{tr("Ακυρώνεις όποτε θέλεις")} · + {formatMoney(activation.amount, activation.currency)} {tr("εφάπαξ στήσιμο")}</>
+        ) : (
+          tr("Ακυρώνεις όποτε θέλεις")
+        )}
       </p>
     </div>
   )
