@@ -1,5 +1,7 @@
 import { randomBytes } from "crypto"
 
+import { planFeaturesFor } from "./vitrinaki-plans"
+
 // Loyalty points per shop. Each shop keeps its own rules in
 // seller.metadata.vitrinaki_loyalty; balances and the earn/redeem ledger live
 // in the vitrinaki-loyalty module. Points are per (shop, customer): what a
@@ -40,6 +42,15 @@ const toNumber = (value: unknown) => {
 const round2 = (n: number) => Math.round(n * 100) / 100
 
 export const newRewardId = () => `rw_${randomBytes(4).toString("hex")}`
+
+// The settings that apply right now: loyalty is part of the Growth plan and
+// up, so on a smaller plan (or without a subscription) it is off, whatever the
+// shop saved. The saved rules stay, and come back on an upgrade.
+export function activeLoyaltySettings(metadata: unknown, now = Date.now()): LoyaltySettings {
+  const settings = readLoyaltySettings(metadata)
+  const subscription = (metadata as Record<string, any> | null)?.vitrinaki_subscription
+  return settings.enabled && !planFeaturesFor(subscription, now).loyalty ? { ...settings, enabled: false } : settings
+}
 
 // Whatever is stored, read it back as valid settings: anything malformed is
 // dropped, so a hand-edited metadata value can never break checkout.

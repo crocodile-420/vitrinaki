@@ -17,6 +17,7 @@ const footerGroups = [
     links: [
       { label: "Καταστήματα", href: "/#vitrina" },
       { label: "Ύφος", href: "/#try" },
+      { label: "Συνδρομή", href: "/pricing" },
       { label: "Ερωτήσεις", href: "/#faq" },
     ],
   },

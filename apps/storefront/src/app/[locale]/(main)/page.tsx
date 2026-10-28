@@ -116,13 +116,14 @@ const extras = [
   { icon: "doc", title: "Τιμολόγια myDATA", text: "Έκδοση παραστατικών με διασύνδεση στο myDATA της ΑΑΔΕ.", soon: true },
 ] as const
 
-// Same plans and team sizes as the Studio's «Ενεργοποίηση» step (PLAN_MEMBER_LIMITS in
-// packages/api/src/lib/vitrinaki-plans.ts). Prices live in Stripe and are not shown yet.
+// Same plans, team sizes and limits as PLAN_FEATURES in
+// packages/api/src/lib/vitrinaki-plans.ts. Prices live in Stripe; the full
+// comparison is on /pricing.
 const plans = [
-  { id: "starter", label: "Starter", team: "1 άτομο", text: "Η βιτρίνα σου με όλα τα βασικά." },
-  { id: "growth", label: "Growth", team: "έως 3 άτομα", text: "Για καταστήματα που μεγαλώνουν." },
-  { id: "pro", label: "Pro", team: "έως 5 άτομα", text: "Ρόλους για την ομάδα σου." },
-  { id: "business", label: "Επιχείρηση", team: "έως 15 άτομα", text: "Πολλά καταστήματα από έναν λογαριασμό, δωρεάν στήσιμο από την ομάδα μας και προτεραιότητα στην υποστήριξη." },
+  { id: "starter", label: "Starter", team: "1 άτομο", text: "Έως 100 προϊόντα και 2 GB για φωτογραφίες." },
+  { id: "growth", label: "Growth", team: "έως 3 άτομα", text: "Έως 1.000 προϊόντα, 10 GB και πόντοι επιβράβευσης." },
+  { id: "pro", label: "Pro", team: "έως 5 άτομα", text: "Έως 5.000 προϊόντα, 30 GB και προβολή στην αρχική του Vitrinaki." },
+  { id: "business", label: "Επιχείρηση", team: "έως 15 άτομα", text: "Απεριόριστα προϊόντα, 100 GB, προσωπικός σύμβουλος και δωρεάν στήσιμο από την ομάδα μας." },
 ] as const
 
 const iconPaths: Record<string, React.ReactNode> = {
@@ -584,7 +585,7 @@ export default async function Home({
             </a>
           </Reveal>
           <Reveal delay={120}>
-            <p className="text-[13px] font-semibold text-[#F7F2E8]/70">{tr("Τα πακέτα διαφέρουν στο μέγεθος της ομάδας και στη βοήθεια που παίρνεις. Όλα έχουν τα παραπάνω.")}</p>
+            <p className="text-[13px] font-semibold text-[#F7F2E8]/70">{tr("Όλα τα πακέτα έχουν τα παραπάνω. Διαφέρουν στην ομάδα, στα προϊόντα, στον χώρο και στη βοήθεια που παίρνεις.")}</p>
             <ul className="mt-4 grid gap-3 sm:grid-cols-2">
               {plans.map((plan) => (
                 <li key={plan.id} className="rounded-2xl bg-[#F7F2E8] p-5 text-[#1F3628]">
@@ -595,6 +596,9 @@ export default async function Home({
               ))}
             </ul>
             <p className="mt-4 text-[13px] leading-6 text-[#F7F2E8]/70">{tr("Οι τιμές οριστικοποιούνται. Πριν ξεκινήσεις θα ξέρεις ακριβώς τι πληρώνεις. Ήρθες με σύσταση από άλλο κατάστημα; Ο πρώτος σου μήνας είναι δωρεάν.")}</p>
+            <Link href={`/${locale}/pricing`} className="group mt-5 inline-flex items-center gap-2 text-[15px] font-semibold text-[#F7F2E8] underline decoration-[#8DB8DE] decoration-2 underline-offset-[6px] hover:decoration-[#F7F2E8]">
+              {tr("Δες αναλυτικά τα πακέτα")} <Arrow />
+            </Link>
           </Reveal>
         </div>
       </section>

@@ -34,13 +34,13 @@ type StorefrontForm = {
 }
 type Subscription = { status?: string; planId?: string; interval?: string; currentPeriodEnd?: string; cancelAtPeriodEnd?: boolean } | null
 
-// Team sizes match PLAN_MEMBER_LIMITS in packages/api/src/lib/vitrinaki-plans.ts.
+// Team sizes and features match PLAN_MEMBER_LIMITS and PLAN_FEATURES in packages/api/src/lib/vitrinaki-plans.ts.
 // Prices come from the Stripe Price IDs configured in the backend, so none here.
 const PLANS = [
-  { id: "starter", label: "Starter", text: "1 άτομο · η βιτρίνα σου με τα βασικά" },
-  { id: "growth", label: "Growth", text: "έως 3 άτομα · για καταστήματα που μεγαλώνουν" },
-  { id: "pro", label: "Pro", text: "έως 5 άτομα · ρόλους για την ομάδα" },
-  { id: "business", label: "Επιχείρηση", text: "έως 15 άτομα με ρόλους · πολλά καταστήματα από έναν λογαριασμό · δωρεάν στήσιμο από την ομάδα μας · προτεραιότητα στην υποστήριξη" },
+  { id: "starter", label: "Starter", text: "1 άτομο · 100 προϊόντα · 2 GB · υποστήριξη με email" },
+  { id: "growth", label: "Growth", text: "έως 3 άτομα · 1.000 προϊόντα · 10 GB · πόντοι επιβράβευσης · email και chat" },
+  { id: "pro", label: "Pro", text: "έως 5 άτομα · 5.000 προϊόντα · 30 GB · προβολή στην αρχική · προτεραιότητα στην υποστήριξη" },
+  { id: "business", label: "Επιχείρηση", text: "έως 15 άτομα · απεριόριστα προϊόντα · 100 GB · πρώτη θέση στην προβολή · προσωπικός σύμβουλος · δωρεάν στήσιμο" },
 ] as const
 
 const backend = () => __BACKEND_URL__.replace(/\/+$/, "")
@@ -285,7 +285,7 @@ export default function VitrinakiStorefrontSettingsPage() {
             <div><h2 className="text-lg font-semibold">Συνδρομή</h2><p className="mt-1 text-sm text-ui-fg-subtle">Η συνδρομή καλύπτει την πλατφόρμα και τη λειτουργία του website. Η προαιρετική υπηρεσία setup είναι ξεχωριστή.</p></div>
             <div className="rounded-xl bg-ui-bg-subtle p-4"><p className="text-xs uppercase tracking-wide text-ui-fg-subtle">Κατάσταση</p><p className="mt-1 font-semibold">{subscription?.status || "Δεν έχει ενεργοποιηθεί"}</p>{subscription?.planId ? <p className="mt-1 text-sm text-ui-fg-subtle">Πλάνο: {PLANS.find(plan => plan.id === subscription.planId)?.label || subscription.planId} ·{subscription.interval || "—"}</p> : null}</div>
             {!billingConfigured ? <p className="text-sm leading-6 text-ui-fg-subtle">Χρειάζεται να ρυθμιστούν τα στοιχεία Stripe στο backend πριν ενεργοποιηθούν πραγματικές πληρωμές.</p> : null}
-            <div className="space-y-2">{PLANS.map(plan => <div key={plan.id} className="rounded-xl border border-ui-border-base p-3"><div className="font-semibold">{plan.label}</div><p className="mt-1 text-xs leading-5 text-ui-fg-subtle">{plan.text}</p><div className="mt-2 grid grid-cols-2 gap-2"><button type="button" disabled={saving || !billingConfigured || !(availablePlans[plan.id] || []).includes("month")} onClick={() => void startBilling(plan.id,"month")} className="rounded-lg border border-ui-border-base px-2 py-2 text-xs font-semibold disabled:opacity-50">Μηνιαία</button><button type="button" disabled={saving || !billingConfigured || !(availablePlans[plan.id] || []).includes("year")} onClick={() => void startBilling(plan.id,"year")} className="rounded-lg border border-ui-border-base px-2 py-2 text-xs font-semibold disabled:opacity-50">Ετήσια</button></div></div>)}</div>
+            <div className="space-y-2">{PLANS.map(plan => <div key={plan.id} className="rounded-xl border border-ui-border-base p-3"><div className="font-semibold">{plan.label}</div><p className="mt-1 text-xs leading-5 text-ui-fg-subtle">{plan.text}</p><div className="mt-2 grid grid-cols-2 gap-2"><button type="button" disabled={saving || !billingConfigured || !(availablePlans[plan.id] || []).includes("month")} onClick={() => void startBilling(plan.id,"month")} className="rounded-lg border border-ui-border-base px-2 py-2 text-xs font-semibold disabled:opacity-50">Χωρίς δέσμευση</button><button type="button" disabled={saving || !billingConfigured || !(availablePlans[plan.id] || []).includes("year")} onClick={() => void startBilling(plan.id,"year")} className="rounded-lg border border-ui-border-base px-2 py-2 text-xs font-semibold disabled:opacity-50">12 μήνες</button></div></div>)}</div>
             <div className="flex gap-2"><input value={promoCode} onChange={e => setPromoCode(e.target.value)} placeholder="Κωδικός προσφοράς" className="min-w-0 flex-1 rounded-lg border border-ui-border-base bg-ui-bg-field px-3 py-2.5 text-sm" /><button type="button" disabled={saving || !promoCode.trim()} onClick={() => void redeemPromo()} className="rounded-lg border border-ui-border-base px-3 py-2.5 text-sm font-semibold disabled:opacity-50">Ενεργοποίηση</button></div>
             {subscription ? <button type="button" disabled={saving || !billingConfigured} onClick={() => void openBillingPortal()} className="w-full rounded-lg border border-ui-border-base px-3 py-2.5 text-sm font-semibold disabled:opacity-50">Διαχείριση συνδρομής</button> : null}
           </section>

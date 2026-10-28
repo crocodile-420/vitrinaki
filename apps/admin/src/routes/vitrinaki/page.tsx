@@ -55,6 +55,7 @@ type PromotedShop = {
   handle: string
   storeName: string
   isVisible: boolean
+  planAllows?: boolean
   promoted: string[]
   products: { id: string; title: string; thumbnail: string | null; status: string }[]
 }
@@ -126,7 +127,7 @@ function PromotedProducts() {
                 <button type="button" onClick={() => setOpen(expanded ? null : shop.sellerId)} aria-expanded={expanded} className="flex w-full items-center justify-between gap-3 px-5 py-4 text-left hover:bg-ui-bg-subtle">
                   <span>
                     <span className="font-semibold">{shop.storeName}</span>
-                    <span className="ml-2 text-xs text-ui-fg-subtle">{shop.handle} · {shop.products.length} προϊόντα{shop.isVisible ? "" : " · δεν φαίνεται δημόσια"}</span>
+                    <span className="ml-2 text-xs text-ui-fg-subtle">{shop.handle} · {shop.products.length} προϊόντα{shop.isVisible ? "" : " · δεν φαίνεται δημόσια"}{shop.planAllows === false ? " · το πακέτο του δεν περιλαμβάνει προβολή (από Pro)" : ""}</span>
                   </span>
                   <span className="shrink-0 text-sm text-ui-fg-subtle">{chosen.length ? `${chosen.length} προωθημένα` : "—"} {expanded ? "▴" : "▾"}</span>
                 </button>

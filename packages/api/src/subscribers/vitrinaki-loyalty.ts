@@ -1,7 +1,7 @@
 import type { SubscriberArgs, SubscriberConfig } from "@medusajs/framework"
 import { ContainerRegistrationKeys, OrderWorkflowEvents } from "@medusajs/framework/utils"
 
-import { pointsForAmount, readLoyaltySettings } from "../lib/vitrinaki-loyalty"
+import { activeLoyaltySettings, pointsForAmount } from "../lib/vitrinaki-loyalty"
 import { VITRINAKI_LOYALTY_MODULE } from "../modules/vitrinaki-loyalty"
 import type VitrinakiLoyaltyModuleService from "../modules/vitrinaki-loyalty/service"
 
@@ -44,7 +44,7 @@ async function handleOrder(eventName: string, orderId: string, container: Subscr
     if (!o?.customer_id || !o.customer?.has_account || !seller?.id) return
     if (String(o.currency_code || "").toLowerCase() !== "eur") return
 
-    const settings = readLoyaltySettings(seller.metadata)
+    const settings = activeLoyaltySettings(seller.metadata)
     if (!settings.enabled) return
     const points = pointsForAmount(o.item_total, settings.pointsPerEuro)
     const awarded = await loyalty.earnForOrder({

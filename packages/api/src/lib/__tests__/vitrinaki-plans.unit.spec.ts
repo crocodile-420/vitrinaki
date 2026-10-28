@@ -1,4 +1,4 @@
-import { activePlanId, availablePlanIntervals, memberLimitFor, memberLimitMessage } from "../vitrinaki-plans"
+import { activePlanId, availablePlanIntervals, commitmentCancelAt, planFeaturesFor, commitmentEnd, memberLimitFor, memberLimitMessage, toPublicPrice } from "../vitrinaki-plans"
 
 describe("vitrinaki plans", () => {
   const now = Date.parse("2026-10-20T12:00:00Z")
@@ -30,5 +30,34 @@ describe("vitrinaki plans", () => {
 
   it("explains the limit in Greek", () => {
     expect(memberLimitMessage(15)).toBe("Το πακέτο σου επιτρέπει έως 15 άτομα. Αναβάθμισε για να προσθέσεις κι άλλους.")
+  })
+
+  it("keeps only the public parts of a Stripe price", () => {
+    expect(toPublicPrice({ id: "price_1", active: true, unit_amount: 1900, currency: "eur", recurring: { interval: "month" }, metadata: { x: 1 } }))
+      .toEqual({ amount: 1900, currency: "eur", interval: "month" })
+    expect(toPublicPrice({ active: true, unit_amount: 9900, currency: "eur", recurring: null })).toEqual({ amount: 9900, currency: "eur", interval: null })
+    expect(toPublicPrice({ active: false, unit_amount: 1900, currency: "eur" })).toBeNull()
+    expect(toPublicPrice({ active: true, unit_amount: null, currency: "eur" })).toBeNull()
+    expect(toPublicPrice(null)).toBeNull()
+  })
+
+  it("ends a commitment twelve months after it starts", () => {
+    expect(commitmentEnd(new Date("2026-10-28T10:00:00Z")).toISOString()).toBe("2027-10-28T10:00:00.000Z")
+  })
+
+  it("moves a cancellation inside the commitment to its end", () => {
+    const periodEnd = Date.parse("2026-12-01T00:00:00Z") / 1000
+    const end = "2027-10-28T10:00:00.000Z"
+    expect(commitmentCancelAt({ cancel_at_period_end: true, current_period_end: periodEnd }, end)).toBe(Date.parse(end) / 1000)
+    expect(commitmentCancelAt({ cancel_at_period_end: false, current_period_end: periodEnd }, end)).toBeNull()
+    expect(commitmentCancelAt({ cancel_at_period_end: true, current_period_end: Date.parse("2027-11-01T00:00:00Z") / 1000 }, end)).toBeNull()
+    expect(commitmentCancelAt({ cancel_at_period_end: true, current_period_end: periodEnd }, null)).toBeNull()
+  })
+
+  it("gives each plan its features and starter features without a subscription", () => {
+    expect(planFeaturesFor({ status: "active", planId: "growth" }, now)).toMatchObject({ products: 1000, loyalty: true, promoted: "none" })
+    expect(planFeaturesFor({ status: "active", planId: "business" }, now)).toMatchObject({ products: null, promoted: "priority" })
+    expect(planFeaturesFor(null, now)).toMatchObject({ products: 100, loyalty: false, storageGb: 2 })
+    expect(planFeaturesFor({ status: "canceled", planId: "pro" }, now).loyalty).toBe(false)
   })
 })
