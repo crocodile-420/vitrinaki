@@ -60,8 +60,11 @@ export default function VitrinakiLoyaltyPage() {
   const [pointsPerEuro, setPointsPerEuro] = useState("1")
   const [rewards, setRewards] = useState<RewardDraft[]>([])
   const [errors, setErrors] = useState<Record<string, string>>({})
+  // Loyalty is part of the Growth plan and up (backend: PLAN_FEATURES).
+  const [planAllows, setPlanAllows] = useState(true)
 
-  const apply = (data: { loyalty: Loyalty; stats: Stats }) => {
+  const apply = (data: { loyalty: Loyalty; stats: Stats; planAllows?: boolean }) => {
+    setPlanAllows(data.planAllows !== false)
     setEnabled(data.loyalty.enabled)
     setPointsPerEuro(String(data.loyalty.pointsPerEuro).replace(".", ","))
     setRewards(toDrafts(data.loyalty))
@@ -193,8 +196,9 @@ export default function VitrinakiLoyaltyPage() {
                 <Label htmlFor="loyalty-enabled" size="small" weight="plus">{t("vitrinakiLoyalty.form.enabled")}</Label>
                 <Text size="xsmall" className="text-ui-fg-subtle mt-1">{t("vitrinakiLoyalty.form.enabledHint")}</Text>
               </div>
-              <Switch id="loyalty-enabled" className="shrink-0" checked={enabled} onCheckedChange={setEnabled} />
+              <Switch id="loyalty-enabled" className="shrink-0" checked={enabled} disabled={!planAllows && !enabled} onCheckedChange={setEnabled} />
             </div>
+            {!planAllows ? <Text size="small" className="text-ui-fg-subtle">{t("vitrinakiLoyalty.form.planRequired")}</Text> : null}
 
             <div className="flex flex-col gap-y-2" style={{ maxWidth: 260 }}>
               <Label htmlFor="loyalty-ppe" size="small" weight="plus">{t("vitrinakiLoyalty.form.pointsPerEuro")}</Label>

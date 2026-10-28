@@ -74,6 +74,38 @@ export function activePlanId(subscription: any, now = Date.now()): PlanId | null
   return isPlanId(planId) ? planId : null
 }
 
+// What each plan includes besides team size. The single source for the
+// limits the backend enforces and the comparison on the pricing page
+// (served by /store/vitrinaki/plans).
+// - products: distinct products a shop can sell (null = no limit)
+// - storageGb: space for the photos and files the shop uploads in the Studio
+// - loyalty: customer loyalty points
+// - promoted: products shown on the Vitrinaki homepage ("priority" first)
+// - support: email / chat / priority / a personal advisor
+export type PlanFeatures = {
+  products: number | null
+  storageGb: number
+  loyalty: boolean
+  promoted: "none" | "standard" | "priority"
+  support: "email" | "chat" | "priority" | "advisor"
+}
+
+export const PLAN_FEATURES: Record<PlanId, PlanFeatures> = {
+  starter: { products: 100, storageGb: 2, loyalty: false, promoted: "none", support: "email" },
+  growth: { products: 1000, storageGb: 10, loyalty: true, promoted: "none", support: "chat" },
+  pro: { products: 5000, storageGb: 30, loyalty: true, promoted: "standard", support: "priority" },
+  business: { products: null, storageGb: 100, loyalty: true, promoted: "priority", support: "advisor" },
+}
+
+// A seller without an active subscription gets the starter features.
+export const planFeaturesFor = (subscription: any, now = Date.now()) =>
+  PLAN_FEATURES[activePlanId(subscription, now) ?? "starter"]
+
+export const productLimitMessage = (limit: number) =>
+  `Το πακέτο σου επιτρέπει έως ${limit} προϊόντα. Αναβάθμισε για να προσθέσεις κι άλλα.`
+
+export const LOYALTY_PLAN_MESSAGE = "Οι πόντοι επιβράβευσης είναι διαθέσιμοι από το πακέτο Growth και πάνω."
+
 // A seller without an active subscription gets the starter limit.
 export const memberLimitFor = (subscription: any, now = Date.now()) =>
   PLAN_MEMBER_LIMITS[activePlanId(subscription, now) ?? "starter"]

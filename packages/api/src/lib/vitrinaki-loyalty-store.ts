@@ -1,7 +1,7 @@
 import type { MedusaContainer } from "@medusajs/framework/types"
 import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 
-import { publicLoyalty, readLoyaltySettings, type LoyaltySettings } from "./vitrinaki-loyalty"
+import { activeLoyaltySettings, publicLoyalty, type LoyaltySettings } from "./vitrinaki-loyalty"
 
 // Cart metadata key for reward codes taken in the cart that could not be
 // applied yet (free shipping before a shipping method is chosen). The
@@ -31,7 +31,7 @@ export async function loadLoyaltyShops(scope: MedusaContainer, sellerIds: string
       id: seller.id,
       name: String(seller.name || ""),
       handle: String(seller.handle || ""),
-      settings: readLoyaltySettings(seller.metadata),
+      settings: activeLoyaltySettings(seller.metadata),
     })
   }
   return shops

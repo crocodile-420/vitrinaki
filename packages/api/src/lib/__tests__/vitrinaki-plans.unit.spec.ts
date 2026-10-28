@@ -1,4 +1,4 @@
-import { activePlanId, availablePlanIntervals, commitmentCancelAt, commitmentEnd, memberLimitFor, memberLimitMessage, toPublicPrice } from "../vitrinaki-plans"
+import { activePlanId, availablePlanIntervals, commitmentCancelAt, planFeaturesFor, commitmentEnd, memberLimitFor, memberLimitMessage, toPublicPrice } from "../vitrinaki-plans"
 
 describe("vitrinaki plans", () => {
   const now = Date.parse("2026-10-20T12:00:00Z")
@@ -52,5 +52,12 @@ describe("vitrinaki plans", () => {
     expect(commitmentCancelAt({ cancel_at_period_end: false, current_period_end: periodEnd }, end)).toBeNull()
     expect(commitmentCancelAt({ cancel_at_period_end: true, current_period_end: Date.parse("2027-11-01T00:00:00Z") / 1000 }, end)).toBeNull()
     expect(commitmentCancelAt({ cancel_at_period_end: true, current_period_end: periodEnd }, null)).toBeNull()
+  })
+
+  it("gives each plan its features and starter features without a subscription", () => {
+    expect(planFeaturesFor({ status: "active", planId: "growth" }, now)).toMatchObject({ products: 1000, loyalty: true, promoted: "none" })
+    expect(planFeaturesFor({ status: "active", planId: "business" }, now)).toMatchObject({ products: null, promoted: "priority" })
+    expect(planFeaturesFor(null, now)).toMatchObject({ products: 100, loyalty: false, storageGb: 2 })
+    expect(planFeaturesFor({ status: "canceled", planId: "pro" }, now).loyalty).toBe(false)
   })
 })

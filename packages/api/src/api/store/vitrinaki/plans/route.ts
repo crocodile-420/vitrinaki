@@ -1,6 +1,6 @@
 import type { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
 
-import { PLAN_ACTIVATION_ENV, PLAN_IDS, PLAN_MEMBER_LIMITS, PLAN_PRICE_ENV, SETUP_PRICE_ENV, toPublicPrice, type PublicPrice } from "../../../../lib/vitrinaki-plans"
+import { PLAN_ACTIVATION_ENV, PLAN_FEATURES, PLAN_IDS, PLAN_MEMBER_LIMITS, PLAN_PRICE_ENV, SETUP_PRICE_ENV, toPublicPrice, type PublicPrice } from "../../../../lib/vitrinaki-plans"
 
 // The public pricing page: each plan's team size and its Stripe prices ("year":
 // the monthly price with a 12-month commitment; "month": the monthly price
@@ -30,6 +30,7 @@ export async function GET(_req: MedusaRequest, res: MedusaResponse) {
   const plans = await Promise.all(PLAN_IDS.map(async (id) => ({
     id,
     memberLimit: PLAN_MEMBER_LIMITS[id],
+    features: PLAN_FEATURES[id],
     month: await stripePrice(process.env[PLAN_PRICE_ENV[id].month]),
     year: await stripePrice(process.env[PLAN_PRICE_ENV[id].year]),
     activation: await stripePrice(process.env[PLAN_ACTIVATION_ENV[id]]),

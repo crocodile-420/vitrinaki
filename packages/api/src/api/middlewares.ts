@@ -9,7 +9,8 @@ import {
 import { cardPaymentForCart } from "../lib/card-payments"
 import { scrubNested } from "../lib/public-seller-scrub"
 import { cardPaymentMessage, isStripeProviderId, SELLER_DATA_KEY, STRIPE_ACCOUNT_DATA_KEY } from "../lib/stripe-connect"
-import { memberLimitMessage } from "../lib/vitrinaki-plans"
+import { memberLimitMessage, productLimitMessage } from "../lib/vitrinaki-plans"
+import { exceedsProductLimit } from "../lib/vitrinaki-product-limit"
 import { keepServerOwnedMetadata } from "../lib/server-metadata"
 import { loadSeller } from "../lib/vitrinaki-referral-rewards"
 import { teamSeats } from "../lib/vitrinaki-team-limit"
@@ -48,6 +49,26 @@ async function enforceTeamLimit(req: MedusaRequest, res: MedusaResponse, next: M
     if (seats && seats.members + seats.pending >= seats.limit) {
       return res.status(400).json({ type: "not_allowed", message: memberLimitMessage(seats.limit) })
     }
+    return next()
+  } catch (error) {
+    return next(error)
+  }
+}
+
+// Products per plan (PLAN_FEATURES.products): a new product, or an offer on a
+// product the shop does not sell yet, is refused once the shop is at its limit.
+// Runs in front of Mercur's own routes, like the team limit above.
+async function enforceProductLimit(req: MedusaRequest, res: MedusaResponse, next: MedusaNextFunction) {
+  try {
+    const sellerId = (req as any).seller_context?.seller_id
+    if (!sellerId) return next()
+    const body = ((req as any).validatedBody || (req as any).body || {}) as Record<string, any>
+    const path = String(req.originalUrl || req.url || "").split("?")[0]
+    const adding = /\/vendor\/products\/?$/.test(path)
+      ? { newProducts: 1 }
+      : { variantIds: (Array.isArray(body.offers) ? body.offers : [body]).map((offer: any) => String(offer?.variant_id || "")) }
+    const limit = await exceedsProductLimit(req.scope, sellerId, adding)
+    if (limit !== null) return res.status(400).json({ type: "not_allowed", message: productLimitMessage(limit) })
     return next()
   } catch (error) {
     return next(error)
@@ -108,6 +129,9 @@ export default defineMiddlewares({
     { matcher: "/vendor/sellers/:id/members", methods: ["POST"], middlewares: [enforceTeamLimit] },
     { matcher: "/admin/sellers/:id/members", methods: ["POST"], middlewares: [enforceTeamLimit] },
     { matcher: "/admin/sellers/:id/members/invite", methods: ["POST"], middlewares: [enforceTeamLimit] },
+    { matcher: "/vendor/products", methods: ["POST"], middlewares: [enforceProductLimit] },
+    { matcher: "/vendor/offers", methods: ["POST"], middlewares: [enforceProductLimit] },
+    { matcher: "/vendor/offers/batch", methods: ["POST"], middlewares: [enforceProductLimit] },
     { matcher: "/vendor/sellers", methods: ["POST"], middlewares: [keepServerOwnedSellerMetadata] },
     { matcher: "/vendor/sellers/:id", methods: ["POST"], middlewares: [keepServerOwnedSellerMetadata] },
     // Its own static route, which the :id matcher above does not reach.

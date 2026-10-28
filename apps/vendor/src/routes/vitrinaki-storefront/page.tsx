@@ -34,13 +34,13 @@ type StorefrontForm = {
 }
 type Subscription = { status?: string; planId?: string; interval?: string; currentPeriodEnd?: string; cancelAtPeriodEnd?: boolean } | null
 
-// Team sizes match PLAN_MEMBER_LIMITS in packages/api/src/lib/vitrinaki-plans.ts.
+// Team sizes and features match PLAN_MEMBER_LIMITS and PLAN_FEATURES in packages/api/src/lib/vitrinaki-plans.ts.
 // Prices come from the Stripe Price IDs configured in the backend, so none here.
 const PLANS = [
-  { id: "starter", label: "Starter", text: "1 άτομο · η βιτρίνα σου με τα βασικά" },
-  { id: "growth", label: "Growth", text: "έως 3 άτομα · για καταστήματα που μεγαλώνουν" },
-  { id: "pro", label: "Pro", text: "έως 5 άτομα · ρόλους για την ομάδα" },
-  { id: "business", label: "Επιχείρηση", text: "έως 15 άτομα με ρόλους · πολλά καταστήματα από έναν λογαριασμό · δωρεάν στήσιμο από την ομάδα μας · προτεραιότητα στην υποστήριξη" },
+  { id: "starter", label: "Starter", text: "1 άτομο · 100 προϊόντα · 2 GB · υποστήριξη με email" },
+  { id: "growth", label: "Growth", text: "έως 3 άτομα · 1.000 προϊόντα · 10 GB · πόντοι επιβράβευσης · email και chat" },
+  { id: "pro", label: "Pro", text: "έως 5 άτομα · 5.000 προϊόντα · 30 GB · προβολή στην αρχική · προτεραιότητα στην υποστήριξη" },
+  { id: "business", label: "Επιχείρηση", text: "έως 15 άτομα · απεριόριστα προϊόντα · 100 GB · πρώτη θέση στην προβολή · προσωπικός σύμβουλος · δωρεάν στήσιμο" },
 ] as const
 
 const backend = () => __BACKEND_URL__.replace(/\/+$/, "")

@@ -2,7 +2,7 @@ import type { Metadata } from "next"
 
 import { Reveal } from "@/components/atoms/Reveal/Reveal"
 import { PricingPlans } from "@/components/sections/Pricing/PricingPlans"
-import { formatMoney, getPublicPricing, type PlanPrice } from "@/lib/data/vitrinaki-plans"
+import { formatMoney, getPublicPricing, groupThousands, SUPPORT_LABELS, type PlanPrice, type PublicPlan } from "@/lib/data/vitrinaki-plans"
 import { getTranslator } from "@/lib/i18n/server"
 import { startHref } from "@/lib/vitrinaki-links"
 
@@ -14,7 +14,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const { tr } = await getTranslator()
   return {
     title: tr("Συνδρομή και πακέτα"),
-    description: tr("Μία συνδρομή για ιστοσελίδα, e-shop, παραγγελίες, πληρωμές και αποστολές. Τα πακέτα διαφέρουν μόνο στο μέγεθος της ομάδας και στη βοήθεια που παίρνεις."),
+    description: tr("Μία συνδρομή για ιστοσελίδα, e-shop, παραγγελίες, πληρωμές και αποστολές. Διάλεξε πακέτο ανάλογα με την ομάδα, τα προϊόντα και τη βοήθεια που χρειάζεσαι."),
   }
 }
 
@@ -28,7 +28,6 @@ const iconPaths: Record<string, React.ReactNode> = {
   card: <><rect x="3" y="5.5" width="18" height="13" rx="2" /><path d="M3 10h18M7 15h3" /></>,
   truck: <><path d="M3 6h11v10H3zM14 10h4l3 3v3h-7" /><circle cx="7" cy="17.5" r="1.8" /><circle cx="17" cy="17.5" r="1.8" /></>,
   calendar: <><rect x="3.5" y="5" width="17" height="15" rx="2" /><path d="M3.5 10h17M8 3v4M16 3v4M8 14h2M12 14h2M8 17h2" /></>,
-  star: <path d="m12 3.5 2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.9L12 3.5Z" />,
   globe: <><circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3Z" /></>,
   lang: <><path d="M4 5h9M8.5 3v2M6 5c.8 3.5 3 6 6 7.5M11 5c-.8 3.5-3 6-6 7.5" /><path d="m13 21 4-9 4 9M14.5 18h5" /></>,
   megaphone: <><path d="M4 10v4h3l7 4V6L7 10H4Z" /><path d="M17.5 9.5a3.5 3.5 0 0 1 0 5M7 14l1.5 5h2.5l-1-4.4" /></>,
@@ -36,7 +35,8 @@ const iconPaths: Record<string, React.ReactNode> = {
   doc: <><path d="M6 3h8l4 4v14H6V3Z" /><path d="M14 3v4h4M9 12h6M9 16h4" /></>,
 }
 
-// Everything every plan has. Only features that exist today; myDATA is marked as coming.
+// Everything every plan has (the rest is in the comparison). Only features that
+// exist today; myDATA is marked as coming.
 const included = [
   { icon: "spark", title: "Ιστοσελίδα & e-shop", text: "Με το όνομα, το λογότυπο και τα χρώματά σου." },
   { icon: "box", title: "Προϊόντα & απόθεμα", text: "Ό,τι πουλάς, με φωτογραφίες, παραλλαγές και απόθεμα." },
@@ -44,17 +44,16 @@ const included = [
   { icon: "card", title: "Πληρωμές με κάρτα", text: "Οι πελάτες πληρώνουν με ασφάλεια, απευθείας στο κατάστημά σου." },
   { icon: "truck", title: "Αποστολές με courier", text: "Στέλνεις σε όλη την Ελλάδα με τις εταιρείες που ήδη ξέρεις." },
   { icon: "calendar", title: "Κρατήσεις online", text: "Ραντεβού και κρατήσεις κατευθείαν από την ιστοσελίδα σου." },
-  { icon: "star", title: "Πόντοι επιβράβευσης", text: "Οι πελάτες μαζεύουν πόντους και ξαναγυρνούν σε σένα." },
   { icon: "globe", title: "Το δικό σου domain", text: "Ξεκινάς στο vitrinaki.gr ή συνδέεις το δικό σου." },
   { icon: "lang", title: "Ελληνικά & Αγγλικά", text: "Για πελάτες στην Ελλάδα και στο εξωτερικό." },
-  { icon: "megaphone", title: "Προβολή στο Vitrinaki", text: "Η κοινή βιτρίνα βοηθά περισσότερους να σε βρουν." },
+  { icon: "megaphone", title: "Στα καταστήματα του Vitrinaki", text: "Η βιτρίνα σου εμφανίζεται στον κοινό κατάλογο, για να σε βρίσκουν περισσότεροι." },
   { icon: "heart", title: "Υποστήριξη από ανθρώπους", text: "Πραγματική βοήθεια όταν τη χρειαστείς." },
   { icon: "doc", title: "Τιμολόγια myDATA", text: "Έκδοση παραστατικών με διασύνδεση στην ΑΑΔΕ.", soon: true },
 ] as const
 
 const faqs = [
-  { q: "Ποια είναι η διαφορά ανάμεσα στα πακέτα;", a: "Όλα τα πακέτα έχουν όλα τα εργαλεία. Διαφέρουν στο πόσα άτομα μπορούν να δουλεύουν στον λογαριασμό σου και στη βοήθεια που παίρνεις από την ομάδα μας." },
-  { q: "Μπορώ να αλλάξω πακέτο αργότερα;", a: "Ναι. Από το Studio, στη «Διαχείριση συνδρομής», βλέπεις τη συνδρομή σου και τις επιλογές που έχεις. Αν μεγαλώσει η ομάδα σου, περνάς σε μεγαλύτερο πακέτο." },
+  { q: "Ποια είναι η διαφορά ανάμεσα στα πακέτα;", a: "Όλα τα πακέτα έχουν ιστοσελίδα, e-shop, παραγγελίες, πληρωμές, αποστολές και κρατήσεις. Διαφέρουν στα άτομα της ομάδας, στον αριθμό προϊόντων, στον χώρο για φωτογραφίες, στους πόντους επιβράβευσης, στην προβολή στην αρχική και στην υποστήριξη." },
+  { q: "Μπορώ να αλλάξω πακέτο αργότερα;", a: "Ναι. Από το Studio, στη «Διαχείριση συνδρομής», βλέπεις τη συνδρομή σου και τις επιλογές που έχεις. Αν φτάσεις το όριο προϊόντων ή ατόμων, περνάς σε μεγαλύτερο πακέτο." },
   { q: "Τι σημαίνει «με δέσμευση 12 μηνών»;", a: "Πληρώνεις κάθε μήνα, σε χαμηλότερη τιμή, και δεσμεύεσαι για 12 μήνες. Χωρίς δέσμευση η μηνιαία τιμή είναι μεγαλύτερη και η πρώτη χρέωση περιλαμβάνει ένα εφάπαξ κόστος στησίματος." },
   { q: "Πώς πληρώνω;", a: "Με κάρτα, μέσω Stripe. Η χρέωση γίνεται κάθε μήνα και στις δύο επιλογές." },
   { q: "Μπορώ να ακυρώσω;", a: "Ναι, από τη «Διαχείριση συνδρομής» στο Studio. Χωρίς δέσμευση, η συνδρομή σταματά στο τέλος του μήνα που έχεις πληρώσει. Με δέσμευση 12 μηνών, η ακύρωση ισχύει όταν ολοκληρωθούν οι 12 μήνες." },
@@ -81,6 +80,50 @@ function Eyebrow({ children, light = false }: { children: React.ReactNode; light
 
 function H2({ children, id, className = "" }: { children: React.ReactNode; id?: string; className?: string }) {
   return <h2 id={id} className={`font-serif mt-5 text-[2.1rem] font-medium leading-[1.06] tracking-[-0.02em] sm:text-5xl ${className}`}>{children}</h2>
+}
+
+const PLAN_LABELS: Record<string, string> = { starter: "Starter", growth: "Growth", pro: "Pro", business: "Επιχείρηση" }
+
+// Plan comparison, built from the limits the backend enforces.
+function Compare({ plans, tr }: { plans: PublicPlan[]; tr: (s: string) => string }) {
+  const yes = <svg className="mx-auto" width="20" height="20" viewBox="0 0 24 24" fill="none" aria-label={tr("Ναι")}><circle cx="12" cy="12" r="10" fill="#DCE6F0" /><path d="m7.5 12 3 3 6-6" stroke="#265E8E" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+  const no = <span className="text-[#2E4A37]/35" aria-label={tr("Όχι")}>—</span>
+  const rows: { label: string; cell: (p: PublicPlan) => React.ReactNode }[] = [
+    { label: "Άτομα στην ομάδα", cell: (p) => (p.memberLimit === 1 ? "1" : `${tr("έως")} ${p.memberLimit}`) },
+    { label: "Προϊόντα", cell: (p) => (p.features.products === null ? tr("Απεριόριστα") : groupThousands(p.features.products)) },
+    { label: "Χώρος για φωτογραφίες και αρχεία", cell: (p) => `${p.features.storageGb} GB` },
+    { label: "Ιστοσελίδα, e-shop, παραγγελίες, πληρωμές, αποστολές", cell: () => yes },
+    { label: "Κρατήσεις online", cell: () => yes },
+    { label: "Το δικό σου domain", cell: () => yes },
+    { label: "Πόντοι επιβράβευσης πελατών", cell: (p) => (p.features.loyalty ? yes : no) },
+    { label: "Προβολή στην αρχική του Vitrinaki", cell: (p) => (p.features.promoted === "priority" ? tr("Πρώτη θέση") : p.features.promoted === "standard" ? yes : no) },
+    { label: "Υποστήριξη", cell: (p) => tr(SUPPORT_LABELS[p.features.support]) },
+    { label: "Δωρεάν στήσιμο από την ομάδα μας", cell: (p) => (p.id === "business" ? yes : no) },
+  ]
+  return (
+    <div className="-mx-5 overflow-x-auto px-5 sm:mx-0 sm:px-0">
+      <table className="w-full min-w-[640px] table-fixed border-separate border-spacing-0 text-left text-[14.5px]">
+        <thead>
+          <tr>
+            <th scope="col" className="w-[34%] pb-4 text-[13px] font-semibold uppercase tracking-[0.14em] text-[#2E4A37]/60">{tr("Πακέτο")}</th>
+            {plans.map((p) => (
+              <th key={p.id} scope="col" className="pb-4 text-center text-[17px] font-extrabold text-[#1F3628]">{tr(PLAN_LABELS[p.id])}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((row) => (
+            <tr key={row.label}>
+              <th scope="row" className="border-t border-[#2E4A37]/10 py-3.5 pr-4 font-semibold text-[#1F3628]">{tr(row.label)}</th>
+              {plans.map((p) => (
+                <td key={p.id} className="border-t border-[#2E4A37]/10 px-2 py-3.5 text-center text-[#2E4A37]">{row.cell(p)}</td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  )
 }
 
 function SetupPrice({ price, tr }: { price: PlanPrice | null; tr: (s: string) => string }) {
@@ -113,7 +156,7 @@ export default async function PricingPage({ params }: { params: Promise<{ locale
               {tr("Μία συνδρομή.")} <span className="italic text-[#8DB8DE]">{tr("Όλα τα εργαλεία μαζί.")}</span>
             </h1>
             <p className="mx-auto mt-5 max-w-xl text-[16px] leading-7 text-[#F7F2E8]/80">
-              {tr("Δεν πληρώνεις χωριστά για ιστοσελίδα, e-shop και διαχείριση. Όλα τα πακέτα έχουν όλα τα εργαλεία. Διαλέγεις ανάλογα με το μέγεθος της ομάδας σου.")}
+              {tr("Δεν πληρώνεις χωριστά για ιστοσελίδα, e-shop και διαχείριση. Όλα τα πακέτα έχουν τα βασικά εργαλεία. Διαλέγεις ανάλογα με το μέγεθος της επιχείρησής σου.")}
             </p>
           </div>
           <div className="mt-10 lg:mt-12">
@@ -124,6 +167,19 @@ export default async function PricingPage({ params }: { params: Promise<{ locale
               ? tr("Ξεκινάς χωρίς κάρτα. Πληρώνεις μόνο όταν ενεργοποιήσεις τη συνδρομή στο Studio. Ήρθες με σύσταση από άλλο κατάστημα; Ο πρώτος σου μήνας είναι δωρεάν.")
               : tr("Οι τιμές οριστικοποιούνται. Πριν ξεκινήσεις θα ξέρεις ακριβώς τι πληρώνεις. Ήρθες με σύσταση από άλλο κατάστημα; Ο πρώτος σου μήνας είναι δωρεάν.")}
           </p>
+        </div>
+      </section>
+
+      {/* Compare */}
+      <section aria-labelledby="compare-title" className="bg-[#F7F2E8]">
+        <div className={`${WRAP} py-14 lg:py-20`}>
+          <Reveal className="max-w-2xl">
+            <Eyebrow>{tr("Σύγκριση")}</Eyebrow>
+            <H2 id="compare-title">{tr("Τι αλλάζει από πακέτο σε πακέτο.")}</H2>
+          </Reveal>
+          <Reveal className="mt-10 rounded-3xl bg-white/70 p-5 ring-1 ring-[#2E4A37]/10 sm:p-8">
+            <Compare plans={pricing.plans} tr={tr} />
+          </Reveal>
         </div>
       </section>
 

@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 
-import { formatMoney, type PlanId, type PlanPrice, type PublicPlan } from "@/lib/data/vitrinaki-plans"
+import { formatMoney, groupThousands, SUPPORT_LABELS, type PlanFeatures, type PlanId, type PlanPrice, type PublicPlan } from "@/lib/data/vitrinaki-plans"
 import { useTranslator } from "@/lib/i18n/client"
 
 // "year": 12-month commitment, billed monthly. "month": no commitment, plus a one-off activation fee.
@@ -10,11 +10,23 @@ type Interval = "month" | "year"
 
 // Plans differ only in team size (enforced in the Studio) and in the help that
 // comes with them. Nothing here promises a feature gated by plan.
-const planCopy: Record<PlanId, { label: string; text: string; points: string[] }> = {
-  starter: { label: "Starter", text: "Η βιτρίνα σου με όλα τα βασικά.", points: ["Ιστοσελίδα & e-shop", "Παραγγελίες, πληρωμές και αποστολές", "Υποστήριξη από ανθρώπους"] },
-  growth: { label: "Growth", text: "Για καταστήματα που μεγαλώνουν.", points: ["Όλα όσα έχει το Starter", "Μοιράζεσαι τη δουλειά με την ομάδα σου"] },
-  pro: { label: "Pro", text: "Για ομάδες που δουλεύουν μαζί κάθε μέρα.", points: ["Όλα όσα έχει το Growth", "Χώρος για μεγαλύτερη ομάδα"] },
-  business: { label: "Επιχείρηση", text: "Για μεγάλες ομάδες, με τη βοήθειά μας από την αρχή.", points: ["Όλα όσα έχει το Pro", "Δωρεάν στήσιμο από την ομάδα μας", "Προτεραιότητα στην υποστήριξη"] },
+const planCopy: Record<PlanId, { label: string; text: string; extra?: string }> = {
+  starter: { label: "Starter", text: "Η βιτρίνα σου με όλα τα βασικά." },
+  growth: { label: "Growth", text: "Για καταστήματα που μεγαλώνουν." },
+  pro: { label: "Pro", text: "Για ομάδες που δουλεύουν μαζί κάθε μέρα." },
+  business: { label: "Επιχείρηση", text: "Για μεγάλες ομάδες, με τη βοήθειά μας από την αρχή.", extra: "Δωρεάν στήσιμο από την ομάδα μας" },
+}
+
+// The card's list, from the same limits the backend enforces.
+export function planPoints(features: PlanFeatures, tr: (s: string) => string, extra?: string) {
+  return [
+    features.products === null ? tr("Απεριόριστα προϊόντα") : tr("Έως {n} προϊόντα").replace("{n}", groupThousands(features.products)),
+    tr("{n} GB για φωτογραφίες και αρχεία").replace("{n}", String(features.storageGb)),
+    features.loyalty ? tr("Πόντοι επιβράβευσης πελατών") : "",
+    features.promoted === "priority" ? tr("Πρώτη θέση στην προβολή της αρχικής") : features.promoted === "standard" ? tr("Προβολή στην αρχική του Vitrinaki") : "",
+    `${tr("Υποστήριξη")}: ${tr(SUPPORT_LABELS[features.support]).toLowerCase()}`,
+    extra ? tr(extra) : "",
+  ].filter(Boolean)
 }
 
 const RECOMMENDED: PlanId = "growth"
@@ -64,10 +76,10 @@ export function PricingPlans({ plans, startHref }: { plans: PublicPlan[]; startH
               <p className="mt-2 min-h-12 text-[14px] leading-6 text-[#2E4A37]/70">{tr(copy.text)}</p>
               <PriceBlock month={plan.month} year={plan.year} activation={plan.activation || null} interval={interval} tr={tr} />
               <ul className="mt-5 flex-1 space-y-2 border-t border-[#2E4A37]/10 pt-5 text-[14px]">
-                {copy.points.map((point) => (
+                {planPoints(plan.features, tr, copy.extra).map((point) => (
                   <li key={point} className="flex gap-2">
                     <svg className="mt-0.5 shrink-0" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#DCE6F0" /><path d="m7.5 12 3 3 6-6" stroke="#265E8E" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                    {tr(point)}
+                    {point}
                   </li>
                 ))}
               </ul>

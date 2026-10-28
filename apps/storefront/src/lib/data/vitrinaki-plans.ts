@@ -4,21 +4,36 @@ export type PlanPrice = { amount: number; currency: string; interval: "month" | 
 
 // "year": monthly price with a 12-month commitment. "month": monthly price
 // without commitment, plus the one-off `activation` fee.
-export type PublicPlan = { id: PlanId; memberLimit: number; month: PlanPrice | null; year: PlanPrice | null; activation?: PlanPrice | null }
+export type PlanFeatures = {
+  products: number | null
+  storageGb: number
+  loyalty: boolean
+  promoted: "none" | "standard" | "priority"
+  support: "email" | "chat" | "priority" | "advisor"
+}
+
+export type PublicPlan = {
+  id: PlanId
+  memberLimit: number
+  features: PlanFeatures
+  month: PlanPrice | null
+  year: PlanPrice | null
+  activation?: PlanPrice | null
+}
 
 export type PublicPricing = {
   plans: PublicPlan[]
   setup: { assisted: PlanPrice | null; done_for_you: PlanPrice | null }
 }
 
-// Team sizes from packages/api/src/lib/vitrinaki-plans.ts, used when the
-// backend is unreachable so the page still lists the plans (without prices).
+// Team sizes and features from packages/api/src/lib/vitrinaki-plans.ts, used
+// when the backend is unreachable so the page still lists the plans (without prices).
 const FALLBACK: PublicPricing = {
   plans: [
-    { id: "starter", memberLimit: 1, month: null, year: null },
-    { id: "growth", memberLimit: 3, month: null, year: null },
-    { id: "pro", memberLimit: 5, month: null, year: null },
-    { id: "business", memberLimit: 15, month: null, year: null },
+    { id: "starter", memberLimit: 1, features: { products: 100, storageGb: 2, loyalty: false, promoted: "none", support: "email" }, month: null, year: null },
+    { id: "growth", memberLimit: 3, features: { products: 1000, storageGb: 10, loyalty: true, promoted: "none", support: "chat" }, month: null, year: null },
+    { id: "pro", memberLimit: 5, features: { products: 5000, storageGb: 30, loyalty: true, promoted: "standard", support: "priority" }, month: null, year: null },
+    { id: "business", memberLimit: 15, features: { products: null, storageGb: 100, loyalty: true, promoted: "priority", support: "advisor" }, month: null, year: null },
   ],
   setup: { assisted: null, done_for_you: null },
 }
@@ -34,7 +49,9 @@ export async function getPublicPricing(): Promise<PublicPricing> {
     })
     if (!response.ok) return FALLBACK
     const data = (await response.json()) as Partial<PublicPricing>
-    return data.plans?.length ? { plans: data.plans, setup: data.setup || FALLBACK.setup } : FALLBACK
+    // An older backend may answer without features: take them from the fallback.
+    const plans = data.plans?.map((plan) => ({ ...plan, features: plan.features || FALLBACK.plans.find((p) => p.id === plan.id)!.features }))
+    return plans?.length ? { plans, setup: data.setup || FALLBACK.setup } : FALLBACK
   } catch {
     return FALLBACK
   }
@@ -48,4 +65,14 @@ export function formatMoney(cents: number, currency: string) {
   const grouped = int.replace(/\B(?=(\d{3})+(?!\d))/g, ".")
   const symbol = currency.toLowerCase() === "eur" ? "€" : currency.toUpperCase()
   return `${grouped}${dec ? `,${dec}` : ""}\u00A0${symbol}`
+}
+
+// «1.000» style grouping, same on server and client.
+export const groupThousands = (n: number) => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ".")
+
+export const SUPPORT_LABELS: Record<PlanFeatures["support"], string> = {
+  email: "Με email",
+  chat: "Email και chat",
+  priority: "Με προτεραιότητα",
+  advisor: "Προσωπικός σύμβουλος",
 }

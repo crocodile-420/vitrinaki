@@ -2,7 +2,7 @@ import type { AuthenticatedMedusaRequest, MedusaResponse } from "@medusajs/frame
 import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 import { updateSellersWorkflow } from "@mercurjs/core/workflows"
 
-import { MAX_PROMOTED_PER_SHOP, PROMOTED_KEY, isStorefrontVisible, promotedIds } from "../../../../lib/vitrinaki-promoted"
+import { MAX_PROMOTED_PER_SHOP, PROMOTED_KEY, isStorefrontVisible, promotedIds, promotionTier } from "../../../../lib/vitrinaki-promoted"
 
 // Every shop with a Vitrinaki website, its products (one row per product it
 // sells) and the ones promoted on the homepage.
@@ -44,6 +44,8 @@ export async function GET(req: AuthenticatedMedusaRequest, res: MedusaResponse) 
       handle: seller.handle,
       storeName: seller.metadata.vitrinaki_storefront.storeName || seller.name,
       isVisible: isStorefrontVisible(seller, now),
+      // Shown on the homepage only on the Pro plan and up.
+      planAllows: promotionTier(seller, now) !== "none",
       promoted: promotedIds(seller.metadata),
       products: Array.from(productsBySeller.get(seller.id)?.values() || []),
     })),
