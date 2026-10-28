@@ -122,6 +122,7 @@ export default async function StartPage({
         <div className={`${WRAP} flex min-h-[calc(100svh-5rem)] flex-col justify-center pb-14 pt-8 sm:pt-10 lg:pb-16`}>
           <StartFlow
             shopHref={shopRegistrationHref(locale)}
+            previewUrl={`/${locale}/studio-preview`}
             resetPasswordUrl={`${studioUrl}/reset-password`}
             termsUrl={termsUrl || undefined}
             privacyUrl={privacyUrl || undefined}

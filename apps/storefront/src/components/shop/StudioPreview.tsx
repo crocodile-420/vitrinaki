@@ -20,7 +20,8 @@ export function StudioPreview({ locale, lang, origins }: { locale: string; lang:
 
   useEffect(() => {
     const onMessage = (event: MessageEvent) => {
-      if (!origins.includes(event.origin)) return
+      // The Studio, or the start page on this same site.
+      if (event.origin !== window.location.origin && !origins.includes(event.origin)) return
       const data = event.data as { type?: string; shop?: ShopResponse } | null
       if (data?.type === "vk-preview" && data.shop?.seller?.id && data.shop.storefront) setShop(data.shop)
     }

@@ -577,7 +577,7 @@ function Preview({ url, draft, device, onDevice }: { url: string; draft: unknown
       <div ref={box} className="vk-editor-stage relative flex-1 overflow-hidden">
         {url ? (
           <div className="absolute left-1/2 top-0" style={{ width: renderWidth, height: size.height / scale, transform: `translateX(-50%) scale(${scale})`, transformOrigin: "top center" }}>
-            <iframe ref={frame} src={url} title="Προεπισκόπηση website" onLoad={() => setReady(false)} className={`h-full w-full bg-white ${device === "mobile" ? "border-x border-ui-border-base" : ""}`} />
+            <iframe ref={frame} src={url} title="Προεπισκόπηση website" className={`h-full w-full bg-white ${device === "mobile" ? "border-x border-ui-border-base" : ""}`} />
           </div>
         ) : <p className="p-6 text-sm text-ui-fg-subtle">Η προεπισκόπηση δεν είναι διαθέσιμη.</p>}
         {url && !ready ? <p className="pointer-events-none absolute inset-x-0 top-3 text-center text-xs text-ui-fg-subtle">Φόρτωση…</p> : null}

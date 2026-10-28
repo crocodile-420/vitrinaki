@@ -117,7 +117,8 @@ export const TAGLINE_IDEAS: Record<BusinessType, string> = {
   other: "Καλώς ήρθες στη βιτρίνα μας",
 }
 
-export const OPTIONAL_STEPS = ["type", "look", "story", "location", "contact"] as const
+export const OPTIONAL_STEPS = ["type", "story", "photos", "location", "contact"] as const
+export const MAX_PHOTOS = 8
 export type OptionalStep = (typeof OPTIONAL_STEPS)[number]
 
 // ---------- API shapes (storefront route handlers) ----------

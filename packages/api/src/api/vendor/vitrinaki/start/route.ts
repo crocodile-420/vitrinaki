@@ -11,6 +11,7 @@ import {
   normalizePublicProfile,
   type FieldErrors,
 } from "../../../../lib/vitrinaki-profile"
+import { MAX_PHOTOS } from "../../../../lib/vitrinaki-autobuild"
 
 // The optional «first steps» right after sign-up on the public start page.
 // Each call saves one small step into the SAME fields the Studio store-profile
@@ -36,9 +37,10 @@ type Patch = Partial<{
   viberSameAsWhatsapp: boolean
   instagram: string
   facebook: string
+  photos: string[]
 }>
 
-const STEPS: Record<string, string> = { type: "type", look: "look", story: "basics", location: "location", contact: "contact" }
+const STEPS: Record<string, string> = { type: "type", look: "look", photos: "look", story: "basics", location: "location", contact: "contact" }
 const PALETTES = new Set(["forest", "terracotta", "ocean"])
 const has = (body: Patch, key: keyof Patch) => Object.prototype.hasOwnProperty.call(body, key)
 const text = (value: unknown, limit: number) => (typeof value === "string" ? value.trim().slice(0, limit) : "")
@@ -130,6 +132,12 @@ export async function POST(req: SellerRequest, res: MedusaResponse) {
     if (logoUrl && !isHttpUrl(logoUrl)) errors.logoUrl = "Δεν ανέβηκε σωστά η εικόνα. Δοκίμασε ξανά."
     storefront.logoUrl = logoUrl || null
     logo = logoUrl || null
+  }
+  if (has(body, "photos")) {
+    const photos = (Array.isArray(body.photos) ? body.photos : []).map((url) => text(url, 2048)).filter(Boolean)
+    if (photos.length > MAX_PHOTOS) errors.photos = `Έως ${MAX_PHOTOS} φωτογραφίες.`
+    else if (photos.some((url) => !isHttpUrl(url))) errors.photos = "Δεν ανέβηκε σωστά μια φωτογραφία. Δοκίμασε ξανά."
+    else storefront.gallery = photos
   }
   if (has(body, "tagline")) storefront.tagline = text(body.tagline, 160)
   if (has(body, "contactPhone")) {
