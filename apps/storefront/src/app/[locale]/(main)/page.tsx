@@ -343,14 +343,15 @@ export default async function Home({
       </section>
 
       {/* How it works: steps scroll, the shop mockup stays pinned and follows them */}
-      <section id="how-it-works" className="scroll-mt-20 bg-[#F3DCD2]">
+      <section id="how-it-works" className="relative isolate scroll-mt-20 bg-[#173A57] text-[#F7F2E8]">
+        <div aria-hidden="true" className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_50%_60%_at_15%_20%,#265E8E_0%,transparent_70%)]" />
         <div className={`${WRAP} py-14 lg:py-16`}>
           <HowItWorksScroll
             intro={
               <Reveal className="max-w-xl lg:pt-8">
-                <Eyebrow>{tr("Πώς ξεκινάς")}</Eyebrow>
+                <Eyebrow light>{tr("Πώς ξεκινάς")}</Eyebrow>
                 <H2>{tr("Από το template στην πρώτη παραγγελία.")}</H2>
-                <p className={`mt-5 max-w-md text-[16px] leading-7 ${MUTED}`}>{tr("Τέσσερα βήματα, με τον δικό σου ρυθμό. Και άνθρωποι δίπλα σου σε κάθε ένα.")}</p>
+                <p className="mt-5 max-w-md text-[16px] leading-7 text-[#F7F2E8]/70">{tr("Τέσσερα βήματα, με τον δικό σου ρυθμό. Και άνθρωποι δίπλα σου σε κάθε ένα.")}</p>
               </Reveal>
             }
           />
@@ -358,7 +359,7 @@ export default async function Home({
       </section>
 
       {/* All-in-one: the business tools under one roof */}
-      <section id="included" aria-labelledby="included-title" className="scroll-mt-20 bg-[#DCE6F0]">
+      <section id="included" aria-labelledby="included-title" className="scroll-mt-20 bg-[#F3DCD2]">
         <div className={`${WRAP} py-14 lg:py-20`}>
           <Reveal className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
             <div>

@@ -263,18 +263,18 @@ export function HowItWorksScroll({ intro }: { intro: React.ReactNode }) {
                 refs.current[i] = node
               }}
               data-step={i}
-              className="border-t border-[#2E4A37]/10 py-8 first:border-t-0 lg:flex lg:min-h-[42vh] lg:items-center lg:last:min-h-[32vh] lg:border-t-0 lg:py-0"
+              className="border-t border-[#F7F2E8]/10 py-8 first:border-t-0 lg:flex lg:min-h-[42vh] lg:items-center lg:last:min-h-[32vh] lg:border-t-0 lg:py-0"
             >
               <div className={`transition-opacity duration-500 motion-reduce:transition-none ${active === i ? "lg:opacity-100" : "lg:opacity-35"}`}>
                 <span className="flex items-center gap-3">
-                  <span className={`grid h-11 w-11 place-items-center rounded-full border font-serif text-xl italic transition-colors duration-500 motion-reduce:transition-none ${active === i ? "border-[#265E8E] bg-[#265E8E] text-white" : "border-[#2E4A37]/15 bg-[#F7F2E8] text-[#265E8E]"}`}>{i + 1}</span>
-                  <span className="text-[13px] font-semibold tracking-wide text-[#2E4A37]/60">{tr(step.label)}</span>
+                  <span className={`grid h-11 w-11 place-items-center rounded-full border font-serif text-xl italic transition-colors duration-500 motion-reduce:transition-none ${active === i ? "border-[#8DB8DE] bg-[#8DB8DE] text-[#173A57]" : "border-[#F7F2E8]/25 bg-transparent text-[#8DB8DE]"}`}>{i + 1}</span>
+                  <span className="text-[13px] font-semibold tracking-wide text-[#F7F2E8]/60">{tr(step.label)}</span>
                 </span>
-                <h3 className="mt-4 font-serif text-[1.7rem] font-medium leading-tight text-[#1F3628] sm:text-3xl">{tr(step.title)}</h3>
-                <p className="mt-3 max-w-md text-[15px] leading-7 text-[#2E4A37]/75">{tr(step.text)}</p>
+                <h3 className="mt-4 font-serif text-[1.7rem] font-medium leading-tight text-[#F7F2E8] sm:text-3xl">{tr(step.title)}</h3>
+                <p className="mt-3 max-w-md text-[15px] leading-7 text-[#F7F2E8]/75">{tr(step.text)}</p>
                 {step.key === "order" ? (
-                  <p className="mt-4 inline-flex items-center gap-2 rounded-full border border-[#2E4A37]/15 bg-white/70 px-3 py-1 text-[12.5px] font-semibold text-[#1F3628]">
-                    <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-[#265E8E]" />
+                  <p className="mt-4 inline-flex items-center gap-2 rounded-full border border-[#F7F2E8]/20 bg-white/10 px-3 py-1 text-[12.5px] font-semibold text-[#F7F2E8]">
+                    <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-[#8DB8DE]" />
                     {tr("Πληρωμές με κάρτα")}
                   </p>
                 ) : null}
@@ -294,10 +294,10 @@ export function HowItWorksScroll({ intro }: { intro: React.ReactNode }) {
             <div className="mb-3 grid grid-cols-4 gap-2 px-6">
               {steps.map((step, i) => (
                 <span key={step.key} className="min-w-0">
-                  <span className="block h-1 overflow-hidden rounded-full bg-[#2E4A37]/10">
-                    <span className={`block h-full rounded-full bg-[#265E8E] transition-[width] duration-500 motion-reduce:transition-none ${i <= active ? "w-full" : "w-0"}`} />
+                  <span className="block h-1 overflow-hidden rounded-full bg-[#F7F2E8]/15">
+                    <span className={`block h-full rounded-full bg-[#8DB8DE] transition-[width] duration-500 motion-reduce:transition-none ${i <= active ? "w-full" : "w-0"}`} />
                   </span>
-                  <span className={`mt-1.5 block truncate text-[11px] font-semibold transition-colors duration-500 motion-reduce:transition-none ${i === active ? "text-[#1F3628]" : "text-[#2E4A37]/45"}`}>{tr(step.label)}</span>
+                  <span className={`mt-1.5 block truncate text-[11px] font-semibold transition-colors duration-500 motion-reduce:transition-none ${i === active ? "text-[#F7F2E8]" : "text-[#F7F2E8]/45"}`}>{tr(step.label)}</span>
                 </span>
               ))}
             </div>
