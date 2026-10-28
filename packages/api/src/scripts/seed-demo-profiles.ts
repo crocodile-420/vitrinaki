@@ -14,6 +14,7 @@ import {
   createLocationFulfillmentSetWorkflow,
   createServiceZonesWorkflow,
   linkSalesChannelsToStockLocationWorkflow,
+  updateProductsWorkflow,
 } from "@medusajs/medusa/core-flows"
 
 import {
@@ -38,6 +39,9 @@ import type VitrinakiPrivateModuleService from "../modules/vitrinaki-private/ser
 //   Hide again: DEMO_PROFILES_ACTION=unpublish npx medusa exec ./src/scripts/seed-demo-profiles.ts
 //               (sets the demo stores to unpublished; delete them for good
 //               from the admin panel if wanted)
+//   New photos: DEMO_PROFILES_ACTION=refresh-images npx medusa exec ./src/scripts/seed-demo-profiles.ts
+//               (gives demo stores that already exist the banner, product and
+//               project photos listed here; nothing else is changed)
 //
 // Images come from the storefront's own static files (/home/*.webp) via
 // VITRINAKI_STOREFRONT_URL, never from backend uploads.
@@ -82,7 +86,7 @@ const DEMOS: Demo[] = [
     palette: "forest",
     tagline: "Από τον ελαιώνα μας, κατευθείαν στο τραπέζι σου",
     description: "Οικογενειακή παραγωγή εξαιρετικού παρθένου ελαιολάδου, μελιού και ελιών Καλαμών. (Δοκιμαστικό κατάστημα)",
-    banner: "/home/story-greece.webp",
+    banner: "/home/kinds/food-field.webp",
     phone: "2721012345",
     profile: {
       story: "Τρεις γενιές φροντίζουμε τα 800 δέντρα κορωνέικης στους λόφους πάνω από την Καλαμάτα. Μαζεύουμε τον καρπό νωρίς, με το χέρι, και τον πάμε στο ελαιοτριβείο την ίδια μέρα.\n\nΔεν αναμειγνύουμε, δεν αγοράζουμε από τρίτους: ό,τι μπουκαλώνουμε είναι δικό μας.",
@@ -102,9 +106,9 @@ const DEMOS: Demo[] = [
     doy: "Καλαμάτας",
     owner: "Demo Παπαδόπουλος",
     products: [
-      { title: "Εξαιρετικό παρθένο ελαιόλαδο 1L", description: "Κορωνέικη ΠΟΠ Καλαμάτα, σοδειά 2025.", price: 14, image: "/home/story-greece.webp" },
-      { title: "Θυμαρίσιο μέλι 450g", description: "Από τα μελίσσια μας στον Ταΰγετο.", price: 11 },
-      { title: "Ελιές Καλαμών 500g", description: "Σε άλμη με ξίδι από κρασί και ρίγανη.", price: 7 },
+      { title: "Εξαιρετικό παρθένο ελαιόλαδο 1L", description: "Κορωνέικη ΠΟΠ Καλαμάτα, σοδειά 2025.", price: 14, image: "/home/site-oil.webp" },
+      { title: "Θυμαρίσιο μέλι 450g", description: "Από τα μελίσσια μας στον Ταΰγετο.", price: 11, image: "/home/kinds/food-honey.webp" },
+      { title: "Ελιές Καλαμών 500g", description: "Σε άλμη με ξίδι από κρασί και ρίγανη.", price: 7, image: "/home/site-olives.webp" },
       { title: "Γευσιγνωσία για δύο", description: "Ελαιόλαδο, μέλι και ελιές σε κουτί δώρου.", price: 32, image: "/home/food-dark.webp" },
     ],
   },
@@ -115,7 +119,7 @@ const DEMOS: Demo[] = [
     palette: "terracotta",
     tagline: "Κεραμικά φτιαγμένα στον τροχό, ένα-ένα",
     description: "Βάζα, κηροπήγια και επιτραπέζια σκεύη από ένα μικρό εργαστήρι στη Σύρο. (Δοκιμαστικό κατάστημα)",
-    banner: "/home/t-home.webp",
+    banner: "/home/kinds/crafts-wheel.webp",
     phone: "2281012345",
     profile: {
       story: "Ξεκίνησα με τον πηλό ως χόμπι το 2015. Σήμερα το εργαστήρι μου στην Ερμούπολη βγάζει μικρές σειρές για σπίτια και καταστήματα σε όλη την Ελλάδα. Κάθε κομμάτι είναι λίγο διαφορετικό από το προηγούμενο: αυτή είναι η ομορφιά του.",
@@ -137,7 +141,7 @@ const DEMOS: Demo[] = [
     products: [
       { title: "Βάζο «Ντόνατ» λευκό", description: "Ύψος 22 εκ., ματ λευκό σμάλτο.", price: 48, image: "/home/p-vase.webp" },
       { title: "Κηροπήγιο πέτρας", description: "Σετ δύο τεμαχίων.", price: 26, image: "/home/p-candle.webp" },
-      { title: "Γλάστρα τερακότα", description: "Χειροποίητη, με οπή αποστράγγισης.", price: 22, image: "/home/p-cactus.webp" },
+      { title: "Γλάστρα τερακότα", description: "Χειροποίητη, με οπή αποστράγγισης.", price: 22, image: "/home/kinds/demo-terracotta.webp" },
     ],
   },
   {
@@ -147,7 +151,7 @@ const DEMOS: Demo[] = [
     palette: "ocean",
     tagline: "Φρέσκα λουλούδια και φυτά, με παράδοση την ίδια μέρα",
     description: "Ανθοδέσμες, φυτά εσωτερικού χώρου και γλάστρες. Παράγγειλε online, παράλαβε από το μαγαζί ή στείλ' τα σε κάποιον που αγαπάς. (Δοκιμαστικό κατάστημα)",
-    banner: "/home/p-peony.webp",
+    banner: "/home/kinds/demo-florist.webp",
     phone: "2310123456",
     profile: {
       story: "Από το 1998 στην ίδια γωνία της Καλαμαριάς. Διαλέγουμε κάθε πρωί λουλούδια από Έλληνες παραγωγούς και φτιάχνουμε ανθοδέσμες με το χέρι.",
@@ -167,10 +171,10 @@ const DEMOS: Demo[] = [
     owner: "Demo Γεωργίου",
     products: [
       { title: "Παιώνιες σε βάζο", description: "Εποχική ανθοδέσμη με παιώνιες.", price: 38, image: "/home/p-peony.webp" },
-      { title: "Τουλίπες σε κεραμική γλάστρα", description: "10 τουλίπες σε κίτρινη γλάστρα.", price: 29, image: "/home/p-tulips.webp" },
-      { title: "Αλόη σε λευκή γλάστρα", description: "Εύκολο φυτό για φωτεινό σημείο.", price: 18, image: "/home/p-aloe.webp" },
-      { title: "Σετ παχύφυτων", description: "Έξι μικρά παχύφυτα σε πήλινα γλαστράκια.", price: 24, image: "/home/p-succulents.webp" },
-      { title: "Χλωρόφυτο γραφείου", description: "Καθαρίζει τον αέρα, θέλει λίγο πότισμα.", price: 15, image: "/home/p-desk-plant.webp" },
+      { title: "Τουλίπες σε κεραμική γλάστρα", description: "10 τουλίπες σε κίτρινη γλάστρα.", price: 29, image: "/home/kinds/demo-tulips.webp" },
+      { title: "Αλόη σε λευκή γλάστρα", description: "Εύκολο φυτό για φωτεινό σημείο.", price: 18, image: "/home/kinds/demo-aloe.webp" },
+      { title: "Σετ παχύφυτων", description: "Έξι μικρά παχύφυτα σε πήλινα γλαστράκια.", price: 24, image: "/home/kinds/demo-succulents.webp" },
+      { title: "Χλωρόφυτο γραφείου", description: "Καθαρίζει τον αέρα, θέλει λίγο πότισμα.", price: 15, image: "/home/kinds/demo-spider-plant.webp" },
     ],
   },
   {
@@ -180,7 +184,7 @@ const DEMOS: Demo[] = [
     palette: "terracotta",
     tagline: "Χρόνος για σένα: μασάζ, γιόγκα και περιποίηση",
     description: "Ένα ήσυχο studio ευεξίας στο Χαλάνδρι με θεραπευτικό μασάζ, μαθήματα γιόγκα και φυσικά καλλυντικά. (Δοκιμαστικό κατάστημα)",
-    banner: "/home/t-services.webp",
+    banner: "/home/kinds/demo-spa.webp",
     phone: "2106123456",
     profile: {
       story: "Η Αύρα ξεκίνησε το 2019 από δύο φυσικοθεραπεύτριες που ήθελαν έναν χώρο όπου η περιποίηση δεν βιάζεται. Δουλεύουμε με μικρές ομάδες και πολύ προσοχή στη λεπτομέρεια.",
@@ -212,8 +216,8 @@ const DEMOS: Demo[] = [
     doy: "Χαλανδρίου",
     owner: "Demo Κωνσταντίνου",
     products: [
-      { title: "Έλαιο τριαντάφυλλου 30ml", description: "Για πρόσωπο και σώμα.", price: 24, image: "/home/p-oil.webp" },
-      { title: "Σετ ορών προσώπου", description: "Ενυδάτωση και λάμψη.", price: 36, image: "/home/p-bottles.webp" },
+      { title: "Έλαιο τριαντάφυλλου 30ml", description: "Για πρόσωπο και σώμα.", price: 24, image: "/home/kinds/demo-oil-dropper.webp" },
+      { title: "Σετ ορών προσώπου", description: "Ενυδάτωση και λάμψη.", price: 36, image: "/home/kinds/demo-spa-bottle.webp" },
     ],
   },
   {
@@ -223,6 +227,7 @@ const DEMOS: Demo[] = [
     palette: "ocean",
     tagline: "Αξιόπιστος ηλεκτρολόγος, καθαρές τιμές",
     description: "Ηλεκτρολογικές εγκαταστάσεις, βλάβες και πιστοποιητικά για σπίτια και καταστήματα στα νότια προάστια. (Δοκιμαστικό κατάστημα)",
+    banner: "/home/kinds/demo-tools.webp",
     phone: "6956789012",
     profile: {
       story: "Είμαι αδειούχος ηλεκτρολόγος με 18 χρόνια στη δουλειά. Έρχομαι στην ώρα μου, εξηγώ τι θα κάνω πριν το κάνω και αφήνω τον χώρο καθαρό.",
@@ -260,7 +265,7 @@ const DEMOS: Demo[] = [
     palette: "forest",
     tagline: "Χώροι που σου μοιάζουν",
     description: "Σχεδιασμός εσωτερικών χώρων για κατοικίες, μικρά καταστήματα και καταλύματα. (Δοκιμαστικό κατάστημα)",
-    banner: "/home/t-portfolio.webp",
+    banner: "/home/kinds/demo-interior.webp",
     phone: "2109123456",
     profile: {
       story: "Είμαι εσωτερική αρχιτέκτονας με σπουδές στην Αθήνα και το Μιλάνο. Μου αρέσουν οι φωτεινοί, απλοί χώροι με φυσικά υλικά και λίγα, καλά επιλεγμένα αντικείμενα. Δουλεύω από την πρώτη ιδέα μέχρι το τελευταίο μαξιλάρι.",
@@ -270,9 +275,9 @@ const DEMOS: Demo[] = [
       portfolio: {
         skills: ["Σχεδιασμός κατοικιών", "Ανακαίνιση airbnb", "3D απεικονίσεις", "Επιλογή επίπλων & φωτισμού", "Styling για φωτογράφιση"],
         projects: [
-          { title: "Διαμέρισμα στο Παγκράτι", description: "Ανακαίνιση 75 τ.μ. με φυσικό φως και λευκές επιφάνειες.", imageUrl: "/home/t-portfolio.webp", link: "", year: "2025" },
-          { title: "Σαλόνι στη Γλυφάδα", description: "Ζεστά υφάσματα, κεραμικά και ήπιοι τόνοι.", imageUrl: "/home/t-home.webp", link: "", year: "2024" },
-          { title: "Γωνιά εργασίας", description: "Μικρό γραφείο σε 4 τ.μ. για δουλειά από το σπίτι.", imageUrl: "/home/p-desk-plant.webp", link: "", year: "2024" },
+          { title: "Διαμέρισμα στο Παγκράτι", description: "Ανακαίνιση 75 τ.μ. με φυσικό φως και λευκές επιφάνειες.", imageUrl: "/home/kinds/demo-room.webp", link: "", year: "2025" },
+          { title: "Σαλόνι στη Γλυφάδα", description: "Ζεστά υφάσματα, κεραμικά και ήπιοι τόνοι.", imageUrl: "/home/kinds/demo-living.webp", link: "", year: "2024" },
+          { title: "Γωνιά εργασίας", description: "Μικρό γραφείο σε 4 τ.μ. για δουλειά από το σπίτι.", imageUrl: "/home/kinds/demo-desk.webp", link: "", year: "2024" },
         ],
         clients: "Ιδιώτες, 6 καταλύματα βραχυχρόνιας μίσθωσης, 2 καφέ στην Αθήνα",
         availability: "Διαθέσιμη για νέα έργα από Δεκέμβριο",
@@ -315,6 +320,33 @@ export default async function seedDemoProfiles({ container }: ExecArgs) {
         },
       })
       logger.info(`Unpublished demo store ${seller.handle}.`)
+    }
+    return
+  }
+
+  if (process.env.DEMO_PROFILES_ACTION === "refresh-images") {
+    const { data } = await query.graph({ entity: "seller", fields: ["id", "handle", "metadata"], filters: { handle: DEMOS.map((d) => d.handle) } })
+    for (const seller of data as any[]) {
+      const demo = DEMOS.find((d) => d.handle === seller.handle)!
+      const banner = asset(demo.banner) || null
+      const storefront = seller.metadata?.vitrinaki_storefront || {}
+      const profile = seller.metadata?.vitrinaki_profile
+      const projects = demo.profile.portfolio?.projects || []
+      if (profile?.portfolio?.projects?.length && projects.length) {
+        profile.portfolio.projects = profile.portfolio.projects.map((p: any, i: number) => (projects[i] ? { ...p, imageUrl: asset(projects[i].imageUrl) } : p))
+      }
+      await updateSellersWorkflow(container).run({
+        input: {
+          selector: { id: seller.id },
+          update: { banner, metadata: { ...(seller.metadata || {}), vitrinaki_storefront: { ...storefront, bannerUrl: banner }, ...(profile ? { vitrinaki_profile: profile } : {}) } },
+        } as any,
+      })
+      for (const [index, item] of demo.products.entries()) {
+        if (!item.image) continue
+        const url = asset(item.image)
+        await updateProductsWorkflow(container).run({ input: { selector: { handle: `${demo.handle}-${index + 1}` }, update: { thumbnail: url, images: [{ url }] } } })
+      }
+      logger.info(`New photos for demo store ${seller.handle}.`)
     }
     return
   }
