@@ -7,31 +7,45 @@ import { PALETTES, TEMPLATE_FOR_TYPE, caps, type BusinessType, type Palette } fr
 // (name, address, colour, kind of business, tagline, logo, city, phone).
 // Purely visual (aria-hidden); the form itself carries all the information.
 
+// Every kind of business has its own photos, so no two kinds look the same.
 const HERO_IMAGE: Record<BusinessType | "none", { src: string; pos: string }> = {
   none: { src: "/home/t-home.webp", pos: "center 55%" },
-  retail: { src: "/home/t-fashion.webp", pos: "center 30%" },
-  crafts: { src: "/home/p-vase.webp", pos: "center" },
-  food: { src: "/home/food-dark.webp", pos: "30% center" },
-  beauty: { src: "/home/t-services.webp", pos: "center 35%" },
-  fitness: { src: "/home/t-services.webp", pos: "center 35%" },
-  lessons: { src: "/home/p-desk-plant.webp", pos: "center" },
-  health: { src: "/home/p-aloe.webp", pos: "center" },
-  professional: { src: "/home/p-desk-plant.webp", pos: "center" },
-  events: { src: "/home/p-peony.webp", pos: "center" },
-  services: { src: "/home/p-desk-plant.webp", pos: "center" },
-  portfolio: { src: "/home/t-portfolio.webp", pos: "center" },
-  other: { src: "/home/t-home.webp", pos: "center 55%" },
+  retail: { src: "/home/kinds/retail-store.webp", pos: "center" },
+  crafts: { src: "/home/kinds/crafts-wheel.webp", pos: "center" },
+  food: { src: "/home/kinds/food-market.webp", pos: "center" },
+  beauty: { src: "/home/kinds/beauty-facial.webp", pos: "30% center" },
+  fitness: { src: "/home/kinds/fitness-class.webp", pos: "center 40%" },
+  lessons: { src: "/home/kinds/lessons-books.webp", pos: "center" },
+  health: { src: "/home/kinds/health-doctor.webp", pos: "40% center" },
+  professional: { src: "/home/kinds/professional-meeting.webp", pos: "center" },
+  events: { src: "/home/kinds/events-wedding.webp", pos: "center" },
+  services: { src: "/home/kinds/services-electrician.webp", pos: "60% center" },
+  portfolio: { src: "/home/kinds/portfolio-camera.webp", pos: "center" },
+  other: { src: "/home/kinds/other-space.webp", pos: "center" },
 }
-const PRODUCTS = [
+type Item = { src: string; name: string; price: string }
+const PRODUCTS: Item[] = [
   { src: "/home/p-candle.webp", name: "Αρωματικό κερί", price: "18,00 €" },
   { src: "/home/p-succulents.webp", name: "Παχύφυτα σε γλάστρα", price: "24,00 €" },
   { src: "/home/p-peony.webp", name: "Παιώνιες", price: "32,00 €" },
 ]
-const FOOD = [
-  { src: "/home/p-oil.webp", name: "Ελαιόλαδο 500ml", price: "9,50 €" },
-  { src: "/home/p-bottles.webp", name: "Κρασί λευκό", price: "14,00 €" },
-  { src: "/home/p-tulips.webp", name: "Δώρο εποχής", price: "22,00 €" },
-]
+const ITEMS: Partial<Record<BusinessType, Item[]>> = {
+  retail: [
+    { src: "/home/kinds/retail-bag.webp", name: "Δερμάτινη τσάντα", price: "68,00 €" },
+    { src: "/home/kinds/retail-sunglasses.webp", name: "Γυαλιά ηλίου", price: "45,00 €" },
+    { src: "/home/kinds/retail-knit.webp", name: "Πλεκτό πόντσο", price: "39,00 €" },
+  ],
+  crafts: [
+    { src: "/home/kinds/crafts-cups.webp", name: "Κεραμικές κούπες", price: "28,00 €" },
+    { src: "/home/kinds/crafts-necklace.webp", name: "Κολιέ με πέτρα", price: "34,00 €" },
+    { src: "/home/kinds/crafts-pearls.webp", name: "Κολιέ με πέρλες", price: "52,00 €" },
+  ],
+  food: [
+    { src: "/home/kinds/food-oil.webp", name: "Ελαιόλαδο 500ml", price: "9,50 €" },
+    { src: "/home/kinds/food-cheese.webp", name: "Γραβιέρα", price: "12,00 €" },
+    { src: "/home/kinds/food-wine.webp", name: "Κρασί κόκκινο", price: "14,00 €" },
+  ],
+}
 const SERVICES = [
   { name: "Πρώτη συνάντηση", meta: "30′", price: "Δωρεάν" },
   { name: "Βασική υπηρεσία", meta: "60′", price: "από 40 €" },
@@ -76,7 +90,7 @@ export function ShopPreview({
   const hero = HERO_IMAGE[businessType || "none"]
   const shownTagline = tagline.trim() || tr("Καλώς ήρθες στη βιτρίνα μας")
   const isServices = template === "services"
-  const items = businessType === "food" ? FOOD : PRODUCTS
+  const items = (businessType && ITEMS[businessType]) || PRODUCTS
 
   return (
     <div aria-hidden="true" className={`overflow-hidden rounded-2xl bg-white shadow-[0_40px_80px_-40px_rgba(31,54,40,0.55)] ring-1 ring-[#2E4A37]/10 ${className}`}>

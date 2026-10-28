@@ -100,8 +100,8 @@ const samples: Record<TemplateKey, Sample> = {
     title: "Φτιαγμένα στο χέρι",
     text: "Φυσική ομορφιά για καθημερινές στιγμές",
     cta: "Ανακάλυψε",
-    img: "/home/p-desk-plant.webp",
-    pos: "45% center",
+    img: "/home/kinds/try-handmade.webp",
+    pos: "center",
     items: [
       { name: "Κεραμικό βάζο", cents: 3200, img: "/home/p-vase.webp" },
       { name: "Αρωματικό κερί", cents: 1800, img: "/home/p-candle.webp" },
@@ -110,7 +110,7 @@ const samples: Record<TemplateKey, Sample> = {
     story: "Ξεκινήσαμε σε ένα μικρό εργαστήριο. Κάθε κομμάτι φτιάχνεται ένα-ένα, με φυσικά υλικά.",
     features: ["Χειροποίητα", "Συσκευασία δώρου", "Αποστολή σε όλη την Ελλάδα"],
     imageText: "Από τον τροχό ως το ράφι σου.",
-    sectionImg: "/home/p-bottles.webp",
+    sectionImg: "/home/kinds/crafts-wheel.webp",
   },
   local: {
     name: "Πράσινη Γωνιά",
@@ -119,8 +119,8 @@ const samples: Record<TemplateKey, Sample> = {
     title: "Φυτά για κάθε γωνιά",
     text: "Φροντισμένα φυτά, έτοιμα για το σπίτι σου",
     cta: "Βρες μας",
-    img: "/home/t-home.webp",
-    pos: "center 70%",
+    img: "/home/kinds/try-seedlings.webp",
+    pos: "center",
     items: [
       { name: "Κάκτος σε πήλινη γλάστρα", cents: 1400, img: "/home/p-cactus.webp" },
       { name: "Παχύφυτα σε γλάστρα", cents: 2200, img: "/home/p-succulents.webp" },
@@ -129,7 +129,7 @@ const samples: Record<TemplateKey, Sample> = {
     story: "Ένα μικρό φυτώριο στη γειτονιά, με φυτά που φροντίζουμε μόνοι μας.",
     features: ["Φρέσκα κάθε εβδομάδα", "Παραλαβή από το κατάστημα", "Συμβουλές φροντίδας"],
     imageText: "Έλα να μας γνωρίσεις από κοντά.",
-    sectionImg: "/home/p-aloe.webp",
+    sectionImg: "/home/kinds/try-sprouts.webp",
   },
   services: {
     name: "Studio Κίνηση",
@@ -138,8 +138,8 @@ const samples: Record<TemplateKey, Sample> = {
     title: "Yoga & pilates",
     text: "Μικρά τμήματα, στον ρυθμό σου",
     cta: "Επικοινωνία",
-    img: "/home/t-services.webp",
-    pos: "center 35%",
+    img: "/home/kinds/try-pilates.webp",
+    pos: "center",
     items: [
       { name: "Yoga αρχαρίων", cents: 1200, meta: "60′" },
       { name: "Pilates mat", cents: 1400, meta: "50′" },
@@ -148,7 +148,7 @@ const samples: Record<TemplateKey, Sample> = {
     story: "Ένας φωτεινός χώρος για να κινηθείς χωρίς πίεση, όποια κι αν είναι η αφετηρία σου.",
     features: ["Μικρά τμήματα", "Πρωινά και απογευματινά", "Πρώτο μάθημα γνωριμίας"],
     imageText: "Ο χώρος μας, στο κέντρο της πόλης.",
-    sectionImg: "/home/site-coast.webp",
+    sectionImg: "/home/kinds/try-yoga.webp",
   },
 }
 
