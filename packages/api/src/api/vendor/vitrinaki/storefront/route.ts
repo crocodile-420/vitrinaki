@@ -4,6 +4,9 @@ import { updateSellersWorkflow } from "@mercurjs/core/workflows"
 import { randomBytes } from "node:crypto"
 
 import { availablePlanIntervals } from "../../../../lib/vitrinaki-plans"
+import { publicProfileView } from "../../../../lib/vitrinaki-profile"
+import { storageView } from "../../../../lib/vitrinaki-storage"
+import { DEFAULT_STYLE, normalizeStyle } from "../../../../lib/vitrinaki-storefront-style"
 
 type SellerRequest = AuthenticatedMedusaRequest & {
   seller_context?: { seller_id?: string }
@@ -28,6 +31,7 @@ type StorefrontForm = {
   logoUrl?: unknown
   bannerUrl?: unknown
   sections?: unknown
+  style?: unknown
   customDomain?: unknown
 }
 const templates = new Set(["atelier", "local", "services"])
@@ -106,6 +110,7 @@ const defaults = (seller: any) => ({
   logoUrl: seller.logo || "",
   bannerUrl: seller.banner || "",
   sections: seller.description ? [{ id: "about", type: "text", title: "Σχετικά με εμάς", body: seller.description, imageUrl: null }] : [],
+  style: DEFAULT_STYLE,
   customDomain: "",
   domainStatus: "not_configured",
   domainVerificationToken: "",
@@ -117,11 +122,20 @@ export async function GET(req: SellerRequest, res: MedusaResponse) {
   const seller = await getSeller(req)
   if (!seller) return res.status(401).json({ message: "Συνδέσου στον λογαριασμό της επιχείρησής σου." })
 
-  const storefront = seller.metadata?.vitrinaki_storefront || defaults(seller)
+  const saved = seller.metadata?.vitrinaki_storefront || defaults(seller)
+  const storefront = { ...saved, style: normalizeStyle(saved.style) }
   const subscription = seller.metadata?.vitrinaki_subscription || null
+  const storefrontUrl = (process.env.VITRINAKI_STOREFRONT_URL || process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3100").replace(/\/+$/, "")
+  const locale = process.env.VITRINAKI_DEFAULT_LOCALE || "gr"
   return res.json({
-    seller: { id: seller.id, name: seller.name, handle: seller.handle, email: seller.email, logo: seller.logo, banner: seller.banner },
+    seller: { id: seller.id, name: seller.name, handle: seller.handle, description: seller.description, email: seller.email, phone: seller.phone, logo: seller.logo, banner: seller.banner },
     storefront,
+    // The editor's live preview: the storefront page that renders the draft,
+    // and the public parts of the store profile it shows.
+    previewUrl: `${storefrontUrl}/${locale}/studio-preview`,
+    profile: seller.metadata?.vitrinaki_profile ? publicProfileView(seller.metadata.vitrinaki_profile) : null,
+    // Photo and file space used against the plan's limit.
+    storage: storageView(seller.metadata),
     subscription: subscription ? {
       planId: subscription.planId || subscription.plan_id,
       interval: subscription.interval || subscription.billing_interval,
@@ -174,6 +188,7 @@ export async function POST(req: SellerRequest, res: MedusaResponse) {
     logoUrl: optionalImageUrl(input.logoUrl),
     bannerUrl: optionalImageUrl(input.bannerUrl),
     sections: normalizeSections(input.sections ?? current.sections),
+    style: normalizeStyle(input.style ?? current.style),
     customDomain,
     domainStatus: customDomain ? (domainChanged ? "pending" : current.domainStatus || "pending") : "not_configured",
     domainVerificationToken: customDomain ? (domainChanged ? randomBytes(18).toString("hex") : current.domainVerificationToken || "") : "",

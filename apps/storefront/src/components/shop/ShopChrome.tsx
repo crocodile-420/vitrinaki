@@ -5,7 +5,8 @@ import { translator, type Lang } from "@/lib/i18n/vitrinaki"
 
 import type { ShopColors } from "./ShopProductCard"
 import { ShopImage } from "./ShopImage"
-import { shopInitials, type ShopResponse } from "./shop-data"
+import type { ShopResponse } from "./shop-data"
+import { shopInitials } from "./shop-style"
 
 const platformUrl = (process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3100").replace(/\/+$/, "")
 
@@ -38,7 +39,7 @@ export function ShopHeader({
           {seller.logo ? (
             <ShopImage src={seller.logo} alt={storefront.storeName} accent="#fff" soft={colors.accent} className="h-9 w-9 shrink-0 rounded-lg" label={storefront.storeName} small />
           ) : (
-            <span style={{ background: colors.accent }} className="grid h-9 w-9 shrink-0 place-items-center rounded-lg text-xs font-extrabold text-white">
+            <span style={{ background: colors.accent, color: colors.onAccent || "#fff" }} className="grid h-9 w-9 shrink-0 place-items-center rounded-lg text-xs font-extrabold">
               {shopInitials(storefront.storeName)}
             </span>
           )}

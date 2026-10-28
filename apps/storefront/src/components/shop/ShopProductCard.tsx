@@ -10,7 +10,8 @@ import { translator, type Lang } from "@/lib/i18n/vitrinaki"
 
 import { ShopImage } from "./ShopImage"
 
-export type ShopColors = { page: string; ink: string; accent: string; soft: string }
+// onAccent: text on the accent colour (dark on a dark-theme page, where the accent is light).
+export type ShopColors = { page: string; ink: string; accent: string; soft: string; onAccent?: string }
 
 // A product card that wears the shop's palette rather than Vitrinaki's, so
 // every shop keeps its own identity.
@@ -86,7 +87,7 @@ export function ShopProductCard({
           type="button"
           onClick={add}
           disabled={disabled || isAddingItem}
-          style={{ background: disabled ? "transparent" : colors.accent, color: disabled ? colors.ink : "#fff", borderColor: colors.accent }}
+          style={{ background: disabled ? "transparent" : colors.accent, color: disabled ? colors.ink : colors.onAccent || "#fff", borderColor: colors.accent }}
           className="shrink-0 rounded-full border px-3.5 py-1.5 text-xs font-bold transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {tr(amount === null ? "Μη διαθέσιμο" : stock ? "Στο καλάθι" : "Εξαντλήθηκε")}

@@ -164,7 +164,7 @@ export function ServicesSection({ p, colors, tr, soft = false, booking = false }
         ))}
       </div>
       {p.beauty.brands ? <p className="mt-4 text-sm opacity-70">{tr("Προϊόντα που χρησιμοποιούμε")}: {p.beauty.brands}</p> : null}
-      <a href={booking ? "#booking" : "#contact"} style={{ background: colors.accent }} className="mt-8 inline-block rounded-full px-6 py-3 font-bold text-white hover:opacity-90">{tr(booking ? "Κλείσε ραντεβού" : "Ζήτησε ραντεβού")}</a>
+      <a href={booking ? "#booking" : "#contact"} style={{ background: colors.accent, color: colors.onAccent || "#fff" }} className="vk-btn mt-8 inline-block rounded-full px-6 py-3 font-bold hover:opacity-90">{tr(booking ? "Κλείσε ραντεβού" : "Ζήτησε ραντεβού")}</a>
     </Section>
   )
 }

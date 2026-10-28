@@ -1587,6 +1587,12 @@ const en: Record<string, string> = {
   "Κλείσε νέο ραντεβού": "Book a new appointment",
   "Για αλλαγή ή ακύρωση επικοινώνησε με την επιχείρηση.": "To change or cancel, contact the business.",
   // Pricing page (/pricing)
+  "Στήσιμο και φιλοξενία της σελίδας σου": "Setup and hosting of your site",
+  "Κόστος στησίματος χωρίς δέσμευση": "Setup fee without commitment",
+  "Κόστος στησίματος με δέσμευση 12 μηνών": "Setup fee with a 12-month commitment",
+  "Στήσιμο χωρίς χρέωση, και χωρίς δέσμευση": "Setup at no charge, even without commitment",
+  "Στήνουμε τη σελίδα σου και τη φιλοξενούμε, με e-shop και διαχείριση μέσα. Όλα τα πακέτα έχουν τα βασικά εργαλεία. Διαλέγεις ανάλογα με το μέγεθος της επιχείρησής σου.": "We set up your site and host it, with the e-shop and management built in. Every plan has the core tools. Choose by the size of your business.",
+  "Απεριόριστα προϊόντα, 100 GB, προσωπικός σύμβουλος και στήσιμο χωρίς χρέωση.": "Unlimited products, 100 GB, a personal advisor and setup at no charge.",
   "Απεριόριστα προϊόντα": "Unlimited products",
   "Έως {n} προϊόντα": "Up to {n} products",
   "{n} GB για φωτογραφίες και αρχεία": "{n} GB for photos and files",

@@ -305,3 +305,34 @@ main .rounded-md.border.bg-ui-tag-neutral-bg {
 html:not(.dark) #root .h-dvh > div.border-r:first-child {
   background: #fbf8f2;
 }
+
+/* ---------- Website editor (routes/vitrinaki-storefront) ----------
+   The panel ships precompiled CSS, so Tailwind classes it does not already
+   contain do nothing on custom pages. The editor's layout and the few
+   utilities it needs beyond that set are defined here. */
+.vk-editor .font-semibold { font-weight: 600; }
+.vk-editor .text-base { font-size: 1rem; line-height: 1.5rem; }
+.vk-editor .text-\[11px\] { font-size: 11px; }
+.vk-editor .leading-5 { line-height: 1.25rem; }
+.vk-editor .leading-6 { line-height: 1.5rem; }
+.vk-editor .tracking-\[0\.18em\] { letter-spacing: 0.18em; }
+.vk-editor .rounded-2xl { border-radius: 1rem; }
+.vk-editor .border-x { border-left-width: 1px; border-right-width: 1px; }
+.vk-editor .place-items-center { place-items: center; }
+.vk-editor .mb-1\.5 { margin-bottom: 0.375rem; }
+.vk-editor .h-1\.5 { height: 0.375rem; }
+.vk-editor .top-3 { top: 0.75rem; }
+.vk-editor .space-y-5 > * + * { margin-top: 1.25rem; }
+.vk-editor .disabled\:opacity-40:disabled { opacity: 0.4; }
+.vk-editor-body { display: grid; gap: 1rem; padding: 1rem; }
+.vk-editor-alert { margin: 1rem 1rem 0; }
+.vk-editor-preview { min-height: 640px; }
+.vk-editor-stage { min-height: 560px; }
+@media (min-width: 640px) {
+  .vk-editor-body { padding: 1.5rem; }
+  .vk-editor-alert { margin: 1rem 1.5rem 0; }
+}
+@media (min-width: 1280px) {
+  .vk-editor-body { grid-template-columns: 400px minmax(0, 1fr); align-items: start; }
+  .vk-editor-preview { position: sticky; top: 5rem; height: calc(100vh - 7rem); }
+}

@@ -23,6 +23,8 @@ export type PublicPlan = {
 
 export type PublicPricing = {
   plans: PublicPlan[]
+  // Full price of the setup fee, shown struck through next to `activation`.
+  setupListPrice?: PlanPrice | null
   setup: { assisted: PlanPrice | null; done_for_you: PlanPrice | null }
 }
 
@@ -51,7 +53,7 @@ export async function getPublicPricing(): Promise<PublicPricing> {
     const data = (await response.json()) as Partial<PublicPricing>
     // An older backend may answer without features: take them from the fallback.
     const plans = data.plans?.map((plan) => ({ ...plan, features: plan.features || FALLBACK.plans.find((p) => p.id === plan.id)!.features }))
-    return plans?.length ? { plans, setup: data.setup || FALLBACK.setup } : FALLBACK
+    return plans?.length ? { plans, setupListPrice: data.setupListPrice || null, setup: data.setup || FALLBACK.setup } : FALLBACK
   } catch {
     return FALLBACK
   }

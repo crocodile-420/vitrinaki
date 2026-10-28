@@ -123,7 +123,7 @@ const plans = [
   { id: "starter", label: "Starter", team: "1 άτομο", text: "Έως 100 προϊόντα και 2 GB για φωτογραφίες." },
   { id: "growth", label: "Growth", team: "έως 3 άτομα", text: "Έως 1.000 προϊόντα, 10 GB και πόντοι επιβράβευσης." },
   { id: "pro", label: "Pro", team: "έως 5 άτομα", text: "Έως 5.000 προϊόντα, 30 GB και προβολή στην αρχική του Vitrinaki." },
-  { id: "business", label: "Επιχείρηση", team: "έως 15 άτομα", text: "Απεριόριστα προϊόντα, 100 GB, προσωπικός σύμβουλος και δωρεάν στήσιμο από την ομάδα μας." },
+  { id: "business", label: "Επιχείρηση", team: "έως 15 άτομα", text: "Απεριόριστα προϊόντα, 100 GB, προσωπικός σύμβουλος και στήσιμο χωρίς χρέωση." },
 ] as const
 
 const iconPaths: Record<string, React.ReactNode> = {

@@ -1,8 +1,8 @@
 import type { Metadata } from "next"
 
 import { Reveal } from "@/components/atoms/Reveal/Reveal"
-import { PricingPlans } from "@/components/sections/Pricing/PricingPlans"
-import { formatMoney, getPublicPricing, groupThousands, SUPPORT_LABELS, type PlanPrice, type PublicPlan } from "@/lib/data/vitrinaki-plans"
+import { PricingPlans, SetupFee } from "@/components/sections/Pricing/PricingPlans"
+import { getPublicPricing, groupThousands, SUPPORT_LABELS, type PlanPrice, type PublicPlan } from "@/lib/data/vitrinaki-plans"
 import { getTranslator } from "@/lib/i18n/server"
 import { startHref } from "@/lib/vitrinaki-links"
 
@@ -85,20 +85,22 @@ function H2({ children, id, className = "" }: { children: React.ReactNode; id?: 
 const PLAN_LABELS: Record<string, string> = { starter: "Starter", growth: "Growth", pro: "Pro", business: "Επιχείρηση" }
 
 // Plan comparison, built from the limits the backend enforces.
-function Compare({ plans, tr }: { plans: PublicPlan[]; tr: (s: string) => string }) {
+function Compare({ plans, setupListPrice, tr }: { plans: PublicPlan[]; setupListPrice: PlanPrice | null; tr: (s: string) => string }) {
   const yes = <svg className="mx-auto" width="20" height="20" viewBox="0 0 24 24" fill="none" aria-label={tr("Ναι")}><circle cx="12" cy="12" r="10" fill="#DCE6F0" /><path d="m7.5 12 3 3 6-6" stroke="#265E8E" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
   const no = <span className="text-[#2E4A37]/35" aria-label={tr("Όχι")}>—</span>
   const rows: { label: string; cell: (p: PublicPlan) => React.ReactNode }[] = [
     { label: "Άτομα στην ομάδα", cell: (p) => (p.memberLimit === 1 ? "1" : `${tr("έως")} ${p.memberLimit}`) },
     { label: "Προϊόντα", cell: (p) => (p.features.products === null ? tr("Απεριόριστα") : groupThousands(p.features.products)) },
     { label: "Χώρος για φωτογραφίες και αρχεία", cell: (p) => `${p.features.storageGb} GB` },
+    { label: "Στήσιμο και φιλοξενία της σελίδας σου", cell: () => yes },
     { label: "Ιστοσελίδα, e-shop, παραγγελίες, πληρωμές, αποστολές", cell: () => yes },
     { label: "Κρατήσεις online", cell: () => yes },
     { label: "Το δικό σου domain", cell: () => yes },
     { label: "Πόντοι επιβράβευσης πελατών", cell: (p) => (p.features.loyalty ? yes : no) },
     { label: "Προβολή στην αρχική του Vitrinaki", cell: (p) => (p.features.promoted === "priority" ? tr("Πρώτη θέση") : p.features.promoted === "standard" ? yes : no) },
     { label: "Υποστήριξη", cell: (p) => tr(SUPPORT_LABELS[p.features.support]) },
-    { label: "Δωρεάν στήσιμο από την ομάδα μας", cell: (p) => (p.id === "business" ? yes : no) },
+    { label: "Κόστος στησίματος χωρίς δέσμευση", cell: (p) => (p.id === "business" ? tr("Δωρεάν") : p.activation ? <SetupFee fee={p.activation} listPrice={setupListPrice} /> : "—") },
+    { label: "Κόστος στησίματος με δέσμευση 12 μηνών", cell: () => tr("Δωρεάν") },
   ]
   return (
     <div className="-mx-5 overflow-x-auto px-5 sm:mx-0 sm:px-0">
@@ -126,17 +128,6 @@ function Compare({ plans, tr }: { plans: PublicPlan[]; tr: (s: string) => string
   )
 }
 
-function SetupPrice({ price, tr }: { price: PlanPrice | null; tr: (s: string) => string }) {
-  return price ? (
-    <p className="mt-4 flex items-baseline gap-1.5">
-      <span className="text-3xl font-extrabold text-[#A8432F]">{formatMoney(price.amount, price.currency)}</span>
-      <span className={`text-[14px] ${MUTED}`}>{tr("μία φορά")}</span>
-    </p>
-  ) : (
-    <p className="mt-4 text-[14px] font-semibold text-[#A8432F]">{tr("Η τιμή ανακοινώνεται σύντομα")}</p>
-  )
-}
-
 export default async function PricingPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params
   const { tr } = await getTranslator()
@@ -156,11 +147,11 @@ export default async function PricingPage({ params }: { params: Promise<{ locale
               {tr("Μία συνδρομή.")} <span className="italic text-[#8DB8DE]">{tr("Όλα τα εργαλεία μαζί.")}</span>
             </h1>
             <p className="mx-auto mt-5 max-w-xl text-[16px] leading-7 text-[#F7F2E8]/80">
-              {tr("Δεν πληρώνεις χωριστά για ιστοσελίδα, e-shop και διαχείριση. Όλα τα πακέτα έχουν τα βασικά εργαλεία. Διαλέγεις ανάλογα με το μέγεθος της επιχείρησής σου.")}
+              {tr("Στήνουμε τη σελίδα σου και τη φιλοξενούμε, με e-shop και διαχείριση μέσα. Όλα τα πακέτα έχουν τα βασικά εργαλεία. Διαλέγεις ανάλογα με το μέγεθος της επιχείρησής σου.")}
             </p>
           </div>
           <div className="mt-10 lg:mt-12">
-            <PricingPlans plans={pricing.plans} startHref={start} />
+            <PricingPlans plans={pricing.plans} startHref={start} setupListPrice={pricing.setupListPrice} />
           </div>
           <p className="mx-auto mt-8 max-w-2xl text-center text-[13.5px] leading-6 text-[#F7F2E8]/70">
             {hasPrices
@@ -178,7 +169,7 @@ export default async function PricingPage({ params }: { params: Promise<{ locale
             <H2 id="compare-title">{tr("Τι αλλάζει από πακέτο σε πακέτο.")}</H2>
           </Reveal>
           <Reveal className="mt-10 rounded-3xl bg-white/70 p-5 ring-1 ring-[#2E4A37]/10 sm:p-8">
-            <Compare plans={pricing.plans} tr={tr} />
+            <Compare plans={pricing.plans} setupListPrice={pricing.setupListPrice || null} tr={tr} />
           </Reveal>
         </div>
       </section>
@@ -208,35 +199,6 @@ export default async function PricingPage({ params }: { params: Promise<{ locale
               </Reveal>
             ))}
           </ul>
-        </div>
-      </section>
-
-      {/* Setup services */}
-      <section aria-labelledby="setup-title" className="bg-[#F3DCD2]">
-        <div className={`${WRAP} grid gap-10 py-14 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16 lg:py-20`}>
-          <Reveal>
-            <Eyebrow>{tr("Βοήθεια στο στήσιμο")}</Eyebrow>
-            <H2 id="setup-title">{tr("Δεν θέλεις να το στήσεις μόνος σου;")}</H2>
-            <p className={`mt-5 max-w-md text-[16px] leading-7 ${MUTED}`}>
-              {tr("Μπορείς να ξεκινήσεις μόνος σου, με τους οδηγούς μας. Αν προτιμάς, το στήνουμε μαζί ή το αναλαμβάνουμε ολόκληρο. Είναι προαιρετική, εφάπαξ υπηρεσία, ξεχωριστή από τη συνδρομή. Στο πακέτο Επιχείρηση το στήσιμο είναι δωρεάν.")}
-            </p>
-          </Reveal>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <Reveal className="h-full">
-              <div className="flex h-full flex-col rounded-3xl bg-[#F7F2E8] p-6 ring-1 ring-[#A8432F]/15">
-                <p className="text-xl font-extrabold text-[#1F3628]">{tr("Το στήνουμε μαζί")}</p>
-                <p className={`mt-2 flex-1 text-[14px] leading-6 ${MUTED}`}>{tr("Δουλεύουμε μαζί σου στη ρύθμιση του brand, του περιεχομένου και του αρχικού καταλόγου.")}</p>
-                <SetupPrice price={pricing.setup.assisted} tr={tr} />
-              </div>
-            </Reveal>
-            <Reveal delay={80} className="h-full">
-              <div className="flex h-full flex-col rounded-3xl bg-[#F7F2E8] p-6 ring-1 ring-[#A8432F]/15">
-                <p className="text-xl font-extrabold text-[#1F3628]">{tr("Το στήνουμε εμείς")}</p>
-                <p className={`mt-2 flex-1 text-[14px] leading-6 ${MUTED}`}>{tr("Μας δίνεις υλικό και φωτογραφίες, κι εμείς παραδίδουμε τη βιτρίνα σου έτοιμη.")}</p>
-                <SetupPrice price={pricing.setup.done_for_you} tr={tr} />
-              </div>
-            </Reveal>
-          </div>
         </div>
       </section>
 
