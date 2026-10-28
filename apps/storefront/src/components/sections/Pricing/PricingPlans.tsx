@@ -8,18 +8,19 @@ import { useTranslator } from "@/lib/i18n/client"
 // "year": 12-month commitment, billed monthly. "month": no commitment, plus a one-off activation fee.
 type Interval = "month" | "year"
 
-// Plans differ only in team size (enforced in the Studio) and in the help that
-// comes with them. Nothing here promises a feature gated by plan.
+// Every plan includes building and hosting the shop's site; the cards list
+// the limits that differ, as the backend enforces them.
 const planCopy: Record<PlanId, { label: string; text: string; extra?: string }> = {
   starter: { label: "Starter", text: "Η βιτρίνα σου με όλα τα βασικά." },
   growth: { label: "Growth", text: "Για καταστήματα που μεγαλώνουν." },
   pro: { label: "Pro", text: "Για ομάδες που δουλεύουν μαζί κάθε μέρα." },
-  business: { label: "Επιχείρηση", text: "Για μεγάλες ομάδες, με τη βοήθειά μας από την αρχή.", extra: "Δωρεάν στήσιμο από την ομάδα μας" },
+  business: { label: "Επιχείρηση", text: "Για μεγάλες ομάδες, με τη βοήθειά μας από την αρχή.", extra: "Στήσιμο χωρίς χρέωση, και χωρίς δέσμευση" },
 }
 
 // The card's list, from the same limits the backend enforces.
 export function planPoints(features: PlanFeatures, tr: (s: string) => string, extra?: string) {
   return [
+    tr("Στήσιμο και φιλοξενία της σελίδας σου"),
     features.products === null ? tr("Απεριόριστα προϊόντα") : tr("Έως {n} προϊόντα").replace("{n}", groupThousands(features.products)),
     tr("{n} GB για φωτογραφίες και αρχεία").replace("{n}", String(features.storageGb)),
     features.loyalty ? tr("Πόντοι επιβράβευσης πελατών") : "",
@@ -33,7 +34,7 @@ const RECOMMENDED: PlanId = "growth"
 
 const team = (n: number) => (n === 1 ? "1 άτομο" : `έως ${n} άτομα`)
 
-export function PricingPlans({ plans, startHref }: { plans: PublicPlan[]; startHref: string }) {
+export function PricingPlans({ plans, startHref, setupListPrice }: { plans: PublicPlan[]; startHref: string; setupListPrice?: PlanPrice | null }) {
   const { tr } = useTranslator()
   const hasMonth = plans.some((p) => p.month)
   const hasYear = plans.some((p) => p.year)
@@ -74,7 +75,7 @@ export function PricingPlans({ plans, startHref }: { plans: PublicPlan[]; startH
               <p className="text-xl font-extrabold">{tr(copy.label)}</p>
               <p className="mt-0.5 text-[13px] font-semibold text-[#265E8E]">{tr(team(plan.memberLimit))}</p>
               <p className="mt-2 min-h-12 text-[14px] leading-6 text-[#2E4A37]/70">{tr(copy.text)}</p>
-              <PriceBlock month={plan.month} year={plan.year} activation={plan.activation || null} interval={interval} tr={tr} />
+              <PriceBlock month={plan.month} year={plan.year} activation={plan.activation || null} listPrice={setupListPrice || null} interval={interval} tr={tr} />
               <ul className="mt-5 flex-1 space-y-2 border-t border-[#2E4A37]/10 pt-5 text-[14px]">
                 {planPoints(plan.features, tr, copy.extra).map((point) => (
                   <li key={point} className="flex gap-2">
@@ -97,7 +98,7 @@ export function PricingPlans({ plans, startHref }: { plans: PublicPlan[]; startH
   )
 }
 
-function PriceBlock({ month, year, activation, interval, tr }: { month: PlanPrice | null; year: PlanPrice | null; activation: PlanPrice | null; interval: Interval; tr: (s: string) => string }) {
+function PriceBlock({ month, year, activation, listPrice, interval, tr }: { month: PlanPrice | null; year: PlanPrice | null; activation: PlanPrice | null; listPrice: PlanPrice | null; interval: Interval; tr: (s: string) => string }) {
   const price = interval === "month" ? month : year
   if (!price) {
     return (
@@ -120,11 +121,22 @@ function PriceBlock({ month, year, activation, interval, tr }: { month: PlanPric
             {saving > 0 ? <span className="ml-2 whitespace-nowrap rounded-full bg-[#F3DCD2] px-2 py-0.5 font-semibold text-[#A8432F]">−{saving}%</span> : null}
           </>
         ) : activation ? (
-          <>{tr("Ακυρώνεις όποτε θέλεις")} · + {formatMoney(activation.amount, activation.currency)} {tr("εφάπαξ στήσιμο")}</>
+          <>{tr("Ακυρώνεις όποτε θέλεις")} · + <SetupFee fee={activation} listPrice={listPrice} /> {tr("εφάπαξ στήσιμο")}</>
         ) : (
           tr("Ακυρώνεις όποτε θέλεις")
         )}
       </p>
     </div>
+  )
+}
+
+// The setup fee, with its full price struck through when it is higher.
+export function SetupFee({ fee, listPrice }: { fee: PlanPrice; listPrice: PlanPrice | null }) {
+  const discounted = listPrice && listPrice.currency === fee.currency && listPrice.amount > fee.amount
+  return (
+    <span className="whitespace-nowrap">
+      {discounted ? <s className="mr-1 opacity-60">{formatMoney(listPrice.amount, listPrice.currency)}</s> : null}
+      <span className="font-semibold">{formatMoney(fee.amount, fee.currency)}</span>
+    </span>
   )
 }

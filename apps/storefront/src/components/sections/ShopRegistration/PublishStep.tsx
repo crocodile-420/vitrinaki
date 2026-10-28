@@ -10,13 +10,13 @@ import { Field, Icon, Notice, Spinner, darkBtn, inputCls, primaryBtn, secondaryB
 type Subscription = { planId?: string; status?: string; currentPeriodEnd?: string | null } | null
 type Billing = { subscription: Subscription; isPublished: boolean; handle: string }
 
-// Team sizes match PLAN_MEMBER_LIMITS in packages/api/src/lib/vitrinaki-plans.ts.
+// Team sizes and limits match PLAN_MEMBER_LIMITS and PLAN_FEATURES in packages/api/src/lib/vitrinaki-plans.ts.
 // Prices come from the Stripe Price IDs the owner configures, so none here.
 const PLANS = [
-  { id: "starter", label: "Starter", text: "1 άτομο · η βιτρίνα σου με τα βασικά" },
-  { id: "growth", label: "Growth", text: "έως 3 άτομα · για καταστήματα που μεγαλώνουν" },
-  { id: "pro", label: "Pro", text: "έως 5 άτομα · ρόλους για την ομάδα" },
-  { id: "business", label: "Επιχείρηση", text: "έως 15 άτομα με ρόλους · πολλά καταστήματα από έναν λογαριασμό · δωρεάν στήσιμο από την ομάδα μας · προτεραιότητα στην υποστήριξη" },
+  { id: "starter", label: "Starter", text: "1 άτομο · 100 προϊόντα · 2 GB" },
+  { id: "growth", label: "Growth", text: "έως 3 άτομα · 1.000 προϊόντα · 10 GB · πόντοι επιβράβευσης" },
+  { id: "pro", label: "Pro", text: "έως 5 άτομα · 5.000 προϊόντα · 30 GB · προβολή στην αρχική" },
+  { id: "business", label: "Επιχείρηση", text: "έως 15 άτομα · απεριόριστα προϊόντα · 100 GB · πρώτη θέση στην προβολή · προσωπικός σύμβουλος · στήσιμο χωρίς χρέωση" },
 ] as const
 
 // «Ενεργοποίηση & δημοσίευση»: activate the plan (a promo code for now; paid
