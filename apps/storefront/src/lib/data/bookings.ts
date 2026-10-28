@@ -10,7 +10,18 @@ export type BookingService = { id: string; name: string; durationMinutes: number
 
 export type ShopBookings =
   | { enabled: false }
-  | { enabled: true; services: BookingService[]; maxDaysAhead: number; cancelHours: number; autoConfirm: boolean; note: string };
+  | { enabled: true; services: BookingService[]; maxDaysAhead: number; cancelHours: number; autoConfirm: boolean; note: string; tripDetails?: boolean };
+
+// The trip of a transfer or taxi booking (asked when the shop turns it on).
+export type BookingTrip = {
+  pickup: string;
+  dropoff: string;
+  passengers: number | string;
+  luggage?: number | string | null;
+  flight?: string;
+  returnDate?: string;
+  returnTime?: string;
+};
 
 export type BookingDay = { date: string; slots: string[] };
 
@@ -25,6 +36,7 @@ export type CustomerBooking = {
   end_time: string;
   status: 'pending' | 'confirmed' | 'declined' | 'cancelled' | 'completed' | 'no_show';
   customer_name: string;
+  details?: { trip?: BookingTrip } | null;
   can_cancel: boolean;
 };
 
@@ -86,6 +98,7 @@ export async function createBooking(input: {
   contact: BookingContact;
   consent: boolean;
   website?: string;
+  trip?: BookingTrip | null;
 }): Promise<{ ok: true; booking: CustomerBooking; token: string } | { ok: false; message: string; taken?: boolean }> {
   try {
     const result = await call<{ booking: CustomerBooking; token: string }>(
@@ -99,7 +112,8 @@ export async function createBooking(input: {
           time: input.time,
           contact: input.contact,
           consent: input.consent,
-          website: input.website || ''
+          website: input.website || '',
+          ...(input.trip ? { trip: input.trip } : {})
         }
       }
     );

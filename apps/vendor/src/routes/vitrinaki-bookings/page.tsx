@@ -22,7 +22,18 @@ const backend = () => __BACKEND_URL__.replace(/\/+$/, "")
 const WEEK_DAYS = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"] as const
 type WeekDay = (typeof WEEK_DAYS)[number]
 type DayHours = { closed: boolean; open: string; close: string; open2: string; close2: string }
-type Service = { id?: string; name: string; durationMinutes: number; price: string; description: string; active: boolean }
+type Service = { id?: string; name: string; durationMinutes: number; price: string; description: string; active: boolean; resourceIds?: string[] }
+// A vehicle, driver, trainer, chair or room: one booking per resource at a time.
+type Resource = { id?: string; name: string; active: boolean }
+type Trip = {
+  pickup: string
+  dropoff: string
+  passengers: number
+  luggage: number | null
+  flight: string
+  returnDate: string
+  returnTime: string
+}
 type DayOff = { from: string; to: string; note: string }
 type Settings = {
   enabled: boolean
@@ -36,6 +47,9 @@ type Settings = {
   cancelHours: number
   daysOff: DayOff[]
   note: string
+  resources: Resource[]
+  resourceLabel: string
+  tripDetails: boolean
 }
 type Status = "pending" | "confirmed" | "declined" | "cancelled" | "completed" | "no_show"
 type Booking = {
@@ -56,6 +70,9 @@ type Booking = {
   customer_note: string
   shop_note: string
   cancelled_by: "shop" | "customer" | null
+  resource_id: string | null
+  resource_name: string | null
+  details?: { trip?: Trip } | null
 }
 type Stats = { pending: number; upcoming: number; today: number }
 
@@ -258,7 +275,8 @@ export default function VitrinakiBookingsPage() {
                     <Text size="small" weight="plus">
                       {dayLabel(b.date, lang, { weekday: "long", day: "numeric", month: "long" })} · {b.time}–{b.end_time}
                     </Text>
-                    <Text size="small" className="text-ui-fg-subtle">{b.service_name} · {b.customer_name} · {b.customer_phone}</Text>
+                    <Text size="small" className="text-ui-fg-subtle">{b.service_name}{b.resource_name ? ` · ${b.resource_name}` : ""} · {b.customer_name} · {b.customer_phone}</Text>
+                    {b.details?.trip ? <Text size="xsmall" className="text-ui-fg-subtle mt-1">{b.details.trip.pickup} → {b.details.trip.dropoff}</Text> : null}
                     {b.customer_note ? <Text size="xsmall" className="text-ui-fg-subtle mt-1">«{b.customer_note}»</Text> : null}
                   </button>
                   <div className="flex gap-2">
@@ -315,6 +333,8 @@ export default function VitrinakiBookingsPage() {
                           <Text size="xsmall" weight="plus" style={{ whiteSpace: "nowrap" }}>{b.time}–{b.end_time}</Text>
                           <Text size="xsmall" className="truncate">{b.customer_name}</Text>
                           <Text size="xsmall" className="text-ui-fg-subtle truncate">{b.service_name}</Text>
+                          {b.resource_name ? <Text size="xsmall" weight="plus" className="truncate">{b.resource_name}</Text> : null}
+                          {b.details?.trip ? <Text size="xsmall" className="text-ui-fg-subtle truncate">{b.details.trip.pickup} → {b.details.trip.dropoff}</Text> : null}
                           <div style={{ marginTop: 4 }}>
                             <Badge size="2xsmall" color={STATUS_COLOR[b.status]}>{t(`vitrinakiBookings.status.${b.status}`)}</Badge>
                           </div>
@@ -343,7 +363,8 @@ export default function VitrinakiBookingsPage() {
       {selected ? (
         <BookingDrawer
           key={`${selected.id}:${selected.status}:${selected.start_at}:${selected.shop_note}`}
-          booking={selected} busy={busyId === selected.id} onClose={() => setSelected(null)} onAction={act} />
+          booking={selected} resources={settings?.resources || []} resourceLabel={settings?.resourceLabel || ""}
+          busy={busyId === selected.id} onClose={() => setSelected(null)} onAction={act} />
       ) : null}
       {creating && settings ? (
         <NewBookingDrawer
@@ -366,11 +387,15 @@ export default function VitrinakiBookingsPage() {
 
 function BookingDrawer({
   booking,
+  resources,
+  resourceLabel,
   busy,
   onClose,
   onAction,
 }: {
   booking: Booking
+  resources: Resource[]
+  resourceLabel: string
   busy: boolean
   onClose: () => void
   onAction: (b: Booking, action: string, extra?: Record<string, unknown>) => Promise<Booking | null>
@@ -384,6 +409,8 @@ function BookingDrawer({
   const [openedAt] = useState(() => Date.now())
 
   const active = booking.status === "pending" || booking.status === "confirmed"
+  const assignable = resources.filter((r) => r.id && r.active)
+  const trip = booking.details?.trip
   const started = new Date(booking.start_at).getTime() <= openedAt
 
   return (
@@ -415,6 +442,29 @@ function BookingDrawer({
             </div>
             {booking.customer_note ? <Text size="small" className="text-ui-fg-subtle mt-2">«{booking.customer_note}»</Text> : null}
           </div>
+
+          {trip ? <TripDetails trip={trip} /> : null}
+
+          {assignable.length || booking.resource_name ? (
+            <div className="flex flex-col gap-y-1">
+              <Label size="small" weight="plus">{resourceLabel || t("vitrinakiBookings.resources.label")}</Label>
+              {active && assignable.length ? (
+                <Select
+                  size="small"
+                  value={booking.resource_id && assignable.some((r) => r.id === booking.resource_id) ? booking.resource_id : undefined}
+                  onValueChange={(v) => v !== booking.resource_id && void onAction(booking, "assign", { resource_id: v })}
+                >
+                  <Select.Trigger data-testid="booking-assign"><Select.Value placeholder={booking.resource_name || t("vitrinakiBookings.resources.none")} /></Select.Trigger>
+                  <Select.Content>
+                    {assignable.map((r) => <Select.Item key={r.id} value={r.id!}>{r.name}</Select.Item>)}
+                  </Select.Content>
+                </Select>
+              ) : (
+                <Text size="small">{booking.resource_name || t("vitrinakiBookings.resources.none")}</Text>
+              )}
+              {active && assignable.length ? <Text size="xsmall" className="text-ui-fg-subtle">{t("vitrinakiBookings.resources.assignHint")}</Text> : null}
+            </div>
+          ) : null}
 
           <div className="flex flex-col gap-y-2">
             <Label htmlFor="booking-note" size="small" weight="plus">{t("vitrinakiBookings.shopNote")}</Label>
@@ -484,6 +534,37 @@ function BookingDrawer({
   )
 }
 
+function TripDetails({ trip }: { trip: Trip }) {
+  const { t, i18n } = useTranslation()
+  const rows: [string, string][] = [
+    [t("vitrinakiBookings.trip.pickup"), trip.pickup],
+    [t("vitrinakiBookings.trip.dropoff"), trip.dropoff],
+    [t("vitrinakiBookings.trip.passengers"), String(trip.passengers)],
+  ]
+  if (trip.luggage !== null && trip.luggage !== undefined) rows.push([t("vitrinakiBookings.trip.luggage"), String(trip.luggage)])
+  if (trip.flight) rows.push([t("vitrinakiBookings.trip.flight"), trip.flight])
+  if (trip.returnDate) {
+    rows.push([
+      t("vitrinakiBookings.trip.return"),
+      `${dayLabel(trip.returnDate, i18n.language, { weekday: "short", day: "numeric", month: "short" })}${trip.returnTime ? `, ${trip.returnTime}` : ""}`,
+    ])
+  }
+  return (
+    <div className="rounded-lg border px-4 py-3" data-testid="booking-trip">
+      <Text size="small" weight="plus">{t("vitrinakiBookings.trip.title")}</Text>
+      <dl className="mt-2" style={{ display: "grid", gridTemplateColumns: "auto 1fr", columnGap: 12, rowGap: 4 }}>
+        {rows.map(([k, v]) => (
+          <div key={k} style={{ display: "contents" }}>
+            <dt className="text-ui-fg-subtle txt-compact-small">{k}</dt>
+            <dd className="txt-compact-small" style={{ overflowWrap: "anywhere" }}>{v}</dd>
+          </div>
+        ))}
+      </dl>
+      {trip.returnDate ? <Text size="xsmall" className="text-ui-fg-subtle mt-2">{t("vitrinakiBookings.trip.returnHint")}</Text> : null}
+    </div>
+  )
+}
+
 // ---------- a booking the shop adds itself ----------
 
 function NewBookingDrawer({
@@ -506,8 +587,17 @@ function NewBookingDrawer({
   const [time, setTime] = useState("10:00")
   const [contact, setContact] = useState(emptyContact)
   const [shopNote, setShopNote] = useState("")
+  const resources = settings.resources.filter((r) => r.id && r.active)
+  const [resourceId, setResourceId] = useState("auto")
+  const [trip, setTrip] = useState({ pickup: "", dropoff: "", passengers: "1", luggage: "", flight: "", returnDate: "", returnTime: "" })
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState("")
+  const tripText = (key: keyof typeof trip, label: string, extra: Record<string, unknown> = {}) => (
+    <div className="flex flex-1 flex-col gap-y-1" style={{ minWidth: 120 }}>
+      <Label htmlFor={`nb-trip-${key}`} size="small" weight="plus">{label}</Label>
+      <Input id={`nb-trip-${key}`} size="small" value={trip[key]} onChange={(e) => setTrip({ ...trip, [key]: e.target.value })} {...extra} />
+    </div>
+  )
 
   const submit = async (event: FormEvent, force = false) => {
     event.preventDefault()
@@ -522,6 +612,16 @@ function NewBookingDrawer({
           time,
           contact,
           shop_note: shopNote,
+          ...(resourceId !== "auto" ? { resource_id: resourceId } : {}),
+          ...(settings.tripDetails && (trip.pickup || trip.dropoff)
+            ? {
+                trip: {
+                  ...trip,
+                  passengers: Number(trip.passengers) || 1,
+                  luggage: trip.luggage === "" ? null : Number(trip.luggage),
+                },
+              }
+            : {}),
           force,
         }),
       })
@@ -586,6 +686,37 @@ function NewBookingDrawer({
                 <Input id="nb-time" type="time" step={300} size="small" value={time} onChange={(e) => setTime(e.target.value)} />
               </div>
             </div>
+            {resources.length ? (
+              <div className="flex flex-col gap-y-1">
+                <Label size="small" weight="plus">{settings.resourceLabel || t("vitrinakiBookings.resources.label")}</Label>
+                <Select size="small" value={resourceId} onValueChange={setResourceId}>
+                  <Select.Trigger><Select.Value /></Select.Trigger>
+                  <Select.Content>
+                    <Select.Item value="auto">{t("vitrinakiBookings.resources.auto")}</Select.Item>
+                    {resources.map((r) => <Select.Item key={r.id} value={r.id!}>{r.name}</Select.Item>)}
+                  </Select.Content>
+                </Select>
+              </div>
+            ) : null}
+            {settings.tripDetails ? (
+              <fieldset className="flex flex-col gap-y-3 rounded-lg border px-4 py-3">
+                <legend className="txt-compact-small-plus px-1">{t("vitrinakiBookings.trip.title")}</legend>
+                <div className="flex flex-wrap gap-3">
+                  {tripText("pickup", t("vitrinakiBookings.trip.pickup"))}
+                  {tripText("dropoff", t("vitrinakiBookings.trip.dropoff"))}
+                </div>
+                <div className="flex flex-wrap gap-3">
+                  {tripText("passengers", t("vitrinakiBookings.trip.passengers"), { inputMode: "numeric" })}
+                  {tripText("luggage", t("vitrinakiBookings.trip.luggage"), { inputMode: "numeric" })}
+                  {tripText("flight", t("vitrinakiBookings.trip.flight"))}
+                </div>
+                <div className="flex flex-wrap gap-3">
+                  {tripText("returnDate", t("vitrinakiBookings.trip.returnDate"), { type: "date" })}
+                  {tripText("returnTime", t("vitrinakiBookings.trip.returnTime"), { type: "time", step: 300 })}
+                </div>
+                <Text size="xsmall" className="text-ui-fg-subtle">{t("vitrinakiBookings.trip.optionalHint")}</Text>
+              </fieldset>
+            ) : null}
             <div className="flex flex-col gap-y-1">
               <Label htmlFor="nb-name" size="small" weight="plus">{t("vitrinakiBookings.form.customerName")}</Label>
               <Input id="nb-name" size="small" value={contact.name} onChange={(e) => setContact({ ...contact, name: e.target.value })} />
@@ -635,10 +766,17 @@ function SettingsForm({ initial, saved, onSaved }: { initial: Settings; saved: b
   })
   const [daysOff, setDaysOff] = useState<DayOff[]>(initial.daysOff)
   const [note, setNote] = useState(initial.note)
+  const [resources, setResources] = useState<Resource[]>(initial.resources || [])
+  const [resourceLabel, setResourceLabel] = useState(initial.resourceLabel || "")
+  const [tripDetails, setTripDetails] = useState(Boolean(initial.tripDetails))
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState("")
 
   const updateService = (i: number, patch: Partial<ServiceDraft>) => setServices((list) => list.map((s, j) => (i === j ? { ...s, ...patch } : s)))
+  const updateResource = (i: number, patch: Partial<Resource>) => setResources((list) => list.map((r, j) => (i === j ? { ...r, ...patch } : r)))
+  // Only saved resources (with an id) can be picked for a service.
+  const savedResources = resources.filter((r) => r.id)
+  const resourceName = resourceLabel.trim() || t("vitrinakiBookings.resources.label")
   const updateDay = (day: WeekDay, patch: Partial<DayHours>) => setSchedule((s) => ({ ...s, [day]: { ...s[day], ...patch } }))
 
   const save = async (event: FormEvent) => {
@@ -663,10 +801,14 @@ function SettingsForm({ initial, saved, onSaved }: { initial: Settings; saved: b
             cancelHours: Number(rules.cancelHours),
             daysOff: daysOff.map((d) => ({ ...d, to: d.to || d.from })),
             note,
+            resources,
+            resourceLabel,
+            tripDetails,
           },
         }),
       })
       setServices(data.settings.services.map((s: Service) => ({ ...s, durationMinutes: String(s.durationMinutes) })))
+      setResources(data.settings.resources || [])
       onSaved(data.settings)
       toast.success(t("vitrinakiBookings.saved"))
     } catch (cause) {
@@ -708,6 +850,13 @@ function SettingsForm({ initial, saved, onSaved }: { initial: Settings; saved: b
             </div>
             <Switch id="bookings-auto" className="shrink-0" checked={autoConfirm} onCheckedChange={setAutoConfirm} />
           </div>
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <Label htmlFor="bookings-trip" size="small" weight="plus">{t("vitrinakiBookings.form.tripDetails")}</Label>
+              <Text size="xsmall" className="text-ui-fg-subtle mt-1">{t("vitrinakiBookings.form.tripDetailsHint")}</Text>
+            </div>
+            <Switch id="bookings-trip" className="shrink-0" checked={tripDetails} onCheckedChange={setTripDetails} data-testid="bookings-trip-toggle" />
+          </div>
         </div>
 
         <div className="flex flex-col gap-y-3">
@@ -744,6 +893,25 @@ function SettingsForm({ initial, saved, onSaved }: { initial: Settings; saved: b
               <Button type="button" size="small" variant="transparent" className="ml-auto" onClick={() => setServices((list) => list.filter((_, j) => j !== i))}>
                 {t("vitrinakiBookings.form.remove")}
               </Button>
+              {savedResources.length ? (
+                <div className="flex w-full flex-wrap items-center gap-x-4 gap-y-1">
+                  <Text size="xsmall" className="text-ui-fg-subtle">{t("vitrinakiBookings.resources.forService", { label: resourceName })}</Text>
+                  {savedResources.map((r) => {
+                    const ids = s.resourceIds || []
+                    return (
+                      <label key={r.id} className="txt-compact-xsmall flex items-center gap-1.5">
+                        <input
+                          type="checkbox"
+                          checked={ids.includes(r.id!)}
+                          onChange={(e) => updateService(i, { resourceIds: e.target.checked ? [...ids, r.id!] : ids.filter((id) => id !== r.id) })}
+                        />
+                        {r.name}
+                      </label>
+                    )
+                  })}
+                  <Text size="xsmall" className="text-ui-fg-muted">{t("vitrinakiBookings.resources.allHint")}</Text>
+                </div>
+              ) : null}
             </div>
           ))}
           {services.length < 20 ? (
@@ -757,6 +925,52 @@ function SettingsForm({ initial, saved, onSaved }: { initial: Settings; saved: b
               {t("vitrinakiBookings.form.addService")}
             </Button>
           ) : null}
+        </div>
+
+        <div className="flex flex-col gap-y-3" data-testid="bookings-resources">
+          <div>
+            <Heading level="h2">{t("vitrinakiBookings.resources.title")}</Heading>
+            <Text size="small" className="text-ui-fg-subtle mt-1">{t("vitrinakiBookings.resources.hint")}</Text>
+          </div>
+          <div className="flex flex-col gap-y-1" style={{ maxWidth: 260 }}>
+            <Label htmlFor="resource-label" size="xsmall" weight="plus">{t("vitrinakiBookings.resources.labelField")}</Label>
+            <Input
+              id="resource-label"
+              size="small"
+              maxLength={30}
+              value={resourceLabel}
+              placeholder={t("vitrinakiBookings.resources.labelPlaceholder")}
+              onChange={(e) => setResourceLabel(e.target.value)}
+            />
+          </div>
+          {resources.map((r, i) => (
+            <div key={r.id ?? `new-${i}`} className="bg-ui-bg-subtle flex flex-wrap items-end gap-3 rounded-lg border px-4 py-3" data-testid="bookings-resource-row">
+              <div className="flex flex-1 flex-col gap-y-1" style={{ minWidth: 180 }}>
+                <Label htmlFor={`res-name-${i}`} size="xsmall" weight="plus">{t("vitrinakiBookings.resources.name")}</Label>
+                <Input
+                  id={`res-name-${i}`}
+                  size="small"
+                  maxLength={60}
+                  value={r.name}
+                  placeholder={t("vitrinakiBookings.resources.namePlaceholder")}
+                  onChange={(e) => updateResource(i, { name: e.target.value })}
+                />
+              </div>
+              <div className="flex items-center gap-2 pb-1.5">
+                <Switch id={`res-active-${i}`} checked={r.active} onCheckedChange={(v) => updateResource(i, { active: v })} />
+                <Label htmlFor={`res-active-${i}`} size="xsmall">{t("vitrinakiBookings.resources.active")}</Label>
+              </div>
+              <Button type="button" size="small" variant="transparent" className="ml-auto" onClick={() => setResources((list) => list.filter((_, j) => j !== i))}>
+                {t("vitrinakiBookings.form.remove")}
+              </Button>
+            </div>
+          ))}
+          {resources.length < 30 ? (
+            <Button type="button" size="small" variant="secondary" className="self-start" onClick={() => setResources((list) => [...list, { name: "", active: true }])}>
+              {t("vitrinakiBookings.resources.add")}
+            </Button>
+          ) : null}
+          {resources.some((r) => !r.id) && services.length ? <Text size="xsmall" className="text-ui-fg-subtle">{t("vitrinakiBookings.resources.saveFirst")}</Text> : null}
         </div>
 
         <div className="flex flex-col gap-y-3">

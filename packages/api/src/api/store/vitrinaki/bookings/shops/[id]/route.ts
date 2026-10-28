@@ -10,10 +10,12 @@ import {
   MAX_ACTIVE_PER_CONTACT,
   newCancelToken,
   publicBookings,
+  resourcePool,
   toMinutes,
   validateContact,
+  validateTrip,
 } from "../../../../../../lib/vitrinaki-bookings"
-import { customerBookingView, loadBookingShop } from "../../../../../../lib/vitrinaki-bookings-store"
+import { customerBookingView, loadBookingShop, resourceChoice } from "../../../../../../lib/vitrinaki-bookings-store"
 import { VITRINAKI_BOOKINGS_MODULE } from "../../../../../../modules/vitrinaki-bookings"
 import type VitrinakiBookingsModuleService from "../../../../../../modules/vitrinaki-bookings/service"
 
@@ -48,7 +50,7 @@ export async function GET(req: AuthenticatedMedusaRequest, res: MedusaResponse) 
 
   const list = Array.from({ length: days }, (_, i) => {
     const date = addDays(from, i)
-    return { date, slots: freeSlots({ settings, durationMinutes: service.durationMinutes, date, busy, now }) }
+    return { date, slots: freeSlots({ settings, durationMinutes: service.durationMinutes, date, busy, now, pool: resourcePool(settings, service) }) }
   })
   const last = addDays(today, settings.maxDaysAhead)
   return res.json({ bookings: view, days: list, has_more: addDays(from, days) <= last })
@@ -73,6 +75,8 @@ export async function POST(req: AuthenticatedMedusaRequest, res: MedusaResponse)
   if (!isDate(date) || !/^([01]\d|2[0-3]):[0-5]\d$/.test(time)) return res.status(400).json({ message: "Διάλεξε μέρα και ώρα." })
   const contact = validateContact(body.contact ?? body)
   if ("error" in contact) return res.status(400).json({ message: contact.error })
+  const trip = settings.tripDetails ? validateTrip(body.trip, { date, time }) : null
+  if (trip && "error" in trip) return res.status(400).json({ message: trip.error })
   if (body.consent !== true) return res.status(400).json({ message: "Χρειάζεται η συγκατάθεσή σου για να σταλούν τα στοιχεία σου στην επιχείρηση." })
 
   const now = new Date()
@@ -82,7 +86,7 @@ export async function POST(req: AuthenticatedMedusaRequest, res: MedusaResponse)
     new Date(localToUtc(date, 0).getTime() - DAY_MS),
     new Date(localToUtc(addDays(date, 1), 0).getTime() + DAY_MS)
   )
-  if (!freeSlots({ settings, durationMinutes: service.durationMinutes, date, busy, now }).includes(time)) {
+  if (!freeSlots({ settings, durationMinutes: service.durationMinutes, date, busy, now, pool: resourcePool(settings, service) }).includes(time)) {
     return res.status(409).json({ message: "Αυτή η ώρα δεν είναι πια διαθέσιμη. Διάλεξε μια άλλη." })
   }
 
@@ -108,8 +112,10 @@ export async function POST(req: AuthenticatedMedusaRequest, res: MedusaResponse)
       customer_note: contact.contact.note || null,
       shop_note: null,
       cancel_token: token,
+      details: trip ? { trip: trip.trip } : null,
       buffer_minutes: settings.bufferMinutes,
       max_active_per_phone: MAX_ACTIVE_PER_CONTACT,
+      resources: resourceChoice(settings, service),
     })
     const booking = await module.retrieveBooking(id)
     return res.status(201).json({ booking: customerBookingView(booking, shop, true), token })

@@ -2,7 +2,7 @@ import type { AuthenticatedMedusaRequest, MedusaResponse } from "@medusajs/frame
 import { MedusaError } from "@medusajs/framework/utils"
 
 import { DEFAULT_BOOKINGS, isDate, localToUtc, readBookingSettings, toMinutes } from "../../../../../lib/vitrinaki-bookings"
-import { vendorBookingView } from "../../../../../lib/vitrinaki-bookings-store"
+import { resourceChoice, vendorBookingView } from "../../../../../lib/vitrinaki-bookings-store"
 import { loadSeller } from "../../../../../lib/stripe-connect-seller"
 import { VITRINAKI_BOOKINGS_MODULE } from "../../../../../modules/vitrinaki-bookings"
 import type VitrinakiBookingsModuleService from "../../../../../modules/vitrinaki-bookings/service"
@@ -18,7 +18,8 @@ const TRANSITIONS: Record<string, { to: string; from: string[]; started?: boolea
   no_show: { to: "no_show", from: ["confirmed", "pending", "completed"], started: true },
 }
 
-// One booking: change its status, move it, or keep a private note on it.
+// One booking: change its status, move it, give it to another resource
+// (vehicle, driver, trainer…), or keep a private note on it.
 export async function POST(req: SellerRequest, res: MedusaResponse) {
   const sellerId = req.seller_context?.seller_id
   if (!sellerId) return res.status(401).json({ message: "Συνδέσου στον λογαριασμό της επιχείρησής σου." })
@@ -32,13 +33,19 @@ export async function POST(req: SellerRequest, res: MedusaResponse) {
   if (action === "note") {
     const note = typeof body.shop_note === "string" ? body.shop_note.trim().slice(0, 500) : ""
     await module.updateBookings({ id: booking.id, shop_note: note || null })
-  } else if (action === "move") {
-    const date = String(body.date || "")
-    const time = String(body.time || "")
-    if (!isDate(date) || !/^([01]\d|2[0-3]):[0-5]\d$/.test(time)) return res.status(400).json({ message: "Διάλεξε μέρα και ώρα." })
+  } else if (action === "move" || action === "assign") {
+    const assigning = action === "assign"
+    const date = assigning ? null : String(body.date || "")
+    const time = assigning ? null : String(body.time || "")
+    if (!assigning && (!isDate(date) || !/^([01]\d|2[0-3]):[0-5]\d$/.test(String(time)))) return res.status(400).json({ message: "Διάλεξε μέρα και ώρα." })
     const seller = await loadSeller(req.scope, sellerId)
     const settings = readBookingSettings(seller?.metadata)
-    const start = localToUtc(date, toMinutes(time))
+    const resourceId = assigning ? String(body.resource_id || "") : booking.resource_id
+    if (assigning && !settings?.resources.some((r) => r.id === resourceId && r.active)) {
+      return res.status(400).json({ message: "Διάλεξε ένα από τα οχήματα, άτομα ή χώρους σου." })
+    }
+    const service = settings?.services.find((s) => s.id === booking.service_id) ?? null
+    const start = assigning ? new Date(booking.start_at) : localToUtc(String(date), toMinutes(String(time)))
     try {
       await module.move({
         id: booking.id,
@@ -47,6 +54,8 @@ export async function POST(req: SellerRequest, res: MedusaResponse) {
         end_at: new Date(start.getTime() + Number(booking.duration_minutes) * 60000),
         buffer_minutes: settings?.bufferMinutes ?? DEFAULT_BOOKINGS.bufferMinutes,
         allow_overlap: body.force === true,
+        // Moving keeps the resource when it is free; assigning asks for that one.
+        resources: assigning ? resourceChoice(settings, null, resourceId, true) : resourceChoice(settings, service, resourceId),
       })
     } catch (error) {
       if (error instanceof MedusaError && error.type === MedusaError.Types.NOT_ALLOWED) {

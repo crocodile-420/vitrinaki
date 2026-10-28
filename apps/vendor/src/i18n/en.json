@@ -245,7 +245,8 @@
       "complete": "Marked as completed.",
       "no_show": "Marked as no-show.",
       "move": "Appointment moved.",
-      "note": "Note saved."
+      "note": "Note saved.",
+      "assign": "The booking was reassigned."
     },
     "overlapConfirm": "There is already an appointment at that time. Add it anyway?",
     "cancelConfirm": "Cancel this appointment? Remember to tell the customer.",
@@ -288,7 +289,9 @@
       "note": "Message to customers",
       "notePlaceholder": "e.g. Bring a towel. To cancel, let me know by the day before.",
       "noteHint": "Shown next to the booking button.",
-      "save": "Save"
+      "save": "Save",
+      "tripDetails": "Trip details",
+      "tripDetailsHint": "For transfers and taxis: the form asks for pickup, destination, passengers, luggage, flight and, if the customer wants, a return."
     },
     "rules": {
       "slotStepMinutes": "Appointments every",
@@ -306,6 +309,36 @@
       "fri": "Friday",
       "sat": "Saturday",
       "sun": "Sunday"
+    },
+    "resources": {
+      "title": "Vehicles, people or rooms",
+      "hint": "If you have more than one vehicle, driver, trainer, chair or room, add them here. Each takes one booking at a time, so you accept as many bookings at the same time as you have. Without them you accept one booking at a time.",
+      "label": "Vehicle / person",
+      "labelField": "What you call them",
+      "labelPlaceholder": "e.g. Vehicle, Driver, Trainer",
+      "name": "Name",
+      "namePlaceholder": "e.g. Mercedes V-Class ABC 1234",
+      "active": "Available",
+      "add": "+ Add",
+      "none": "Not assigned",
+      "auto": "Automatic (first free)",
+      "assignHint": "Change it to give the booking to another one, if it is free at that time.",
+      "forService": "{{label}} for this service:",
+      "allHint": "If you pick none, all of them apply.",
+      "saveFirst": "Save to be able to pick the new ones per service."
+    },
+    "trip": {
+      "title": "Trip",
+      "pickup": "Pickup",
+      "dropoff": "Destination",
+      "passengers": "Passengers",
+      "luggage": "Luggage",
+      "flight": "Flight",
+      "return": "Return",
+      "returnDate": "Return date",
+      "returnTime": "Return time",
+      "returnHint": "The return is the customer's request: book it as a separate booking.",
+      "optionalHint": "Optional. If you add a trip, pickup and destination are needed."
     }
   }
 }
