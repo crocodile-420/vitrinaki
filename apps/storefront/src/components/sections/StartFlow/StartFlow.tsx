@@ -8,8 +8,8 @@ import { useTranslator } from "@/lib/i18n/client"
 import {
   BUSINESS_TYPES,
   HANDLE_MAX,
+  MAX_PHOTOS,
   OPTIONAL_STEPS,
-  PALETTES,
   PASSWORD_MIN,
   TAGLINE_IDEAS,
   caps,
@@ -27,7 +27,10 @@ import {
   type StartResponse,
 } from "@/lib/vitrinaki-start"
 
+import type { ShopResponse } from "@/components/shop/shop-data"
+
 import { ShopPreview } from "./ShopPreview"
+import { SitePreview } from "./SitePreview"
 
 type Phase = "account" | OptionalStep | "done"
 type Created = { name: string; handle: string; email: string; saved?: string[] }
@@ -137,6 +140,7 @@ function StepBar({ current, done = () => true }: { current: number; done?: (inde
 
 export function StartFlow({
   shopHref,
+  previewUrl,
   resetPasswordUrl,
   termsUrl,
   privacyUrl,
@@ -146,6 +150,8 @@ export function StartFlow({
   referralCode = "",
 }: {
   shopHref: string
+  /** /[locale]/studio-preview: renders the built shop at the end. */
+  previewUrl: string
   resetPasswordUrl: string
   termsUrl?: string
   privacyUrl?: string
@@ -185,9 +191,17 @@ export function StartFlow({
   // Optional steps
   const [businessType, setBusinessType] = useState<BusinessType | "">("")
   const [businessTypeOther, setBusinessTypeOther] = useState("")
-  const [palette, setPalette] = useState<Palette>("forest")
+  // The miniature keeps the default colours; the built shop gets its own look.
+  const palette: Palette = "forest"
   const [logoUrl, setLogoUrl] = useState("")
   const [logoBusy, setLogoBusy] = useState(false)
+  const [photos, setPhotos] = useState<string[]>([])
+  const [photosBusy, setPhotosBusy] = useState(0)
+  // The shop as built at the end («Στήνεται μόνο του»), and its look.
+  const [built, setBuilt] = useState<ShopResponse | null>(null)
+  const [preset, setPreset] = useState(0)
+  const [building, setBuilding] = useState(false)
+  const [buildError, setBuildError] = useState("")
   const [tagline, setTagline] = useState("")
   const [story, setStory] = useState("")
   const [area, setArea] = useState("")
@@ -362,17 +376,17 @@ export function StartFlow({
     setStepMessage("")
     const i = OPTIONAL_STEPS.indexOf(phase as OptionalStep)
     if (i >= 0 && i < OPTIONAL_STEPS.length - 1) return setPhase(OPTIONAL_STEPS[i + 1])
-    // The rest of the profile is filled in on /shop-registration.
+    // Last step: the shop is built and shown (the rest of the profile is
+    // filled in on /shop-registration).
     setPhase("done")
-    window.location.assign(shopHref)
-  }, [phase, shopHref])
+  }, [phase])
 
   function stepPayload(step: OptionalStep): Record<string, unknown> | null {
     switch (step) {
       case "type":
         return businessType ? { businessType, businessTypeOther: businessType === "other" ? businessTypeOther.trim() : "" } : null
-      case "look":
-        return { palette, logoUrl }
+      case "photos":
+        return photos.length || logoUrl ? { photos, logoUrl } : null
       case "story":
         return tagline.trim() || story.trim() ? { tagline: tagline.trim(), story: story.trim() } : null
       case "location":
@@ -455,6 +469,55 @@ export function StartFlow({
       setLogoBusy(false)
     }
   }
+
+  async function uploadPhotos(files: FileList | null) {
+    const list = Array.from(files || []).slice(0, MAX_PHOTOS - photos.length)
+    if (!list.length) return
+    setStepErrors({})
+    setPhotosBusy(list.length)
+    for (const file of list) {
+      try {
+        if (file.size > 10 * 1024 * 1024) throw new Error(tr("Η φωτογραφία είναι μεγαλύτερη από 10 MB."))
+        const form = new FormData()
+        form.append("file", file)
+        form.append("kind", "photo")
+        form.append("lang", lang)
+        const response = await fetch(`${API}/logo`, { method: "POST", body: form })
+        const body = await response.json().catch(() => ({}))
+        if (!response.ok || !body.url) throw new Error(body.message || tr("Δεν ανέβηκε η φωτογραφία. Δοκίμασε ξανά."))
+        setPhotos((current) => (current.length < MAX_PHOTOS ? [...current, body.url] : current))
+      } catch (error) {
+        setStepErrors({ photos: error instanceof Error ? error.message : tr("Δεν ανέβηκε η φωτογραφία. Δοκίμασε ξανά.") })
+      } finally {
+        setPhotosBusy((n) => Math.max(0, n - 1))
+      }
+    }
+  }
+
+  // Builds the shop from the answers; with a preset, in that look.
+  const build = useCallback(async (nextPreset?: number) => {
+    setBuilding(true)
+    setBuildError("")
+    try {
+      const response = await fetch(`${API}/build`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(nextPreset === undefined ? { lang } : { preset: nextPreset, lang }),
+      })
+      const body = await response.json().catch(() => ({}))
+      if (!response.ok || !body.seller) throw new Error(body.message || tr("Δεν στήθηκε η σελίδα. Δοκίμασε ξανά."))
+      setBuilt(body as ShopResponse)
+      setPreset(Number(body.preset) || 0)
+    } catch (error) {
+      setBuildError(error instanceof Error ? error.message : tr("Δεν στήθηκε η σελίδα. Δοκίμασε ξανά."))
+    } finally {
+      setBuilding(false)
+    }
+  }, [lang, tr])
+
+  useEffect(() => {
+    if (phase === "done" && created && !built && !building && !buildError) void build()
+  }, [phase, created, built, building, buildError, build])
 
   const address = `vitrinaki.gr/store/${created?.handle || handle}`
   const copyAddress = async () => {
@@ -778,8 +841,8 @@ export function StartFlow({
 
   const stepMeta: Record<OptionalStep, { title: string; text: string }> = {
     type: { title: tr("Τι κάνεις;"), text: tr("Έτσι διαλέγουμε το κατάλληλο ύφος και τις ενότητες της σελίδας σου.") },
-    look: { title: tr("Πώς θα δείχνει;"), text: tr("Διάλεξε χρώμα και, αν έχεις, ανέβασε το λογότυπό σου.") },
     story: { title: tr("Η ιστορία σου"), text: tr("Μία φράση για την πρώτη ματιά και λίγα λόγια για το όραμά σου.") },
+    photos: { title: tr("Φωτογραφίες"), text: tr("Ανέβασε 3 έως 8 φωτογραφίες από τον χώρο, τα προϊόντα ή τη δουλειά σου. Η πρώτη γίνεται εξώφυλλο, οι υπόλοιπες μπαίνουν στις ενότητες της σελίδας.") },
     location: { title: tr("Πού βρίσκεσαι;"), text: tr("Βοηθά τους πελάτες της περιοχής σου να σε βρουν. Δεν χρειάζεται ακριβής διεύθυνση.") },
     contact: { title: tr("Πώς θα σε βρίσκουν;"), text: tr("Εμφανίζονται δημόσια στη σελίδα σου. Συμπλήρωσε όσα θέλεις.") },
   }
@@ -822,31 +885,48 @@ export function StartFlow({
             ) : null}
           </fieldset>
         )
-      case "look":
+      case "photos":
         return (
           <div className="space-y-6">
-            <fieldset>
-              <legend className="mb-2 text-[13.5px] font-semibold text-[#1F3628]">{tr("Χρώμα")}</legend>
-              <div className="grid grid-cols-3 gap-2.5">
-                {PALETTES.map((p) => {
-                  const active = palette === p.value
-                  return (
-                    <label key={p.value} className={`relative cursor-pointer overflow-hidden rounded-xl border bg-white transition focus-within:ring-4 focus-within:ring-[#2E4A37]/15 ${active ? "border-[#1F3628] shadow-[inset_0_0_0_1px_#1F3628]" : "border-[#2E4A37]/15 hover:border-[#2E4A37]/40"}`}>
-                      <input type="radio" name="palette" value={p.value} checked={active} onChange={() => setPalette(p.value)} className="sr-only" />
-                      <span className="flex h-16" aria-hidden="true">
-                        <span className="flex-[2]" style={{ background: p.color }} />
-                        <span className="flex-1" style={{ background: p.soft }} />
-                        <span className="flex-1" style={{ background: p.page }} />
+            <div>
+              <p className="mb-2 text-[13.5px] font-semibold text-[#1F3628]">
+                {tr("Φωτογραφίες")} <span className="font-normal text-[#2E4A37]/55">{photos.length}/{MAX_PHOTOS}</span>
+              </p>
+              <ul className="grid grid-cols-3 gap-2.5">
+                {photos.map((url, index) => (
+                  <li key={`${index}-${url}`} className="group relative aspect-square overflow-hidden rounded-xl bg-[#F7F2E8] ring-1 ring-black/5">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={url} alt="" className="h-full w-full object-cover" />
+                    {index === 0 ? (
+                      <span className="absolute left-1.5 top-1.5 rounded-full bg-[#1F3628] px-2 py-0.5 text-[10.5px] font-semibold text-white">{tr("Εξώφυλλο")}</span>
+                    ) : (
+                      <button type="button" onClick={() => setPhotos((list) => [url, ...list.filter((u) => u !== url)])} className="absolute left-1.5 top-1.5 rounded-full bg-white/90 px-2 py-0.5 text-[10.5px] font-semibold text-[#1F3628] shadow-sm hover:bg-white">
+                        {tr("Κάν' το εξώφυλλο")}
+                      </button>
+                    )}
+                    <button type="button" aria-label={tr("Αφαίρεση")} onClick={() => setPhotos((list) => list.filter((u) => u !== url))} className="absolute right-1.5 top-1.5 grid h-6 w-6 place-items-center rounded-full bg-white/90 text-[#1F3628] shadow-sm hover:bg-white">
+                      <Icon name="x" size={13} />
+                    </button>
+                  </li>
+                ))}
+                {Array.from({ length: photosBusy }, (_, i) => (
+                  <li key={`busy-${i}`} className="grid aspect-square place-items-center rounded-xl bg-[#F7F2E8] text-[#2E4A37]"><Spinner /></li>
+                ))}
+                {photos.length + photosBusy < MAX_PHOTOS ? (
+                  <li>
+                    <label className={`grid aspect-square cursor-pointer place-items-center rounded-xl border border-dashed bg-[#F7F2E8]/60 text-center text-[12.5px] font-semibold text-[#2E4A37] transition focus-within:ring-4 focus-within:ring-[#2E4A37]/15 hover:border-[#2E4A37] ${stepErrors.photos ? "border-[#C0503C]" : "border-[#2E4A37]/30"}`}>
+                      <span className="grid justify-items-center gap-1 px-2">
+                        <Icon name="upload" size={20} />
+                        {photos.length ? tr("Πρόσθεσε") : tr("Διάλεξε φωτογραφίες")}
                       </span>
-                      <span className="flex items-center justify-between px-2.5 py-2 text-[13px] font-semibold text-[#1F3628]">
-                        {tr(p.label)}
-                        {active ? <Icon name="check" size={15} /> : null}
-                      </span>
+                      <input type="file" multiple accept="image/png,image/jpeg,image/webp" disabled={photosBusy > 0} onChange={(e) => { void uploadPhotos(e.target.files); e.target.value = "" }} className="sr-only" />
                     </label>
-                  )
-                })}
-              </div>
-            </fieldset>
+                  </li>
+                ) : null}
+              </ul>
+              <p className="mt-2 text-[12px] text-[#2E4A37]/60">{tr("JPG, PNG ή WEBP, έως 10 MB η καθεμία. Από το κινητό σου, όπως είναι.")}</p>
+              {stepErrors.photos ? <p className="mt-1.5 text-[13px] font-medium text-[#B2432F]" role="alert">{stepErrors.photos}</p> : null}
+            </div>
             <div>
               <p className="mb-2 text-[13.5px] font-semibold text-[#1F3628]">
                 {tr("Λογότυπο")} <span className="font-normal text-[#2E4A37]/55">{tr("(αν έχεις)")}</span>
@@ -1028,7 +1108,7 @@ export function StartFlow({
           <button type="button" onClick={next} disabled={saving} className={ghostBtn}>
             {tr("Αργότερα")}
           </button>
-          <button type="submit" disabled={saving || logoBusy} aria-busy={saving} className={`${primaryBtn} sm:min-w-[11rem]`}>
+          <button type="submit" disabled={saving || logoBusy || photosBusy > 0} aria-busy={saving} className={`${primaryBtn} sm:min-w-[11rem]`}>
             {saving ? <><Spinner />{tr("Αποθήκευση…")}</> : <>{stepIndex === OPTIONAL_STEPS.length - 1 ? tr("Ολοκλήρωση") : tr("Συνέχεια")} <Icon name="arrow" size={18} /></>}
           </button>
         </div>
@@ -1045,11 +1125,24 @@ export function StartFlow({
           <p className="text-[12px] font-semibold tracking-[0.16em] text-[#C0503C]">{caps(tr("Όλα έτοιμα"))}</p>
         </div>
         <h2 ref={headingRef} tabIndex={-1} className="mt-4 text-[1.75rem] font-extrabold leading-tight tracking-[-0.02em] text-[#1F3628] outline-none">
-          {tr("Η βιτρίνα σου είναι έτοιμη")}
+          {tr("Η σελίδα σου στήθηκε")}
         </h2>
         <p className="mt-1.5 text-[14.5px] leading-6 text-[#2E4A37]/75">
-          {tr("Συμπλήρωσε το προφίλ του καταστήματος, ενεργοποίησε το πακέτο σου και δημοσίευσε τη σελίδα σου, όλα εδώ στο Vitrinaki.")}
+          {tr("Τη φτιάξαμε από όσα μας είπες: κείμενα, φωτογραφίες, χρώματα και ενότητες. Δες τη, άλλαξε στυλ αν θέλεις, και συνέχισε στη δημοσίευση.")}
         </p>
+
+        <div aria-live="polite" className="empty:hidden">
+          {buildError ? (
+            <p role="alert" className="mt-4 flex items-center justify-between gap-2 rounded-xl bg-[#FBEDE9] px-3.5 py-2.5 text-[13.5px] font-medium text-[#7A2E20]">
+              <span className="flex items-center gap-2"><Icon name="alert" size={16} /> {buildError}</span>
+              <button type="button" onClick={() => void build(preset)} className="shrink-0 font-semibold underline-offset-2 hover:underline">{tr("Ξανά")}</button>
+            </p>
+          ) : null}
+        </div>
+
+        <button type="button" onClick={() => void build(preset + 1)} disabled={building || !built} className={`${secondaryBtn} mt-5 w-full`}>
+          {building ? <><Spinner />{tr("Στήνουμε…")}</> : <><Icon name="spark" size={18} />{tr("Δοκίμασε άλλο στυλ")}</>}
+        </button>
 
         <div className="mt-5 rounded-xl border border-[#2E4A37]/12 bg-[#F7F2E8] p-3.5">
           <p className="text-[12.5px] font-semibold text-[#2E4A37]/70">{tr("Η διεύθυνσή σου")}</p>
@@ -1077,12 +1170,18 @@ export function StartFlow({
 
         <div className="mt-6 grid gap-2.5">
           <a href={shopHref} className={`${primaryBtn} w-full`}>
-            {tr("Συνέχισε στο προφίλ του καταστήματος")} <Icon name="arrow" size={18} />
+            {tr("Μου αρέσει, συνέχεια")} <Icon name="arrow" size={18} />
           </a>
-          <form method="post" action={`${API}/handoff`}>
-            <input type="hidden" name="to" value="studio" />
-            <button type="submit" className={`${secondaryBtn} w-full text-[14px]`}>{tr("Πρόσθεσε προϊόντα στο Studio")}</button>
-          </form>
+          <div className="grid grid-cols-2 gap-2.5">
+            <form method="post" action={`${API}/handoff`}>
+              <input type="hidden" name="to" value="website" />
+              <button type="submit" className={`${secondaryBtn} w-full px-3 text-[14px]`}>{tr("Αλλαγές στο Studio")}</button>
+            </form>
+            <form method="post" action={`${API}/handoff`}>
+              <input type="hidden" name="to" value="studio" />
+              <button type="submit" className={`${secondaryBtn} w-full px-3 text-[14px]`}>{tr("Πρόσθεσε προϊόντα")}</button>
+            </form>
+          </div>
         </div>
         {saved.size < OPTIONAL_STEPS.length ? (
           <p className="mt-4 text-center text-[13.5px] text-[#2E4A37]/70">
@@ -1103,18 +1202,22 @@ export function StartFlow({
             <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#E08A76]" />
             {caps(tr("Ζωντανή προεπισκόπηση"))}
           </span>
-          <ShopPreview
-            lang={lang}
-            name={created?.name || storeName}
-            handle={created?.handle || handle}
-            palette={palette}
-            businessType={businessType}
-            tagline={tagline}
-            logoUrl={logoUrl}
-            city={city || area}
-            phone={contactPhone || whatsapp}
-            instagram={instagram}
-          />
+          {phase === "done" ? (
+            <SitePreview url={previewUrl} shop={built} height={640} />
+          ) : (
+            <ShopPreview
+              lang={lang}
+              name={created?.name || storeName}
+              handle={created?.handle || handle}
+              palette={palette}
+              businessType={businessType}
+              tagline={tagline}
+              logoUrl={logoUrl}
+              city={city || area}
+              phone={contactPhone || whatsapp}
+              instagram={instagram}
+            />
+          )}
         </div>
         <div className="hidden lg:block">{benefits}</div>
       </div>
@@ -1126,18 +1229,22 @@ export function StartFlow({
         {/* Phones: the preview follows the card */}
         <div className="mt-6 lg:hidden">
           <p className="mb-2 text-[11px] font-semibold tracking-[0.14em] text-[#2E4A37]/60">{caps(tr("Ζωντανή προεπισκόπηση"))}</p>
-          <ShopPreview
-            lang={lang}
-            name={created?.name || storeName}
-            handle={created?.handle || handle}
-            palette={palette}
-            businessType={businessType}
-            tagline={tagline}
-            logoUrl={logoUrl}
-            city={city || area}
-            phone={contactPhone || whatsapp}
-            instagram={instagram}
-          />
+          {phase === "done" ? (
+            <SitePreview url={previewUrl} shop={built} height={640} />
+          ) : (
+            <ShopPreview
+              lang={lang}
+              name={created?.name || storeName}
+              handle={created?.handle || handle}
+              palette={palette}
+              businessType={businessType}
+              tagline={tagline}
+              logoUrl={logoUrl}
+              city={city || area}
+              phone={contactPhone || whatsapp}
+              instagram={instagram}
+            />
+          )}
           {benefits}
         </div>
       </div>
