@@ -255,3 +255,43 @@ button:disabled svg path {
   .vk-marquee, .vk-float, .vk-glow, .vk-caret { animation: none; }
   .vk-tilt { transform: none !important; }
 }
+
+/* Shop pages: the style a seller picks in the Studio editor (shop-style.ts).
+   The defaults (classic / round / solid / light) add nothing, so shops look as
+   they did before. */
+.vk-shop[data-font="modern"] .font-serif {
+  font-family: inherit;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.vk-shop[data-font="minimal"] .font-serif {
+  font-family: inherit;
+  font-weight: 300;
+  letter-spacing: 0.01em;
+}
+.vk-shop[data-font="minimal"] {
+  font-weight: 300;
+}
+.vk-shop[data-corners="soft"] :is(.rounded-full.px-6, .rounded-full.border.px-3, .vk-btn) {
+  border-radius: 8px;
+}
+.vk-shop[data-corners="soft"] :is([class*="rounded-[2rem]"], .rounded-3xl) {
+  border-radius: 14px;
+}
+.vk-shop[data-corners="soft"] .rounded-2xl {
+  border-radius: 10px;
+}
+.vk-shop[data-corners="sharp"] [class*="rounded"]:not(.h-1\.5) {
+  border-radius: 0 !important;
+}
+.vk-shop[data-buttons="outline"] .vk-btn {
+  background: transparent !important;
+  color: inherit !important;
+  box-shadow: inset 0 0 0 2px currentColor;
+}
+.vk-shop[data-theme="dark"] .bg-white {
+  background-color: rgb(255 255 255 / 0.07);
+}
+.vk-shop[data-theme="dark"] :is(.bg-white\/50, .bg-white\/60) {
+  background-color: rgb(255 255 255 / 0.08);
+}

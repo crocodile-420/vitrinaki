@@ -2,6 +2,7 @@ import type { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
 import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 
 import { publicProfileView } from "../../../../../lib/vitrinaki-profile"
+import { normalizeStyle } from "../../../../../lib/vitrinaki-storefront-style"
 
 type PublicStorefront = {
   handle?: string
@@ -16,6 +17,7 @@ type PublicStorefront = {
   customDomain?: string
   domainStatus?: string
   sections?: unknown[]
+  style?: unknown
 }
 
 export async function GET(req: MedusaRequest, res: MedusaResponse) {
@@ -76,6 +78,7 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
         body: typeof section.body === "string" ? section.body.slice(0, 1600) : "",
         imageUrl: typeof section.imageUrl === "string" ? section.imageUrl : null,
       })) : [],
+      style: normalizeStyle(storefront.style),
     },
     // Whitelisted public answers of the Studio store profile. Private legal and
     // owner details live in a separate table and are never read here.

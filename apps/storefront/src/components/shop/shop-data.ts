@@ -1,6 +1,6 @@
 import { headers } from "next/headers"
 
-import { paletteColors } from "@/lib/data/vitrinaki-storefronts"
+import { themedColors, type ShopStyle } from "./shop-style"
 
 export type ShopSection = {
   id: string
@@ -52,12 +52,13 @@ export type ShopResponse = {
     tagline: string
     description: string
     template: "atelier" | "local" | "services"
-    palette: keyof typeof paletteColors
+    palette: "forest" | "terracotta" | "ocean" | "plum"
     contactEmail?: string | null
     contactPhone?: string | null
     customDomain?: string | null
     domainStatus?: string
     sections?: ShopSection[]
+    style?: Partial<ShopStyle>
   }
   profile?: ShopProfile | null
 }
@@ -89,12 +90,6 @@ export async function shopPaths(shop: ShopResponse, locale: string, handle: stri
   return { customDomainMode, home, product }
 }
 
-export const shopColors = (shop: ShopResponse) => paletteColors[shop.storefront.palette] || paletteColors.forest
+export const shopColors = (shop: ShopResponse) => themedColors(shop.storefront.palette, shop.storefront.style?.theme || "light")
 
-export const shopInitials = (name: string) =>
-  name
-    .split(/\s+/)
-    .map((word) => word[0])
-    .join("")
-    .slice(0, 2)
-    .toUpperCase()
+export { shopInitials } from "./shop-style"

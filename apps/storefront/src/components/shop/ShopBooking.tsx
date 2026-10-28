@@ -144,8 +144,8 @@ export function ShopBooking({ sellerId, services, autoConfirm, note, cancelHours
             </p>
             <a
               href={`${manageBase}/${done.token}`}
-              style={{ background: colors.accent }}
-              className="mt-7 inline-block rounded-full px-6 py-3 font-bold text-white hover:opacity-90"
+              style={{ background: colors.accent, color: colors.onAccent || "#fff" }}
+              className="vk-btn mt-7 inline-block rounded-full px-6 py-3 font-bold hover:opacity-90"
               data-testid="booking-manage-link"
             >
               {tr("Δες ή ακύρωσε το ραντεβού σου")}
@@ -226,7 +226,7 @@ export function ShopBooking({ sellerId, services, autoConfirm, note, cancelHours
                             setTime("")
                           }}
                           aria-pressed={active}
-                          style={active ? { background: colors.accent, color: "#fff" } : { borderColor: `${colors.ink}1f` }}
+                          style={active ? { background: colors.accent, color: colors.onAccent || "#fff" } : { borderColor: `${colors.ink}1f` }}
                           className={`flex flex-col items-center rounded-xl py-2 text-center ${active ? "" : "border"} ${empty ? "opacity-35" : ""}`}
                           data-testid="booking-day"
                         >
@@ -266,7 +266,7 @@ export function ShopBooking({ sellerId, services, autoConfirm, note, cancelHours
                               type="button"
                               onClick={() => setTime(slot)}
                               aria-pressed={active}
-                              style={active ? { background: colors.accent, color: "#fff", borderColor: colors.accent } : { borderColor: `${colors.ink}26` }}
+                              style={active ? { background: colors.accent, color: colors.onAccent || "#fff", borderColor: colors.accent } : { borderColor: `${colors.ink}26` }}
                               className="rounded-xl border py-2.5 font-bold tabular-nums"
                               data-testid="booking-slot"
                             >
@@ -321,8 +321,8 @@ export function ShopBooking({ sellerId, services, autoConfirm, note, cancelHours
               <button
                 type="submit"
                 disabled={isPending}
-                style={{ background: colors.accent }}
-                className="w-full rounded-full px-6 py-3.5 font-bold text-white hover:opacity-90 disabled:opacity-60"
+                style={{ background: colors.accent, color: colors.onAccent || "#fff" }}
+                className="vk-btn w-full rounded-full px-6 py-3.5 font-bold hover:opacity-90 disabled:opacity-60"
                 data-testid="booking-submit"
               >
                 {isPending ? tr("Στέλνουμε…") : tr(autoConfirm ? "Κλείσε το ραντεβού" : "Στείλε το αίτημα")}

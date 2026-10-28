@@ -10,7 +10,7 @@ describe("server-owned seller metadata", () => {
   }
 
   it("covers subscription, Stripe Connect and referral", () => {
-    expect([...SERVER_OWNED_SELLER_METADATA_KEYS].sort()).toEqual(["vitrinaki_loyalty", "vitrinaki_promoted", "vitrinaki_referral", "vitrinaki_stripe_connect", "vitrinaki_subscription"])
+    expect([...SERVER_OWNED_SELLER_METADATA_KEYS].sort()).toEqual(["vitrinaki_loyalty", "vitrinaki_promoted", "vitrinaki_referral", "vitrinaki_storage", "vitrinaki_stripe_connect", "vitrinaki_subscription"])
   })
 
   it("restores stored values over forged ones and keeps the rest of the client's metadata", () => {

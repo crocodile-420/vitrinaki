@@ -3,6 +3,7 @@ import { notFound } from "next/navigation"
 import { BookingStatusCard } from "@/components/shop/BookingStatusCard"
 import { ShopFooter, ShopHeader } from "@/components/shop/ShopChrome"
 import { loadShop, shopColors, shopPaths } from "@/components/shop/shop-data"
+import { shopStyle, styleAttrs } from "@/components/shop/shop-style"
 import { getBookingByToken } from "@/lib/data/bookings"
 import { getTranslator } from "@/lib/i18n/server"
 
@@ -21,7 +22,7 @@ export default async function BookingPage({ params }: { params: Promise<{ locale
   const paths = await shopPaths(shop, locale, handle)
 
   return (
-    <main style={{ background: colors.page, color: colors.ink }} className="min-h-screen">
+    <main {...styleAttrs(shopStyle(shop.storefront.style))} style={{ background: colors.page, color: colors.ink }} className="vk-shop min-h-screen">
       <ShopHeader shop={shop} colors={colors} home={paths.home} locale={locale} lang={lang} />
       <BookingStatusCard initial={booking} token={token} colors={colors} home={paths.home} contactPhone={shop.storefront.contactPhone || ""} />
       <ShopFooter shop={shop} colors={colors} lang={lang} />

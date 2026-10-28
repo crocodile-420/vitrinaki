@@ -23,12 +23,20 @@ export const PLAN_PRICE_ENV: Record<PlanId, { month: string; year: string }> = {
   business: { month: "STRIPE_PRICE_BUSINESS_MONTHLY", year: "STRIPE_PRICE_BUSINESS_YEARLY" },
 }
 
-// One-off activation fee for the no-commitment option, per plan (optional).
-export const PLAN_ACTIVATION_ENV: Record<PlanId, string> = {
+// One-off setup fee for the no-commitment option, per plan (optional). The
+// Business plan has none: its setup is always included.
+export const PLAN_ACTIVATION_ENV: Partial<Record<PlanId, string>> = {
   starter: "STRIPE_PRICE_STARTER_ACTIVATION",
   growth: "STRIPE_PRICE_GROWTH_ACTIVATION",
   pro: "STRIPE_PRICE_PRO_ACTIVATION",
-  business: "STRIPE_PRICE_BUSINESS_ACTIVATION",
+}
+
+// The setup fee's full price, shown struck through next to the Stripe price.
+export const SETUP_LIST_PRICE = { amount: 35000, currency: "eur" } as const
+
+export const activationPriceEnv = (planId: PlanId) => {
+  const name = PLAN_ACTIVATION_ENV[planId]
+  return name ? process.env[name] : undefined
 }
 
 // When a 12-month commitment that started at `start` ends.

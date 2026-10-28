@@ -11,6 +11,7 @@ import { scrubNested } from "../lib/public-seller-scrub"
 import { cardPaymentMessage, isStripeProviderId, SELLER_DATA_KEY, STRIPE_ACCOUNT_DATA_KEY } from "../lib/stripe-connect"
 import { memberLimitMessage, productLimitMessage } from "../lib/vitrinaki-plans"
 import { exceedsProductLimit } from "../lib/vitrinaki-product-limit"
+import { addStorageUsage, storageLimitBytes, storageLimitMessage, storageUsedBytes, wouldExceedStorage } from "../lib/vitrinaki-storage"
 import { keepServerOwnedMetadata } from "../lib/server-metadata"
 import { loadSeller } from "../lib/vitrinaki-referral-rewards"
 import { teamSeats } from "../lib/vitrinaki-team-limit"
@@ -75,6 +76,38 @@ async function enforceProductLimit(req: MedusaRequest, res: MedusaResponse, next
   }
 }
 
+// Space per plan (PLAN_FEATURES.storageGb) for Studio uploads. Before Mercur's
+// upload route: refuse when the request would go over the limit (its size is
+// known from Content-Length before the files are parsed). After a successful
+// upload: add the files' size to the shop's usage.
+async function enforceStorageLimit(req: MedusaRequest, res: MedusaResponse, next: MedusaNextFunction) {
+  try {
+    const sellerId = (req as any).seller_context?.seller_id
+    if (!sellerId) return next()
+    const seller = await loadSeller(req.scope, sellerId)
+    if (!seller) return next()
+    const limit = storageLimitBytes(seller.metadata?.vitrinaki_subscription)
+    const incoming = Number(req.headers["content-length"] || 0)
+    if (wouldExceedStorage(storageUsedBytes(seller.metadata), incoming, limit)) {
+      return res.status(400).json({ type: "not_allowed", message: storageLimitMessage(limit) })
+    }
+    const json = res.json.bind(res)
+    res.json = ((body: any) => {
+      if (res.statusCode < 400) {
+        const files = ((req as any).files || []) as { size?: number }[]
+        const bytes = files.reduce((sum, file) => sum + (Number(file.size) || 0), 0) || incoming
+        addStorageUsage(req.scope, sellerId, bytes).catch((error) =>
+          req.scope.resolve("logger").error(`[vitrinaki/storage] ${sellerId}: ${error instanceof Error ? error.message : String(error)}`)
+        )
+      }
+      return json(body)
+    }) as typeof res.json
+    return next()
+  } catch (error) {
+    return next(error)
+  }
+}
+
 // Card payment sessions are charged on the shop's own Stripe account. The
 // backend decides which account, never the client: a card session is refused
 // unless the whole cart is from one shop with an active Stripe account, and
@@ -130,6 +163,7 @@ export default defineMiddlewares({
     { matcher: "/admin/sellers/:id/members", methods: ["POST"], middlewares: [enforceTeamLimit] },
     { matcher: "/admin/sellers/:id/members/invite", methods: ["POST"], middlewares: [enforceTeamLimit] },
     { matcher: "/vendor/products", methods: ["POST"], middlewares: [enforceProductLimit] },
+    { matcher: "/vendor/uploads", methods: ["POST"], middlewares: [enforceStorageLimit] },
     { matcher: "/vendor/offers", methods: ["POST"], middlewares: [enforceProductLimit] },
     { matcher: "/vendor/offers/batch", methods: ["POST"], middlewares: [enforceProductLimit] },
     { matcher: "/vendor/sellers", methods: ["POST"], middlewares: [keepServerOwnedSellerMetadata] },

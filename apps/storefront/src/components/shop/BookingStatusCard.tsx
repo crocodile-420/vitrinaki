@@ -79,7 +79,7 @@ export function BookingStatusCard({
               </button>
             )
           ) : null}
-          <a href={`${home}#booking`} style={{ background: colors.accent }} className="rounded-full px-6 py-3 font-bold text-white hover:opacity-90">
+          <a href={`${home}#booking`} style={{ background: colors.accent, color: colors.onAccent || "#fff" }} className="vk-btn rounded-full px-6 py-3 font-bold hover:opacity-90">
             {tr(booking.status === "pending" || booking.status === "confirmed" ? "Κλείσε κι άλλο ραντεβού" : "Κλείσε νέο ραντεβού")}
           </a>
         </div>

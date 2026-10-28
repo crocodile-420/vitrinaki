@@ -10,6 +10,7 @@ export const SERVER_OWNED_SELLER_METADATA_KEYS = [
   "vitrinaki_referral",
   "vitrinaki_loyalty",
   "vitrinaki_promoted",
+  "vitrinaki_storage",
 ] as const
 
 // The incoming metadata with every server-owned key set to its stored value,

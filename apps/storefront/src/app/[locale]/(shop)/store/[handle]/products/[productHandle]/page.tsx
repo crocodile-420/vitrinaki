@@ -7,6 +7,7 @@ import { ShopFooter, ShopHeader } from "@/components/shop/ShopChrome"
 import { ShopImage } from "@/components/shop/ShopImage"
 import { ShopProductCard } from "@/components/shop/ShopProductCard"
 import { loadShop, shopColors, shopPaths } from "@/components/shop/shop-data"
+import { shopStyle, styleAttrs } from "@/components/shop/shop-style"
 import { getTranslator } from "@/lib/i18n/server"
 
 export async function generateMetadata({ params }: { params: Promise<{ handle: string; productHandle: string }> }) {
@@ -39,7 +40,7 @@ export default async function ShopProductPage({ params }: { params: Promise<{ lo
     .slice(0, 4)
 
   return (
-    <main style={{ background: colors.page, color: colors.ink }} className="min-h-screen">
+    <main {...styleAttrs(shopStyle(shop.storefront.style))} style={{ background: colors.page, color: colors.ink }} className="vk-shop min-h-screen">
       <ShopHeader shop={shop} colors={colors} home={paths.home} locale={locale} lang={lang} />
 
       <div className="mx-auto max-w-6xl px-5 py-8 sm:px-8 sm:py-12">

@@ -2,7 +2,7 @@ import type { AuthenticatedMedusaRequest, MedusaResponse } from "@medusajs/frame
 import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 import { updateSellersWorkflow } from "@mercurjs/core/workflows"
 
-import { COMMITMENT_MONTHS, isPlanId, PLAN_ACTIVATION_ENV, PLAN_PRICE_ENV } from "../../../../../lib/vitrinaki-plans"
+import { COMMITMENT_MONTHS, activationPriceEnv, isPlanId, PLAN_PRICE_ENV } from "../../../../../lib/vitrinaki-plans"
 
 type SellerRequest = AuthenticatedMedusaRequest & { seller_context?: { seller_id?: string } }
 
@@ -49,7 +49,7 @@ export async function POST(req: SellerRequest, res: MedusaResponse) {
   // No commitment: the one-off activation fee goes on the first invoice.
   // 12-month commitment: recorded on the subscription; the webhook keeps any
   // cancellation from taking effect before the commitment ends.
-  const activationPriceId = interval === "month" ? process.env[PLAN_ACTIVATION_ENV[planId]] : undefined
+  const activationPriceId = interval === "month" ? activationPriceEnv(planId) : undefined
   if (activationPriceId) {
     form.set("line_items[1][price]", activationPriceId)
     form.set("line_items[1][quantity]", "1")
