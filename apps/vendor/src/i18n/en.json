@@ -339,6 +339,10 @@
       "returnTime": "Return time",
       "returnHint": "The return is the customer's request: book it as a separate booking.",
       "optionalHint": "Optional. If you add a trip, pickup and destination are needed."
+    },
+    "view": {
+      "week": "Week",
+      "resources": "By vehicle / person"
     }
   }
 }

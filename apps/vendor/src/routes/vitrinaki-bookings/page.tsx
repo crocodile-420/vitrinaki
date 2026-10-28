@@ -140,6 +140,7 @@ export default function VitrinakiBookingsPage() {
   const [busyId, setBusyId] = useState<string | null>(null)
   const [selected, setSelected] = useState<Booking | null>(null)
   const [creating, setCreating] = useState(false)
+  const [view, setView] = useState<"week" | "resources">("week")
 
   const loadWeek = async (start = weekStart) => {
     setWeekLoading(true)
@@ -205,6 +206,41 @@ export default function VitrinakiBookingsPage() {
     for (const b of bookings) map.set(b.date, [...(map.get(b.date) || []), b])
     return map
   }, [bookings])
+  // Rows of the per-resource view: the shop's resources, then any resource a
+  // booking still names that is no longer in the settings, then the bookings
+  // with none.
+  const resourceRows = useMemo(() => {
+    const rows: { id: string; name: string; muted: boolean }[] = (settings?.resources || [])
+      .filter((r) => r.id)
+      .map((r) => ({ id: r.id!, name: r.name, muted: !r.active }))
+    for (const b of bookings) {
+      if (b.resource_id && !rows.some((r) => r.id === b.resource_id)) rows.push({ id: b.resource_id, name: b.resource_name || b.resource_id, muted: true })
+    }
+    if (bookings.some((b) => !b.resource_id)) rows.push({ id: "", name: t("vitrinakiBookings.resources.none"), muted: true })
+    return rows
+  }, [settings, bookings, t])
+  const hasResources = Boolean(settings?.resources?.some((r) => r.id))
+  const showResources = hasResources && view === "resources"
+
+  const bookingCard = (b: Booking, withResource = true) => (
+    <button
+      key={b.id}
+      type="button"
+      onClick={() => setSelected(b)}
+      className="bg-ui-bg-subtle hover:bg-ui-bg-subtle-hover rounded-md border text-left"
+      style={{ padding: "6px 8px", minWidth: 0, overflow: "hidden", opacity: ["cancelled", "declined"].includes(b.status) ? 0.55 : 1 }}
+      data-testid="booking-card"
+    >
+      <Text size="xsmall" weight="plus" style={{ whiteSpace: "nowrap" }}>{b.time}–{b.end_time}</Text>
+      <Text size="xsmall" className="truncate">{b.customer_name}</Text>
+      <Text size="xsmall" className="text-ui-fg-subtle truncate">{b.service_name}</Text>
+      {withResource && b.resource_name ? <Text size="xsmall" weight="plus" className="truncate">{b.resource_name}</Text> : null}
+      {b.details?.trip ? <Text size="xsmall" className="text-ui-fg-subtle truncate">{b.details.trip.pickup} → {b.details.trip.dropoff}</Text> : null}
+      <div style={{ marginTop: 4 }}>
+        <Badge size="2xsmall" color={STATUS_COLOR[b.status]}>{t(`vitrinakiBookings.status.${b.status}`)}</Badge>
+      </div>
+    </button>
+  )
 
   return (
     <div className="flex flex-col gap-y-3" data-testid="vitrinaki-bookings">
@@ -297,12 +333,50 @@ export default function VitrinakiBookingsPage() {
                 {weekLoading ? <Text size="xsmall" className="text-ui-fg-subtle">{t("vitrinakiBookings.loading")}</Text> : null}
               </div>
               <div className="flex flex-wrap gap-2">
+                {hasResources ? (
+                  <div className="flex gap-1 rounded-md border p-0.5">
+                    {(["week", "resources"] as const).map((key) => (
+                      <Button key={key} size="small" variant={view === key ? "secondary" : "transparent"} onClick={() => setView(key)} data-testid={`bookings-view-${key}`}>
+                        {t(`vitrinakiBookings.view.${key}`)}
+                      </Button>
+                    ))}
+                  </div>
+                ) : null}
                 <Button size="small" variant="secondary" onClick={() => goWeek(addDays(weekStart, -7))} aria-label={t("vitrinakiBookings.prevWeek")}>←</Button>
                 <Button size="small" variant="secondary" onClick={() => goWeek(mondayOf(today))}>{t("vitrinakiBookings.thisWeek")}</Button>
                 <Button size="small" variant="secondary" onClick={() => goWeek(addDays(weekStart, 7))} aria-label={t("vitrinakiBookings.nextWeek")}>→</Button>
                 <Button size="small" onClick={() => setCreating(true)} data-testid="booking-new">{t("vitrinakiBookings.new")}</Button>
               </div>
             </div>
+            {showResources ? (
+              <div className="border-t" style={{ overflowX: "auto" }} data-testid="bookings-by-resource">
+                <div className="bg-ui-border-base" style={{ display: "grid", gap: 1, gridTemplateColumns: "140px repeat(7, minmax(130px, 1fr))", minWidth: 140 + 7 * 130 }}>
+                  <div className="bg-ui-bg-base" />
+                  {days.map((date) => (
+                    <div key={date} className={date === today ? "bg-ui-bg-highlight" : "bg-ui-bg-base"} style={{ padding: "8px 10px" }}>
+                      <Text size="xsmall" weight="plus">{dayLabel(date, lang, { weekday: "short", day: "numeric", month: "short" })}</Text>
+                    </div>
+                  ))}
+                  {resourceRows.map((row) => (
+                    <div key={row.id || "none"} style={{ display: "contents" }}>
+                      <div className="bg-ui-bg-subtle" style={{ padding: "10px", position: "sticky", left: 0 }}>
+                        <Text size="small" weight="plus" className={row.muted ? "text-ui-fg-subtle" : undefined} style={{ overflowWrap: "anywhere" }}>{row.name}</Text>
+                      </div>
+                      {days.map((date) => {
+                        const list = (byDay.get(date) || []).filter((b) => (b.resource_id || "") === row.id)
+                        return (
+                          <div key={date} className={date === today ? "bg-ui-bg-highlight" : "bg-ui-bg-base"} style={{ minHeight: 72, padding: 6 }}>
+                            <div className="flex flex-col" style={{ gap: 6 }}>
+                              {list.length === 0 ? <Text size="xsmall" className="text-ui-fg-muted">—</Text> : list.map((b) => bookingCard(b, false))}
+                            </div>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : (
             <div
               className="bg-ui-border-base border-t"
               style={{ display: "grid", gap: 1, gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))" }}
@@ -321,30 +395,13 @@ export default function VitrinakiBookingsPage() {
                     </Text>
                     <div className="flex flex-col" style={{ gap: 6, marginTop: 8 }}>
                       {list.length === 0 ? <Text size="xsmall" className="text-ui-fg-muted">—</Text> : null}
-                      {list.map((b) => (
-                        <button
-                          key={b.id}
-                          type="button"
-                          onClick={() => setSelected(b)}
-                          className="bg-ui-bg-subtle hover:bg-ui-bg-subtle-hover rounded-md border text-left"
-                          style={{ padding: "6px 8px", minWidth: 0, overflow: "hidden", opacity: ["cancelled", "declined"].includes(b.status) ? 0.55 : 1 }}
-                          data-testid="booking-card"
-                        >
-                          <Text size="xsmall" weight="plus" style={{ whiteSpace: "nowrap" }}>{b.time}–{b.end_time}</Text>
-                          <Text size="xsmall" className="truncate">{b.customer_name}</Text>
-                          <Text size="xsmall" className="text-ui-fg-subtle truncate">{b.service_name}</Text>
-                          {b.resource_name ? <Text size="xsmall" weight="plus" className="truncate">{b.resource_name}</Text> : null}
-                          {b.details?.trip ? <Text size="xsmall" className="text-ui-fg-subtle truncate">{b.details.trip.pickup} → {b.details.trip.dropoff}</Text> : null}
-                          <div style={{ marginTop: 4 }}>
-                            <Badge size="2xsmall" color={STATUS_COLOR[b.status]}>{t(`vitrinakiBookings.status.${b.status}`)}</Badge>
-                          </div>
-                        </button>
-                      ))}
+                      {list.map((b) => bookingCard(b))}
                     </div>
                   </div>
                 )
               })}
             </div>
+            )}
           </Container>
         </>
       ) : null}
