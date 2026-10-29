@@ -4,6 +4,7 @@ import { headers } from "next/headers"
 import Script from "next/script"
 import { LiveSitePreview } from "@/components/sections/SitePreview/LiveSitePreview"
 import { HeroDemo, StudioTable } from "@/components/sections/HeroDemo/HeroDemo"
+import { CinematicHero } from "@/components/sections/CinematicHero/CinematicHero"
 import { PromotedMarket } from "@/components/sections/PromotedMarket/PromotedMarket"
 import { SitePreview } from "@/components/sections/HeroDemo/SitePreview"
 import { sites } from "@/components/sections/HeroDemo/sites"
@@ -280,25 +281,30 @@ export default async function Home({
         }}
       />
 
-      {/* Hero */}
-      <section className="relative">
+      {/* Hero: a full-bleed photo per kind of business, with live cards over it */}
+      <section aria-label={tr("Αρχή")}>
+        <CinematicHero lang={lang} businessUrl={businessUrl} />
+      </section>
+
+      {/* The story of one order, on an example shop */}
+      <section className="relative" aria-labelledby="story-title">
         <HeroDemo
           lang={lang}
           intro={
             <>
               <p className="mb-4 inline-flex items-center gap-2 text-[13px] font-semibold text-[#2E4A37]/75">
                 <span className="h-1.5 w-1.5 rounded-full bg-[#265E8E]" />
-                {tr("Για κάθε επιχείρηση, σε όλη την Ελλάδα")}
+                {tr("Δες πώς δουλεύει")}
               </p>
-              <h1 className="text-[2.15rem] font-extrabold leading-[1.05] tracking-[-0.03em] text-[#1F3628] sm:text-[3rem] lg:text-[2.6rem] xl:text-[3rem]">
-                {tr("Το όνειρό σου αξίζει μια βιτρίνα.")}{" "}
+              <h2 id="story-title" className="text-[2.15rem] font-extrabold leading-[1.05] tracking-[-0.03em] text-[#1F3628] sm:text-[3rem] lg:text-[2.6rem] xl:text-[3rem]">
+                {tr("Κάθε μεγάλη επιχείρηση")}{" "}
                 <span className="relative inline-block text-[#C0503C]">
-                  {tr("Άνοιξέ τη σήμερα.")}
+                  {tr("ξεκίνησε μικρή.")}
                   <Swoosh className="absolute -bottom-2 left-0 h-2.5 w-full text-[#C0503C]/45" />
                 </span>
-              </h1>
+              </h2>
               <p className="mt-5 max-w-md text-[15px] leading-7 text-[#1F3628]/75 sm:text-[16px]">
-                {tr("Κάθε μεγάλη επιχείρηση ξεκίνησε από ένα μικρό μαγαζί. Φτιάξε την ιστοσελίδα και το e-shop σου, πούλα σε όλη την Ελλάδα και μεγάλωσε με ανθρώπους δίπλα σου.")}
+                {tr("Δες τη διαδρομή μιας παραγγελίας: το προϊόν στη βιτρίνα σου, η συσκευασία, ο πελάτης, η αξιολόγηση και οι παραγγελίες από όλο τον κόσμο. Γράψε το όνομά σου και γίνεται δικό σου.")}
               </p>
               <div className="mt-7 flex flex-wrap items-center gap-3">
                 <a href={businessUrl} className={primaryBtn}>
