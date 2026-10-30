@@ -45,6 +45,7 @@ The local ports are for development. Production can use domains/subdomains or ot
 
 - Website editing is a first version of settings/template/palette selection, not a drag-and-drop page builder or a custom content-block editor.
 - Products still use the existing shared Medusa product records and seller-scoped Mercur offers. Product inventory/prices remain offer-based.
+- Each shop's Studio shows only that shop's own products: the ones it created, the ones the platform assigned to it (`product_seller`), and the ones it already sells through offers. Mercur's default shared catalog (every published product visible to every seller) is narrowed in `packages/api/src/api/middlewares.ts` (see `src/lib/vitrinaki-shop-catalog.ts`), and a shop cannot create an offer on another shop's or Vitrinaki's product. The platform admin still sees every product.
 - Shop metadata, Stripe subscription state, and setup orders are stored under seller metadata for this MVP; move these to dedicated versioned modules/tables before high-volume production and add reconciliation jobs.
 - A custom domain needs DNS changes, hosting-provider domain registration, and automatic certificate provisioning outside this code. DNS verification alone is not enough.
 - Configure and verify real Stripe products/prices, webhook endpoint `/webhooks/stripe`, and webhook event delivery before accepting any live charges.

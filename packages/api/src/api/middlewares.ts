@@ -11,6 +11,7 @@ import { scrubNested } from "../lib/public-seller-scrub"
 import { cardPaymentMessage, isStripeProviderId, SELLER_DATA_KEY, STRIPE_ACCOUNT_DATA_KEY } from "../lib/stripe-connect"
 import { memberLimitMessage, productLimitMessage } from "../lib/vitrinaki-plans"
 import { exceedsProductLimit } from "../lib/vitrinaki-product-limit"
+import { foreignProductsOfVariants, productIdFilter, shopProductIds } from "../lib/vitrinaki-shop-catalog"
 import { addStorageUsage, storageLimitBytes, storageLimitMessage, storageUsedBytes, wouldExceedStorage } from "../lib/vitrinaki-storage"
 import { keepServerOwnedMetadata } from "../lib/server-metadata"
 import { loadSeller } from "../lib/vitrinaki-referral-rewards"
@@ -70,6 +71,56 @@ async function enforceProductLimit(req: MedusaRequest, res: MedusaResponse, next
       : { variantIds: (Array.isArray(body.offers) ? body.offers : [body]).map((offer: any) => String(offer?.variant_id || "")) }
     const limit = await exceedsProductLimit(req.scope, sellerId, adding)
     if (limit !== null) return res.status(400).json({ type: "not_allowed", message: productLimitMessage(limit) })
+    return next()
+  } catch (error) {
+    return next(error)
+  }
+}
+
+// Each shop's Studio holds only its own products (src/lib/vitrinaki-shop-catalog.ts),
+// not Mercur's shared catalog. These run after Mercur's own product middlewares
+// (the project's are registered last), so they narrow its filters further.
+function scopeToShopProducts(field: "id" | "product_id") {
+  return async (req: MedusaRequest, _res: MedusaResponse, next: MedusaNextFunction) => {
+    try {
+      const sellerId = (req as any).seller_context?.seller_id
+      if (!sellerId) return next()
+      const ids = productIdFilter(await shopProductIds(req.scope, sellerId))
+      const filters = ((req as any).filterableFields ??= {})
+      filters.$and = [...(filters.$and || []), { [field]: ids }]
+      return next()
+    } catch (error) {
+      return next(error)
+    }
+  }
+}
+
+// A product page (and its variants, attributes, preview) of another shop's or
+// Vitrinaki's product answers "not found", as if it did not exist.
+async function ensureShopProduct(req: MedusaRequest, res: MedusaResponse, next: MedusaNextFunction) {
+  try {
+    const sellerId = (req as any).seller_context?.seller_id
+    const productId = req.params?.id
+    if (!sellerId || !productId) return next()
+    if (!(await shopProductIds(req.scope, sellerId)).includes(productId)) {
+      return res.status(404).json({ type: "not_found", message: `Product with id ${productId} was not found` })
+    }
+    return next()
+  } catch (error) {
+    return next(error)
+  }
+}
+
+// A shop sells only its own products: an offer on someone else's product is refused.
+async function ensureOffersOnShopProducts(req: MedusaRequest, res: MedusaResponse, next: MedusaNextFunction) {
+  try {
+    const sellerId = (req as any).seller_context?.seller_id
+    if (!sellerId) return next()
+    const body = ((req as any).validatedBody || (req as any).body || {}) as Record<string, any>
+    const variantIds = (Array.isArray(body.offers) ? body.offers : [body]).map((offer: any) => String(offer?.variant_id || ""))
+    if ((await foreignProductsOfVariants(req.scope, sellerId, variantIds)).length) {
+      return res.status(400).json({ type: "not_allowed", message: "Μπορείς να πουλάς μόνο προϊόντα του καταστήματός σου. Πρόσθεσέ το πρώτα στα προϊόντα σου." })
+    }
     return next()
   } catch (error) {
     return next(error)
@@ -163,9 +214,19 @@ export default defineMiddlewares({
     { matcher: "/admin/sellers/:id/members", methods: ["POST"], middlewares: [enforceTeamLimit] },
     { matcher: "/admin/sellers/:id/members/invite", methods: ["POST"], middlewares: [enforceTeamLimit] },
     { matcher: "/vendor/products", methods: ["POST"], middlewares: [enforceProductLimit] },
+    { matcher: "/vendor/products", methods: ["GET"], middlewares: [scopeToShopProducts("id")] },
+    { matcher: "/vendor/product-variants", methods: ["GET"], middlewares: [scopeToShopProducts("product_id")] },
+    ...[
+      "/vendor/products/:id",
+      "/vendor/products/:id/attributes/batch",
+      "/vendor/products/:id/cancel",
+      "/vendor/products/:id/preview",
+      "/vendor/products/:id/variants",
+      "/vendor/products/:id/variants/:variant_id",
+    ].map((matcher) => ({ matcher, methods: ["GET", "POST", "DELETE"] as ("GET" | "POST" | "DELETE")[], middlewares: [ensureShopProduct] })),
     { matcher: "/vendor/uploads", methods: ["POST"], middlewares: [enforceStorageLimit] },
-    { matcher: "/vendor/offers", methods: ["POST"], middlewares: [enforceProductLimit] },
-    { matcher: "/vendor/offers/batch", methods: ["POST"], middlewares: [enforceProductLimit] },
+    { matcher: "/vendor/offers", methods: ["POST"], middlewares: [ensureOffersOnShopProducts, enforceProductLimit] },
+    { matcher: "/vendor/offers/batch", methods: ["POST"], middlewares: [ensureOffersOnShopProducts, enforceProductLimit] },
     { matcher: "/vendor/sellers", methods: ["POST"], middlewares: [keepServerOwnedSellerMetadata] },
     { matcher: "/vendor/sellers/:id", methods: ["POST"], middlewares: [keepServerOwnedSellerMetadata] },
     // Its own static route, which the :id matcher above does not reach.
