@@ -1,6 +1,7 @@
 // Vitrinaki subscription plans: the one place that lists them, maps them to
 // the Stripe Price env vars and sets how many people each plan allows on a
-// seller account. Prices themselves live in Stripe, never in code.
+// seller account. Checkout always charges the Stripe Prices; PLAN_LIST_PRICES
+// only fills the public pricing page while a Stripe Price is not configured.
 
 export const PLAN_IDS = ["starter", "growth", "pro", "business"] as const
 export type PlanId = (typeof PLAN_IDS)[number]
@@ -33,6 +34,17 @@ export const PLAN_ACTIVATION_ENV: Partial<Record<PlanId, string>> = {
 
 // The setup fee's full price, shown struck through next to the Stripe price.
 export const SETUP_LIST_PRICE = { amount: 35000, currency: "eur" } as const
+
+// Announced prices in euro cents, VAT included: "month" without commitment,
+// "year" per month with a 12-month commitment, "activation" the one-off setup
+// fee without commitment. The pricing page shows them for any plan whose
+// Stripe Price env var is unset; the Stripe Prices should match them.
+export const PLAN_LIST_PRICES: Record<PlanId, { month: number; year: number; activation: number | null }> = {
+  starter: { month: 2500, year: 1900, activation: 10000 },
+  growth: { month: 4900, year: 3900, activation: 10000 },
+  pro: { month: 8900, year: 6900, activation: 10000 },
+  business: { month: 15900, year: 12900, activation: null },
+}
 
 export const activationPriceEnv = (planId: PlanId) => {
   const name = PLAN_ACTIVATION_ENV[planId]

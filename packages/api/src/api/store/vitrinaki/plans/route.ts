@@ -1,12 +1,13 @@
 import type { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
 
-import { activationPriceEnv, PLAN_FEATURES, PLAN_IDS, PLAN_MEMBER_LIMITS, PLAN_PRICE_ENV, SETUP_LIST_PRICE, SETUP_PRICE_ENV, toPublicPrice, type PublicPrice } from "../../../../lib/vitrinaki-plans"
+import { PLAN_ACTIVATION_ENV, PLAN_FEATURES, PLAN_IDS, PLAN_LIST_PRICES, PLAN_MEMBER_LIMITS, PLAN_PRICE_ENV, SETUP_LIST_PRICE, SETUP_PRICE_ENV, toPublicPrice, type PublicPrice } from "../../../../lib/vitrinaki-plans"
 
 // The public pricing page: each plan's team size and its Stripe prices ("year":
 // the monthly price with a 12-month commitment; "month": the monthly price
 // without commitment, plus its one-off setup fee and that fee's full price), plus
-// the one-off setup services. Prices are read from Stripe (never kept in code) and
-// cached for a few minutes; a price that is not configured comes back as null.
+// the one-off setup services. Prices are read from Stripe and cached for a few
+// minutes. A plan price without a Stripe Price env var falls back to its
+// announced price (PLAN_LIST_PRICES); an unset setup service comes back as null.
 const CACHE_MS = 10 * 60 * 1000
 const cache = new Map<string, { at: number; price: PublicPrice | null }>()
 
@@ -26,14 +27,22 @@ async function stripePrice(priceId: string | undefined): Promise<PublicPrice | n
   }
 }
 
+// The Stripe price when its env var is set (null if Stripe cannot give it),
+// otherwise the announced price.
+async function planPrice(envName: string | undefined, listAmount: number | null, interval: PublicPrice["interval"]): Promise<PublicPrice | null> {
+  const priceId = envName ? process.env[envName] : undefined
+  if (priceId) return stripePrice(priceId)
+  return listAmount === null ? null : { amount: listAmount, currency: "eur", interval }
+}
+
 export async function GET(_req: MedusaRequest, res: MedusaResponse) {
   const plans = await Promise.all(PLAN_IDS.map(async (id) => ({
     id,
     memberLimit: PLAN_MEMBER_LIMITS[id],
     features: PLAN_FEATURES[id],
-    month: await stripePrice(process.env[PLAN_PRICE_ENV[id].month]),
-    year: await stripePrice(process.env[PLAN_PRICE_ENV[id].year]),
-    activation: await stripePrice(activationPriceEnv(id)),
+    month: await planPrice(PLAN_PRICE_ENV[id].month, PLAN_LIST_PRICES[id].month, "month"),
+    year: await planPrice(PLAN_PRICE_ENV[id].year, PLAN_LIST_PRICES[id].year, "month"),
+    activation: await planPrice(PLAN_ACTIVATION_ENV[id], PLAN_LIST_PRICES[id].activation, null),
   })))
   const [assisted, doneForYou] = await Promise.all([
     stripePrice(process.env[SETUP_PRICE_ENV.assisted]),
