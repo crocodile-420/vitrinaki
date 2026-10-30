@@ -64,6 +64,7 @@ export function GlobeHero({ lang, businessUrl, tryHref = "#try" }: { lang: Lang;
   const [cw, setCw] = useState(1200)
   const [vw, setVw] = useState(1280)
   const [hh, setHh] = useState(0)
+  const [vh, setVh] = useState(800)
 
   useEffect(() => {
     const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches
@@ -74,6 +75,7 @@ export function GlobeHero({ lang, businessUrl, tryHref = "#try" }: { lang: Lang;
     let gone = false
     const [phi0, theta0] = angles([LAT0, LON0])
     setVw(window.innerWidth)
+    setVh(window.innerHeight)
     // the site header is sticky too: the scene starts under it
     setHh(document.querySelector("header")?.offsetHeight || 0)
     import("cobe").then(({ default: createGlobe }) => {
@@ -83,7 +85,7 @@ export function GlobeHero({ lang, businessUrl, tryHref = "#try" }: { lang: Lang;
       setCw(size)
       globe = createGlobe(c, {
         devicePixelRatio: 2, width: size * 2, height: size * 2, phi: phi0, theta: theta0,
-        dark: 1, diffuse: 1.4, mapSamples: 60000, mapBrightness: 5, mapBaseBrightness: 0.04,
+        dark: 1, diffuse: 1.1, mapSamples: 40000, mapBrightness: 6, mapBaseBrightness: 0.05,
         baseColor: [0.16, 0.24, 0.2], markerColor: [0.95, 0.5, 0.38], glowColor: [0.18, 0.32, 0.26],
         markers: [], arcs: [], arcColor: [0.95, 0.72, 0.62], arcWidth: 0.5, arcHeight: 0.25, scale: SCALE, opacity: 0.95,
       }) as never
@@ -137,23 +139,26 @@ export function GlobeHero({ lang, businessUrl, tryHref = "#try" }: { lang: Lang;
   const R = (cw / 2) * RADIUS * SCALE
   const n = cards.length
   const small = vw < 640
-  const cardW = small ? 135 : 190
-  const cardH = small ? 200 : 280
-  // the strip's centre, below the centre of the frame (which the sticky header pushes down)
-  const stripY = (small ? 110 : 170) - hh / 2
+  // the frame is the screen under the sticky header; on short screens the cards shrink to fit
+  const frameH = vh - hh - 20
+  const cardH = small ? 200 : Math.min(280, Math.round(frameH * 0.36))
+  const cardW = Math.round((cardH * 190) / 280)
+  // the strip's centre, from the centre of the frame: its cards end just under the top of the buttons
+  const stripY = frameH / 2 - (small ? 150 : 70) - cardH / 2
 
   return (
     <div ref={track} className="relative" style={{ height: "600vh" }}>
-      <div className="sticky top-0 h-screen overflow-hidden bg-[#F7F2E8]">
-        <div className="absolute overflow-hidden bg-[#E6EDE3]" style={{ inset: `${(1 - dark) * 10}px`, top: hh + (1 - dark) * 10, borderRadius: `${(1 - dark) * 28}px` }}>
+      <div className="sticky overflow-hidden bg-[#F7F2E8]" style={{ top: hh, height: `calc(100vh - ${hh}px)` }}>
+        <div className="absolute overflow-hidden bg-[#E6EDE3]" style={{ inset: `${(1 - dark) * 10}px`, borderRadius: `${(1 - dark) * 28}px` }}>
           <div aria-hidden="true" className="absolute inset-0 bg-[radial-gradient(ellipse_60%_60%_at_50%_50%,#123024_0%,#070B09_70%)]" style={{ opacity: dark }} />
           <canvas ref={canvas} aria-hidden="true" className="absolute left-1/2 top-1/2 aspect-square w-[max(120vh,105vw)] -translate-x-1/2 -translate-y-1/2" style={{ opacity: globeO }} />
 
-          <div className="absolute inset-x-0 top-0 pt-12 text-center text-[#14301F] sm:pt-14" style={{ opacity: heroO, transform: `translateY(${-p * 600}px)`, visibility: heroO > 0 ? "visible" : "hidden" }}>
+          <div className="absolute inset-x-0 top-0 pt-6 text-center text-[#14301F] sm:pt-7" style={{ opacity: heroO, transform: `translateY(${-p * 600}px)`, visibility: heroO > 0 ? "visible" : "hidden" }}>
+            <img src="/brand/vitrinaki-logo.png" alt="vitrinaki.gr" className="mx-auto mb-4 w-[min(56vw,300px)]" />
             <p className="mx-auto inline-flex items-center gap-2 rounded-full bg-[#14301F]/[0.07] px-3.5 py-1.5 text-[12.5px] font-semibold">
               <span className="rounded-full bg-[#14301F] px-2 py-0.5 text-[11px] text-white">{tr("Νέο")}</span> {tr("Κρατήσεις online για κάθε επιχείρηση")}
             </p>
-            <h1 className="mx-auto mt-5 max-w-[860px] px-4 text-[2.5rem] font-extrabold leading-[1.02] tracking-[-0.04em] sm:text-[4.2rem]">{tr("Το όνειρό σου αξίζει")}<br />{tr("μια βιτρίνα.")}</h1>
+            <h1 className="mx-auto mt-5 max-w-[860px] px-4 text-[2.5rem] font-extrabold leading-[1.02] tracking-[-0.04em] sm:text-[3.8rem]">{tr("Η θέση σου στο vitrinaki")}<br />{tr("σε περιμένει.")}</h1>
             <p className="mx-auto mt-4 max-w-[520px] px-5 text-[15px] leading-7 text-[#14301F]/70 sm:text-[17px]">
               {tr("Ιστοσελίδα, e-shop και κρατήσεις για το μαγαζί, το εργαστήρι ή το studio σου.")}
             </p>
