@@ -4,7 +4,7 @@ import { headers } from "next/headers"
 import Script from "next/script"
 import { LiveSitePreview } from "@/components/sections/SitePreview/LiveSitePreview"
 import { HeroDemo, StudioTable } from "@/components/sections/HeroDemo/HeroDemo"
-import { BentoHero } from "@/components/sections/BentoHero/BentoHero"
+import { GlobeHero } from "@/components/sections/GlobeHero/GlobeHero"
 import { PromotedMarket } from "@/components/sections/PromotedMarket/PromotedMarket"
 import { SitePreview } from "@/components/sections/HeroDemo/SitePreview"
 import { sites } from "@/components/sections/HeroDemo/sites"
@@ -281,9 +281,9 @@ export default async function Home({
         }}
       />
 
-      {/* Hero: the message, a photo per kind of business and what a shop gets, in one grid */}
+      {/* Hero: a carousel of shops around the logo; on scroll every shop lights up on the globe */}
       <section aria-label={tr("Αρχή")}>
-        <BentoHero lang={lang} businessUrl={businessUrl} />
+        <GlobeHero lang={lang} businessUrl={businessUrl} />
       </section>
 
       {/* The story of one order, on an example shop */}
