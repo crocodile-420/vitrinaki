@@ -3,6 +3,7 @@ import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 import { updateSellersWorkflow } from "@mercurjs/core/workflows"
 import { verifyStripeSignature as verifySignature } from "../../../lib/stripe-connect"
 import { commitmentCancelAt, commitmentEnd, isPlanId } from "../../../lib/vitrinaki-plans"
+import { hasPremiumItem, PREMIUM_PRICE_ENV } from "../../../lib/vitrinaki-premium"
 import { isQualifyingPayment } from "../../../lib/vitrinaki-referral"
 import { applyPendingReferralRewards, qualifyReferral } from "../../../lib/vitrinaki-referral-rewards"
 
@@ -115,7 +116,9 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
     interval: ["month", "year"].includes(String(subscriptionMetadata.billing_interval)) ? subscriptionMetadata.billing_interval : subscription.interval,
     stripeCustomerId: customerId || subscription.stripeCustomerId || null,
     stripeSubscriptionId: subscriptionId || subscription.stripeSubscriptionId || null,
-    stripePriceId: object.items?.data?.[0]?.price?.id || subscription.stripePriceId || null,
+    stripePriceId: (object.items?.data || []).find((item: any) => item?.price?.id !== process.env[PREMIUM_PRICE_ENV.month])?.price?.id || subscription.stripePriceId || null,
+    // The premium add-on is a second item on the same subscription.
+    premium: subObject ? hasPremiumItem(object) : Boolean(subscription.premium),
     currentPeriodStart: periodStart,
     currentPeriodEnd: periodEnd,
     cancelAtPeriodEnd,

@@ -2,6 +2,7 @@ import type { AuthenticatedMedusaRequest, MedusaResponse } from "@medusajs/frame
 import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 import { updateSellersWorkflow } from "@mercurjs/core/workflows"
 
+import { premiumCheckoutItems } from "../../../../../lib/vitrinaki-premium"
 import { COMMITMENT_MONTHS, activationPriceEnv, isPlanId, PLAN_PRICE_ENV } from "../../../../../lib/vitrinaki-plans"
 
 type SellerRequest = AuthenticatedMedusaRequest & { seller_context?: { seller_id?: string } }
@@ -13,7 +14,7 @@ export async function POST(req: SellerRequest, res: MedusaResponse) {
     return res.status(503).json({ message: "Οι πληρωμές δεν έχουν ρυθμιστεί ακόμη. Δεν έγινε καμία χρέωση." })
   }
 
-  const body = (req.body || {}) as { planId?: string; interval?: string }
+  const body = (req.body || {}) as { planId?: string; interval?: string; premium?: boolean }
   const planId = String(body.planId || "")
   const interval = String(body.interval || "")
   if (!isPlanId(planId) || (interval !== "month" && interval !== "year")) {
@@ -21,6 +22,8 @@ export async function POST(req: SellerRequest, res: MedusaResponse) {
   }
   const priceId = process.env[PLAN_PRICE_ENV[planId][interval]]
   if (!priceId) return res.status(503).json({ message: "Το συγκεκριμένο πλάνο δεν έχει ρυθμιστεί στο Stripe. Δεν έγινε καμία χρέωση." })
+  const premiumItems = body.premium ? premiumCheckoutItems(planId) : []
+  if (!premiumItems) return res.status(503).json({ message: "Η προσθήκη Premium δεν έχει ρυθμιστεί ακόμη στο Stripe. Δεν έγινε καμία χρέωση." })
 
   const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
   const { data } = await query.graph({ entity: "seller", fields: ["id", "name", "handle", "email", "metadata"], filters: { id: sellerId } })
@@ -54,6 +57,13 @@ export async function POST(req: SellerRequest, res: MedusaResponse) {
     form.set("line_items[1][price]", activationPriceId)
     form.set("line_items[1][quantity]", "1")
   }
+  // Premium add-on: its monthly price and one-off activation, after the plan's items.
+  premiumItems.forEach((price, i) => {
+    const n = (activationPriceId ? 2 : 1) + i
+    form.set(`line_items[${n}][price]`, price)
+    form.set(`line_items[${n}][quantity]`, "1")
+  })
+  if (premiumItems.length) form.set("subscription_data[metadata][premium]", "true")
   if (interval === "year") form.set("subscription_data[metadata][commitment_months]", String(COMMITMENT_MONTHS))
   if (seller.email) form.set("customer_email", seller.email)
   if (current?.stripeCustomerId) {

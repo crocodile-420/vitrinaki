@@ -10,6 +10,8 @@ export type PlanFeatures = {
   loyalty: boolean
   promoted: "none" | "standard" | "priority"
   support: "email" | "chat" | "priority" | "advisor"
+  // Premium templates: a paid monthly add-on, or all included.
+  premium?: "addon" | "included"
 }
 
 export type PublicPlan = {
@@ -26,6 +28,8 @@ export type PublicPricing = {
   // Full price of the setup fee, shown struck through next to `activation`.
   setupListPrice?: PlanPrice | null
   setup: { assisted: PlanPrice | null; done_for_you: PlanPrice | null }
+  // The Premium templates add-on: monthly price and one-off activation.
+  premium?: { month: PlanPrice | null; activation: PlanPrice | null }
 }
 
 const eur = (amount: number, interval: PlanPrice["interval"]): PlanPrice => ({ amount, currency: "eur", interval })
@@ -35,13 +39,14 @@ const eur = (amount: number, interval: PlanPrice["interval"]): PlanPrice => ({ a
 // so the page still lists the plans with their prices.
 const FALLBACK: PublicPricing = {
   plans: [
-    { id: "starter", memberLimit: 1, features: { products: 100, storageGb: 2, loyalty: false, promoted: "none", support: "email" }, month: eur(2500, "month"), year: eur(1900, "month"), activation: eur(10000, null) },
-    { id: "growth", memberLimit: 3, features: { products: 1000, storageGb: 10, loyalty: true, promoted: "none", support: "chat" }, month: eur(4900, "month"), year: eur(3900, "month"), activation: eur(10000, null) },
-    { id: "pro", memberLimit: 5, features: { products: 5000, storageGb: 30, loyalty: true, promoted: "standard", support: "priority" }, month: eur(8900, "month"), year: eur(6900, "month"), activation: eur(10000, null) },
-    { id: "business", memberLimit: 15, features: { products: null, storageGb: 100, loyalty: true, promoted: "priority", support: "advisor" }, month: eur(15900, "month"), year: eur(12900, "month"), activation: null },
+    { id: "starter", memberLimit: 1, features: { products: 100, storageGb: 2, loyalty: false, promoted: "none", support: "email", premium: "addon" }, month: eur(2500, "month"), year: eur(1900, "month"), activation: eur(10000, null) },
+    { id: "growth", memberLimit: 3, features: { products: 1000, storageGb: 10, loyalty: true, promoted: "none", support: "chat", premium: "addon" }, month: eur(4900, "month"), year: eur(3900, "month"), activation: eur(10000, null) },
+    { id: "pro", memberLimit: 5, features: { products: 5000, storageGb: 30, loyalty: true, promoted: "standard", support: "priority", premium: "addon" }, month: eur(8900, "month"), year: eur(6900, "month"), activation: eur(10000, null) },
+    { id: "business", memberLimit: 15, features: { products: null, storageGb: 100, loyalty: true, promoted: "priority", support: "advisor", premium: "included" }, month: eur(15900, "month"), year: eur(12900, "month"), activation: null },
   ],
   setupListPrice: eur(35000, null),
   setup: { assisted: null, done_for_you: null },
+  premium: { month: null, activation: null },
 }
 
 // The pricing page: plans and setup services with the prices set in Stripe,
@@ -57,7 +62,9 @@ export async function getPublicPricing(): Promise<PublicPricing> {
     const data = (await response.json()) as Partial<PublicPricing>
     // An older backend may answer without features: take them from the fallback.
     const plans = data.plans?.map((plan) => ({ ...plan, features: plan.features || FALLBACK.plans.find((p) => p.id === plan.id)!.features }))
-    return plans?.length ? { plans, setupListPrice: data.setupListPrice || null, setup: data.setup || FALLBACK.setup } : FALLBACK
+    return plans?.length
+      ? { plans, setupListPrice: data.setupListPrice || null, setup: data.setup || FALLBACK.setup, premium: data.premium || FALLBACK.premium }
+      : FALLBACK
   } catch {
     return FALLBACK
   }

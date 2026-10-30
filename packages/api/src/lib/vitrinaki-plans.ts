@@ -102,19 +102,21 @@ export function activePlanId(subscription: any, now = Date.now()): PlanId | null
 // - loyalty: customer loyalty points
 // - promoted: products shown on the Vitrinaki homepage ("priority" first)
 // - support: email / chat / priority / a personal advisor
+// - premium: premium templates as a paid monthly add-on, or all included
 export type PlanFeatures = {
   products: number | null
   storageGb: number
   loyalty: boolean
   promoted: "none" | "standard" | "priority"
   support: "email" | "chat" | "priority" | "advisor"
+  premium: "addon" | "included"
 }
 
 export const PLAN_FEATURES: Record<PlanId, PlanFeatures> = {
-  starter: { products: 100, storageGb: 2, loyalty: false, promoted: "none", support: "email" },
-  growth: { products: 1000, storageGb: 10, loyalty: true, promoted: "none", support: "chat" },
-  pro: { products: 5000, storageGb: 30, loyalty: true, promoted: "standard", support: "priority" },
-  business: { products: null, storageGb: 100, loyalty: true, promoted: "priority", support: "advisor" },
+  starter: { products: 100, storageGb: 2, loyalty: false, promoted: "none", support: "email", premium: "addon" },
+  growth: { products: 1000, storageGb: 10, loyalty: true, promoted: "none", support: "chat", premium: "addon" },
+  pro: { products: 5000, storageGb: 30, loyalty: true, promoted: "standard", support: "priority", premium: "addon" },
+  business: { products: null, storageGb: 100, loyalty: true, promoted: "priority", support: "advisor", premium: "included" },
 }
 
 // A seller without an active subscription gets the starter features.
