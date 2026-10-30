@@ -757,6 +757,10 @@ const en: Record<string, string> = {
   "Για κάθε επιχείρηση, σε όλη την Ελλάδα": "For every business, all over Greece",
   // Home hero (GlobeHero) and the order story below it
   "Κρατήσεις online για κάθε επιχείρηση": "Online bookings for every business",
+  "Το όνειρό σου αξίζει": "Your dream deserves",
+  "μια βιτρίνα.": "a shop window.",
+  "Ιστοσελίδα, e-shop και κρατήσεις για το μαγαζί, το εργαστήρι ή το studio σου.": "Website, e-shop and bookings for your shop, workshop or studio.",
+  "όλοι χωράνε!": "room for everyone!",
   "Μέλι": "Honey",
   "Οπτικά": "Opticians",
   "Αισθητική": "Beauty",

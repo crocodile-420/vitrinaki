@@ -3,8 +3,8 @@
 import { useEffect, useRef, useState } from "react"
 import { translator, type Lang } from "@/lib/i18n/vitrinaki"
 
-// The home page hero. It opens on a carousel of shop cards, one per kind of
-// business, turning around the vitrinaki.gr logo. On scroll the page turns dark, a globe appears and every card flies
+// The home page hero. It opens on a curved strip of shop cards, one per kind
+// of business, turning like a carousel. On scroll the page turns dark, a globe appears and every card flies
 // to a Greek town, where it becomes a light; then the globe turns out to the
 // world with arcs to customers abroad, while what a shop gets scrolls past.
 // The globe is cobe (WebGL), loaded on the client only.
@@ -60,7 +60,7 @@ export function GlobeHero({ lang, businessUrl, tryHref = "#try" }: { lang: Lang;
   const canvas = useRef<HTMLCanvasElement>(null)
   const paused = useRef(false)
   const [p, setP] = useState(0)
-  const [rot, setRot] = useState(0)
+  const [offset, setOffset] = useState(0)
   const [cw, setCw] = useState(1200)
   const [vw, setVw] = useState(1280)
   const [hh, setHh] = useState(0)
@@ -95,8 +95,8 @@ export function GlobeHero({ lang, businessUrl, tryHref = "#try" }: { lang: Lang;
         const target = clamp01(-r.top / (r.height - window.innerHeight))
         cur += (target - cur) * (still ? 1 : 0.18)
         setP(cur)
-        // the carousel turns only while the visitor is at the top, a full turn in 36s
-        if (!still && !paused.current && cur < 0.01) setRot((a) => (a + (now - last) / 100) % 360)
+        // the strip turns only while the visitor is at the top, a card every 2.6s
+        if (!still && !paused.current && cur < 0.01) setOffset((o) => (o + (now - last) / 2600) % cards.length)
         if (globe) {
           const lit = clamp01((cur - 0.3) / 0.12)
           const zoom = easeInOut(clamp01((cur - 0.42) / 0.3))
@@ -137,71 +137,68 @@ export function GlobeHero({ lang, businessUrl, tryHref = "#try" }: { lang: Lang;
   const R = (cw / 2) * RADIUS * SCALE
   const n = cards.length
   const small = vw < 640
-  const cardW = small ? 84 : 124
-  const cardH = small ? 118 : 172
-  // the carousel: an ellipse seen from above, the front cards passing under the logo and the back ones behind it
-  const ringX = small ? vw * 0.4 : Math.min(540, vw * 0.4)
-  const ringY = small ? 60 : 115
-  const ringTop = small ? 75 : 50
-  const logoTop = ringTop - (small ? 85 : 25)
+  const cardW = small ? 135 : 190
+  const cardH = small ? 200 : 280
+  // the strip's centre, below the centre of the frame (which the sticky header pushes down)
+  const stripY = (small ? 110 : 170) - hh / 2
 
   return (
     <div ref={track} className="relative" style={{ height: "600vh" }}>
       <div className="sticky top-0 h-screen overflow-hidden bg-[#F7F2E8]">
-        <div className="absolute overflow-hidden bg-[#E6EDE3]" style={{ inset: `${(1 - dark) * 10}px`, top: hh + (1 - dark) * 6, borderRadius: `${(1 - dark) * 28}px` }}>
+        <div className="absolute overflow-hidden bg-[#E6EDE3]" style={{ inset: `${(1 - dark) * 10}px`, top: hh + (1 - dark) * 10, borderRadius: `${(1 - dark) * 28}px` }}>
           <div aria-hidden="true" className="absolute inset-0 bg-[radial-gradient(ellipse_60%_60%_at_50%_50%,#123024_0%,#070B09_70%)]" style={{ opacity: dark }} />
           <canvas ref={canvas} aria-hidden="true" className="absolute left-1/2 top-1/2 aspect-square w-[max(120vh,105vw)] -translate-x-1/2 -translate-y-1/2" style={{ opacity: globeO }} />
 
-          <div className="absolute inset-x-0 top-0 pt-7 text-center text-[#14301F] sm:pt-9" style={{ opacity: heroO, transform: `translateY(${-p * 600}px)`, visibility: heroO > 0 ? "visible" : "hidden" }}>
+          <div className="absolute inset-x-0 top-0 pt-12 text-center text-[#14301F] sm:pt-14" style={{ opacity: heroO, transform: `translateY(${-p * 600}px)`, visibility: heroO > 0 ? "visible" : "hidden" }}>
             <p className="mx-auto inline-flex items-center gap-2 rounded-full bg-[#14301F]/[0.07] px-3.5 py-1.5 text-[12.5px] font-semibold">
               <span className="rounded-full bg-[#14301F] px-2 py-0.5 text-[11px] text-white">{tr("Νέο")}</span> {tr("Κρατήσεις online για κάθε επιχείρηση")}
             </p>
-            <h1 className="mx-auto mt-4 max-w-[980px] px-4 text-[2.1rem] font-extrabold leading-[1.04] tracking-[-0.04em] sm:text-[3.4rem]">{tr("Το όνειρό σου αξίζει μια βιτρίνα.")}</h1>
-            <p className="mx-auto mt-3 max-w-[560px] px-5 text-[14px] leading-6 text-[#14301F]/70 sm:text-[16px]">
-              {tr("Για μαγαζιά, παραγωγούς, δημιουργούς και επαγγελματίες. Ιστοσελίδα, e-shop και κρατήσεις, σε ένα μέρος.")}
+            <h1 className="mx-auto mt-5 max-w-[860px] px-4 text-[2.5rem] font-extrabold leading-[1.02] tracking-[-0.04em] sm:text-[4.2rem]">{tr("Το όνειρό σου αξίζει")}<br />{tr("μια βιτρίνα.")}</h1>
+            <p className="mx-auto mt-4 max-w-[520px] px-5 text-[15px] leading-7 text-[#14301F]/70 sm:text-[17px]">
+              {tr("Ιστοσελίδα, e-shop και κρατήσεις για το μαγαζί, το εργαστήρι ή το studio σου.")}
             </p>
+            <svg className="absolute right-[7%] top-[60%] hidden h-24 w-28 text-[#14301F] lg:block" viewBox="0 0 120 100" fill="none" aria-hidden="true">
+              <text x="10" y="22" fontFamily="cursive" fontSize="16" fill="currentColor" transform="rotate(12 60 20)">{tr("όλοι χωράνε!")}</text>
+              <path d="M70 40c-6 20-22 34-44 40m0 0 10-10m-10 10 13 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+            </svg>
           </div>
 
           <div
             aria-hidden="true"
             className="absolute inset-0"
-            style={{ opacity: cardsO, visibility: cardsO > 0 ? "visible" : "hidden" }}
+            style={{ perspective: 1100, opacity: cardsO, visibility: cardsO > 0 ? "visible" : "hidden" }}
             onMouseEnter={() => (paused.current = true)}
             onMouseLeave={() => (paused.current = false)}
           >
-            <img
-              src="/brand/vitrinaki-logo.png"
-              alt=""
-              className="absolute left-1/2 top-1/2 w-[min(88vw,720px)] max-w-none drop-shadow-[0_18px_30px_rgba(20,48,31,.18)]"
-              style={{ zIndex: 20, transform: `translate(-50%,-50%) translateY(${logoTop}px) scale(${1 - fly * 0.4})`, opacity: heroO }}
-            />
             {cards.map(([img, label], i) => {
-              // on the ring: depth 1 in front of the logo, -1 behind it
-              const a = ((i / n) * 360 + rot) * (Math.PI / 180)
-              const depth = Math.cos(a)
-              const ring = 0.62 + 0.38 * ((depth + 1) / 2)
+              // on the strip: k cards from the middle; then a light on its town
+              let k = i - offset
+              if (k > n / 2) k -= n
+              if (k < -n / 2) k += n
+              const abs = Math.abs(k)
               const [tx, ty] = project(towns[i])
-              const x = Math.sin(a) * ringX * (1 - fly) + tx * R * fly
-              const y = (ringTop + depth * ringY) * (1 - fly) + ty * R * fly
-              const size = ring + (1 - ring) * fly
+              const x = k * (small ? 150 : 205) * (1 - fly) + tx * R * fly
+              const y = stripY * (1 - fly) + ty * R * fly
+              const z = abs * abs * 14 * (1 - fly)
+              const edge = fly < 0.05 && abs > 4.8
               return (
                 <figure
                   key={img}
                   className="absolute left-1/2 top-1/2 overflow-hidden bg-white"
                   style={{
-                    width: r2((cardW + (12 - cardW) * fly) * size),
-                    height: r2((cardH + (12 - cardH) * fly) * size),
-                    borderRadius: 16 + fly * 8,
-                    transform: `translate(-50%,-50%) translate(${r2(x)}px,${r2(y)}px) perspective(900px) rotateY(${(Math.sin(a) * -38 * (1 - fly)).toFixed(2)}deg)`,
-                    zIndex: Math.round(20 + depth * 10),
-                    filter: fly < 0.5 && depth < 0 ? `brightness(${r2(1 + depth * 0.25)})` : undefined,
+                    width: r2(cardW + (12 - cardW) * fly),
+                    height: r2(cardH + (12 - cardH) * fly),
+                    borderRadius: 18 + fly * 8,
+                    transform: `translate(-50%,-50%) translate3d(${r2(x)}px,${r2(y)}px,${r2(z)}px) rotateY(${r2(-k * 11 * (1 - fly))}deg)`,
+                    zIndex: 10 - Math.round(abs),
+                    opacity: edge ? r2(Math.max(0, 5.5 - abs)) : 1,
                     boxShadow: `0 20px 40px -20px rgba(20,48,31,.5), 0 0 ${fly * 24}px ${fly * 6}px rgba(242,128,97,${r2(fly * 0.9)})`,
                   }}
                 >
-                  <img src={K + img} alt="" loading="eager" decoding="async" className="h-full w-full object-cover" />
+                  <img src={K + img} alt="" loading={abs < 3 ? "eager" : "lazy"} decoding="async" className="h-full w-full object-cover" />
                   <div className="absolute inset-0 bg-[#F2805F]" style={{ opacity: clamp01((fly - 0.6) / 0.35) }} />
-                  <figcaption className="absolute inset-x-1.5 bottom-1.5 flex items-center gap-1.5 rounded-lg bg-white/85 px-2 py-1 text-left text-[10.5px] font-semibold text-[#14301F] backdrop-blur sm:text-[11.5px]" style={{ opacity: 1 - clamp01(fly / 0.3) }}>
-                    <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#E0634B]" />
+                  <figcaption className="absolute inset-x-2 bottom-2 flex items-center gap-2 rounded-xl bg-white/85 px-2.5 py-1.5 text-left text-[11.5px] font-semibold text-[#14301F] backdrop-blur" style={{ opacity: 1 - clamp01(fly / 0.3) }}>
+                    <span className="grid h-5 w-5 shrink-0 place-items-center rounded-full bg-[#14301F] text-[9px] text-white">▶</span>
                     {tr(label)}
                   </figcaption>
                 </figure>
