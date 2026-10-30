@@ -2,7 +2,7 @@ import type { Metadata } from "next"
 
 import { Reveal } from "@/components/atoms/Reveal/Reveal"
 import { PricingPlans, SetupFee } from "@/components/sections/Pricing/PricingPlans"
-import { getPublicPricing, groupThousands, SUPPORT_LABELS, type PlanPrice, type PublicPlan } from "@/lib/data/vitrinaki-plans"
+import { formatMoney, getPublicPricing, groupThousands, SUPPORT_LABELS, type PlanPrice, type PublicPlan, type PublicPricing } from "@/lib/data/vitrinaki-plans"
 import { getTranslator } from "@/lib/i18n/server"
 import { startHref } from "@/lib/vitrinaki-links"
 
@@ -85,7 +85,11 @@ function H2({ children, id, className = "" }: { children: React.ReactNode; id?: 
 const PLAN_LABELS: Record<string, string> = { starter: "Starter", growth: "Growth", pro: "Pro", business: "Επιχείρηση" }
 
 // Plan comparison, built from the limits the backend enforces.
-function Compare({ plans, setupListPrice, tr }: { plans: PublicPlan[]; setupListPrice: PlanPrice | null; tr: (s: string) => string }) {
+function Compare({ plans, setupListPrice, premium, tr }: { plans: PublicPlan[]; setupListPrice: PlanPrice | null; premium?: PublicPricing["premium"]; tr: (s: string) => string }) {
+  // The add-on's Stripe prices, e.g. «+9 €/μήνα · 110 € εφάπαξ».
+  const premiumPrice = premium?.month
+    ? `+${formatMoney(premium.month.amount, premium.month.currency)}${tr("/μήνα")}${premium.activation ? ` · ${formatMoney(premium.activation.amount, premium.activation.currency)} ${tr("εφάπαξ")}` : ""}`
+    : tr("Με προσθήκη")
   const yes = <svg className="mx-auto" width="20" height="20" viewBox="0 0 24 24" fill="none" aria-label={tr("Ναι")}><circle cx="12" cy="12" r="10" fill="#DCE6F0" /><path d="m7.5 12 3 3 6-6" stroke="#265E8E" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
   const no = <span className="text-[#2E4A37]/35" aria-label={tr("Όχι")}>—</span>
   const rows: { label: string; cell: (p: PublicPlan) => React.ReactNode }[] = [
@@ -99,6 +103,7 @@ function Compare({ plans, setupListPrice, tr }: { plans: PublicPlan[]; setupList
     { label: "Πόντοι επιβράβευσης πελατών", cell: (p) => (p.features.loyalty ? yes : no) },
     { label: "Προβολή στην αρχική του Vitrinaki", cell: (p) => (p.features.promoted === "priority" ? tr("Πρώτη θέση") : p.features.promoted === "standard" ? yes : no) },
     { label: "Υποστήριξη", cell: (p) => tr(SUPPORT_LABELS[p.features.support]) },
+    { label: "Premium πρότυπα με κίνηση", cell: (p) => (p.features.premium === "included" ? tr("Όλα, δωρεάν") : premiumPrice) },
     { label: "Κόστος στησίματος χωρίς δέσμευση", cell: (p) => (p.id === "business" ? tr("Δωρεάν") : p.activation ? <SetupFee fee={p.activation} listPrice={setupListPrice} /> : "—") },
     { label: "Κόστος στησίματος με δέσμευση 12 μηνών", cell: () => tr("Δωρεάν") },
   ]
@@ -169,7 +174,7 @@ export default async function PricingPage({ params }: { params: Promise<{ locale
             <H2 id="compare-title">{tr("Τι αλλάζει από πακέτο σε πακέτο.")}</H2>
           </Reveal>
           <Reveal className="mt-10 rounded-3xl bg-white/70 p-5 ring-1 ring-[#2E4A37]/10 sm:p-8">
-            <Compare plans={pricing.plans} setupListPrice={pricing.setupListPrice || null} tr={tr} />
+            <Compare plans={pricing.plans} setupListPrice={pricing.setupListPrice || null} premium={pricing.premium} tr={tr} />
           </Reveal>
         </div>
       </section>

@@ -97,6 +97,7 @@ Set these in `packages/api/.env` (never commit secret values):
 - `STRIPE_SECRET_KEY` and `STRIPE_WEBHOOK_SECRET`.
 - `STRIPE_PRICE_STARTER_MONTHLY`, `STRIPE_PRICE_STARTER_YEARLY`, `STRIPE_PRICE_GROWTH_MONTHLY`, `STRIPE_PRICE_GROWTH_YEARLY`, `STRIPE_PRICE_PRO_MONTHLY`, and `STRIPE_PRICE_PRO_YEARLY`.
 - `STRIPE_PRICE_SETUP_ASSISTED` and `STRIPE_PRICE_SETUP_DONE_FOR_YOU` for optional one-time services.
+- `STRIPE_PRICE_PREMIUM_MONTHLY` (recurring, monthly) and `STRIPE_PRICE_PREMIUM_ACTIVATION` (one-time) for the Premium templates add-on. Business includes premium, so neither is charged on it.
 - `VITRINAKI_STOREFRONT_URL`, `VITRINAKI_STUDIO_URL`, and `VITRINAKI_DEFAULT_LOCALE`.
 - `VITRINAKI_CUSTOM_DOMAIN_TARGET` with the actual CNAME target supplied by the hosting provider.
 - `VITRINAKI_PLATFORM_HOSTS` as a comma-separated list of platform hostnames, including both root and `www` where applicable.

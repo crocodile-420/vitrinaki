@@ -28,6 +28,7 @@ type StorefrontForm = {
   tagline: string
   description: string
   template: "atelier" | "local" | "services"
+  premiumTemplate: string | null
   palette: "forest" | "terracotta" | "ocean" | "plum" | "indigo" | "sage" | "graphite"
   style: StorefrontStyle
   contactEmail: string
@@ -41,7 +42,8 @@ type StorefrontForm = {
   isPublished: boolean
 }
 type Seller = { id: string; name: string; handle: string; description?: string | null }
-type Subscription = { status?: string; planId?: string; interval?: string; currentPeriodEnd?: string; cancelAtPeriodEnd?: boolean } | null
+type Subscription = { status?: string; planId?: string; interval?: string; currentPeriodEnd?: string; cancelAtPeriodEnd?: boolean; premium?: boolean } | null
+type Premium = { configured: boolean; included: boolean; active: boolean }
 type Storage = { usedBytes: number; limitBytes: number }
 type Tab = "basics" | "look" | "images" | "sections" | "domain" | "plan"
 
@@ -51,7 +53,7 @@ const PLANS = [
   { id: "starter", label: "Starter", text: "1 άτομο · 100 προϊόντα · 2 GB · υποστήριξη με email" },
   { id: "growth", label: "Growth", text: "έως 3 άτομα · 1.000 προϊόντα · 10 GB · πόντοι επιβράβευσης · email και chat" },
   { id: "pro", label: "Pro", text: "έως 5 άτομα · 5.000 προϊόντα · 30 GB · προβολή στην αρχική · προτεραιότητα στην υποστήριξη" },
-  { id: "business", label: "Επιχείρηση", text: "έως 15 άτομα · απεριόριστα προϊόντα · 100 GB · πρώτη θέση στην προβολή · προσωπικός σύμβουλος · χωρίς κόστος στησίματος" },
+  { id: "business", label: "Επιχείρηση", text: "έως 15 άτομα · απεριόριστα προϊόντα · 100 GB · πρώτη θέση στην προβολή · προσωπικός σύμβουλος · όλα τα premium πρότυπα · χωρίς κόστος στησίματος" },
 ] as const
 
 const TABS: { id: Tab; label: string }[] = [
@@ -67,7 +69,7 @@ const backend = () => __BACKEND_URL__.replace(/\/+$/, "")
 const DEFAULT_STYLE: StorefrontStyle = { font: "classic", corners: "round", buttons: "solid", theme: "light" }
 const blank: StorefrontForm = {
   storeName: "", tagline: "Καλώς ήρθες στο κατάστημά μας", description: "",
-  template: "atelier", palette: "forest", style: DEFAULT_STYLE, contactEmail: "", contactPhone: "",
+  template: "atelier", premiumTemplate: null, palette: "forest", style: DEFAULT_STYLE, contactEmail: "", contactPhone: "",
   logoUrl: "", bannerUrl: "", sections: [],
   customDomain: "", domainStatus: "not_configured", domainVerificationToken: "", isPublished: false,
 }
@@ -85,6 +87,29 @@ const templates = [
   { value: "local", label: "Local", text: "Τοπικά προϊόντα" },
   { value: "services", label: "Services", text: "Υπηρεσίες και ραντεβού" },
 ] as const
+// Same ids and order as PREMIUM_TEMPLATE_IDS in packages/api/src/lib/vitrinaki-premium.ts.
+// Prices come from Stripe (STRIPE_PRICE_PREMIUM_*), so none here.
+const premiumTemplates = [
+  { value: "salon", label: "Κομμωτήριο", text: "Ραντεβού, επιλογή ατόμου, τιμοκατάλογος" },
+  { value: "taverna", label: "Ταβέρνα", text: "Κατάλογος και κράτηση τραπεζιού" },
+  { value: "bakery", label: "Φούρνος", text: "Κράτηση για αύριο, τούρτα κατά παραγγελία" },
+  { value: "photo", label: "Φωτογράφος", text: "Portfolio, πακέτα, διαθεσιμότητα" },
+  { value: "gym", label: "Γυμναστήριο", text: "Πρόγραμμα, κράτηση θέσης, συνδρομές" },
+  { value: "accounting", label: "Γραφείο", text: "Λογιστές, δικηγόροι: ραντεβού και προθεσμίες" },
+  { value: "trades", label: "Τεχνίτης", text: "Κλήση, περιοχές, αίτημα με φωτογραφία" },
+  { value: "boutique", label: "Μπουτίκ", text: "Lookbook, χρώματα, μεγέθη" },
+  { value: "rooms", label: "Ενοικιαζόμενα", text: "Ημερολόγιο και τιμή κράτησης" },
+  { value: "physio", label: "Υγεία", text: "Ραντεβού ανά θεραπευτή" },
+  { value: "florist", label: "Ανθοπωλείο", text: "Παράδοση σήμερα, κάρτα με μήνυμα" },
+  { value: "jewelry", label: "Κοσμήματα", text: "Εξατομίκευση και ιστορία" },
+  { value: "tech", label: "Επισκευές (sci-fi)", text: "Τιμή επισκευής ανά μοντέλο" },
+  { value: "laser", label: "Κλινική laser (sci-fi)", text: "Πακέτα θεραπειών και ραντεβού" },
+  { value: "street", label: "Streetwear", text: "Showroom με κρεμάστρα" },
+  { value: "glass", label: "Γυαλί", text: "Σελίδα από φιμέ γυαλί που σπάει" },
+] as const
+// The premium templates the shop page can already render with the shop's own
+// details; the rest are listed so sellers see what is coming.
+const READY_PREMIUM = new Set<string>(["glass"])
 const styleChoices: { [K in keyof StorefrontStyle]: { label: string; options: { value: StorefrontStyle[K]; label: string }[] } } = {
   font: { label: "Γραμματοσειρά τίτλων", options: [{ value: "classic", label: "Κλασική" }, { value: "modern", label: "Μοντέρνα" }, { value: "minimal", label: "Λιτή" }] },
   corners: { label: "Γωνίες", options: [{ value: "round", label: "Στρογγυλές" }, { value: "soft", label: "Ήπιες" }, { value: "sharp", label: "Ευθείες" }] },
@@ -115,6 +140,8 @@ export default function VitrinakiStorefrontSettingsPage() {
   const [subscription, setSubscription] = useState<Subscription>(null)
   const [billingConfigured, setBillingConfigured] = useState(false)
   const [availablePlans, setAvailablePlans] = useState<Record<string, string[]>>({})
+  const [premium, setPremium] = useState<Premium>({ configured: false, included: false, active: false })
+  const [premiumAtCheckout, setPremiumAtCheckout] = useState(false)
   const [domainTarget, setDomainTarget] = useState("")
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -153,6 +180,7 @@ export default function VitrinakiStorefrontSettingsPage() {
       setSubscription(data.subscription || null)
       setBillingConfigured(Boolean(data.billingConfigured))
       setAvailablePlans(data.availablePlans || {})
+      setPremium(data.premium || { configured: false, included: false, active: false })
       setDomainTarget(data.domainTarget || "")
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "Δεν ήταν δυνατή η φόρτωση των ρυθμίσεων.")
@@ -270,11 +298,22 @@ export default function VitrinakiStorefrontSettingsPage() {
   const startBilling = async (planId: string, interval: "month" | "year") => {
     setSaving(true); setError(""); setMessage("")
     try {
-      const data = await callAPI("/vendor/vitrinaki/billing/checkout", { method: "POST", body: JSON.stringify({ planId, interval }) })
+      const data = await callAPI("/vendor/vitrinaki/billing/checkout", { method: "POST", body: JSON.stringify({ planId, interval, premium: premiumAtCheckout }) })
       if (data.url) window.location.assign(data.url)
       else setMessage("Το αίτημα ολοκληρώθηκε, αλλά δεν επιστράφηκε σύνδεσμος πληρωμής.")
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "Δεν ήταν δυνατή η έναρξη της συνδρομής.")
+    } finally { setSaving(false) }
+  }
+
+  const changePremium = async (action: "add" | "remove") => {
+    setSaving(true); setError(""); setMessage("")
+    try {
+      await callAPI("/vendor/vitrinaki/billing/premium", { method: "POST", body: JSON.stringify({ action }) })
+      setMessage(action === "add" ? "Το Premium προστέθηκε στη συνδρομή σου." : "Το Premium αφαιρέθηκε. Η βιτρίνα σου δείχνει το απλό πρότυπο.")
+      await refresh()
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : "Δεν ήταν δυνατή η αλλαγή του Premium.")
     } finally { setSaving(false) }
   }
 
@@ -374,6 +413,31 @@ export default function VitrinakiStorefrontSettingsPage() {
                     ))}
                   </div>
                 </Choice>
+                <Choice label="Premium πρότυπο">
+                  <p className="text-xs leading-5 text-ui-fg-subtle">
+                    {premium.active
+                      ? "Το premium πρότυπο εμφανίζεται στη δημοσιευμένη βιτρίνα σου."
+                      : premium.included
+                        ? "Το πακέτο σου περιλαμβάνει όλα τα premium πρότυπα."
+                        : "Δοκίμασέ τα ελεύθερα στην προεπισκόπηση. Στη δημοσιευμένη βιτρίνα εμφανίζονται με την προσθήκη Premium ή με το πακέτο Επιχείρηση."}
+                  </p>
+                  <div className="mt-2 grid gap-2">
+                    <Option active={!form.premiumTemplate} onClick={() => update("premiumTemplate", null)}>
+                      <span className="font-semibold">Χωρίς premium</span><span className="ml-2 text-ui-fg-subtle">Το απλό πρότυπο από πάνω</span>
+                    </Option>
+                    {premiumTemplates.map(t => READY_PREMIUM.has(t.value) ? (
+                      <Option key={t.value} active={form.premiumTemplate === t.value} onClick={() => update("premiumTemplate", t.value)}>
+                        <span className="font-semibold">{t.label}</span><span className="ml-2 text-ui-fg-subtle">{t.text}</span>
+                      </Option>
+                    ) : (
+                      <div key={t.value} className="rounded-lg border border-dashed border-ui-border-base px-3 py-2 text-left text-sm opacity-60">
+                        <span className="font-semibold">{t.label}</span><span className="ml-2 text-ui-fg-subtle">Έρχεται σύντομα</span>
+                      </div>
+                    ))}
+                  </div>
+                  <a href={`${previewUrl.replace(/\/studio-preview$/, "")}/premium`} target="_blank" rel="noreferrer" className="mt-2 block text-sm font-semibold text-ui-fg-interactive">Δες όλα τα premium πρότυπα live →</a>
+                  {form.premiumTemplate && !premium.active ? <button type="button" onClick={() => setTab("plan")} className="mt-1 text-sm font-semibold text-ui-fg-interactive">Πρόσθεσε το Premium στη συνδρομή →</button> : null}
+                </Choice>
                 <Choice label="Χρώματα">
                   <div className="grid grid-cols-4 gap-2">
                     {palettes.map(p => (
@@ -449,8 +513,32 @@ export default function VitrinakiStorefrontSettingsPage() {
                 <div className="rounded-xl bg-ui-bg-subtle p-4"><p className="text-xs uppercase tracking-wide text-ui-fg-subtle">Κατάσταση</p><p className="mt-1 font-semibold">{subscription?.status || "Δεν έχει ενεργοποιηθεί"}</p>{subscription?.planId ? <p className="mt-1 text-sm text-ui-fg-subtle">Πλάνο: {PLANS.find(plan => plan.id === subscription.planId)?.label || subscription.planId} · {subscription.interval === "year" ? "12 μήνες" : subscription.interval === "month" ? "χωρίς δέσμευση" : "—"}</p> : null}</div>
                 {storage ? <StorageMeter storage={storage} /> : null}
                 {!billingConfigured ? <p className="text-sm leading-6 text-ui-fg-subtle">Χρειάζεται να ρυθμιστούν τα στοιχεία Stripe στο backend πριν ενεργοποιηθούν πραγματικές πληρωμές.</p> : null}
+                {premium.configured && !subscription?.planId ? (
+                  <label className="flex items-start gap-3 rounded-xl border border-ui-border-base p-3 text-sm">
+                    <input type="checkbox" checked={premiumAtCheckout} onChange={e => setPremiumAtCheckout(e.target.checked)} className="mt-1" />
+                    <span><span className="font-semibold">Πρόσθεσε το Premium</span><span className="mt-1 block text-xs leading-5 text-ui-fg-subtle">Τα 16 premium πρότυπα με κίνηση. Μηνιαία προσθήκη με εφάπαξ ενεργοποίηση στην πρώτη πληρωμή. Στο πακέτο Επιχείρηση περιλαμβάνεται χωρίς χρέωση.</span></span>
+                  </label>
+                ) : null}
                 <div className="space-y-2">{PLANS.map(plan => <div key={plan.id} className="rounded-xl border border-ui-border-base p-3"><div className="font-semibold">{plan.label}</div><p className="mt-1 text-xs leading-5 text-ui-fg-subtle">{plan.text}</p><div className="mt-2 grid grid-cols-2 gap-2"><button type="button" disabled={saving || !billingConfigured || !(availablePlans[plan.id] || []).includes("month")} onClick={() => void startBilling(plan.id, "month")} className="rounded-lg border border-ui-border-base px-2 py-2 text-xs font-semibold disabled:opacity-50">Χωρίς δέσμευση</button><button type="button" disabled={saving || !billingConfigured || !(availablePlans[plan.id] || []).includes("year")} onClick={() => void startBilling(plan.id, "year")} className="rounded-lg border border-ui-border-base px-2 py-2 text-xs font-semibold disabled:opacity-50">12 μήνες</button></div></div>)}</div>
                 <div className="flex gap-2"><input value={promoCode} onChange={e => setPromoCode(e.target.value)} placeholder="Κωδικός προσφοράς" className="min-w-0 flex-1 rounded-lg border border-ui-border-base bg-ui-bg-field px-3 py-2.5 text-sm" /><button type="button" disabled={saving || !promoCode.trim()} onClick={() => void redeemPromo()} className="rounded-lg border border-ui-border-base px-3 py-2.5 text-sm font-semibold disabled:opacity-50">Ενεργοποίηση</button></div>
+                {subscription?.planId && ["active", "trialing"].includes(String(subscription.status)) && premium.configured ? (
+                  <div className="rounded-xl border border-ui-border-base p-3">
+                    <div className="font-semibold">Premium πρότυπα</div>
+                    {premium.included ? (
+                      <p className="mt-1 text-xs leading-5 text-ui-fg-subtle">Περιλαμβάνονται στο πακέτο σου.</p>
+                    ) : subscription.premium ? (
+                      <>
+                        <p className="mt-1 text-xs leading-5 text-ui-fg-subtle">Ενεργή μηνιαία προσθήκη. Αν τη σταματήσεις, η βιτρίνα σου γυρίζει στο απλό πρότυπο χωρίς να χαθεί τίποτα.</p>
+                        <button type="button" disabled={saving} onClick={() => void changePremium("remove")} className="mt-2 rounded-lg border border-ui-border-base px-3 py-2 text-xs font-semibold disabled:opacity-50">Σταμάτησε το Premium</button>
+                      </>
+                    ) : (
+                      <>
+                        <p className="mt-1 text-xs leading-5 text-ui-fg-subtle">Μηνιαία προσθήκη στη συνδρομή σου. Χρεώνεται αμέσως η εφάπαξ ενεργοποίηση και ο υπόλοιπος μήνας.</p>
+                        <button type="button" disabled={saving} onClick={() => void changePremium("add")} className="mt-2 rounded-lg border border-ui-border-base px-3 py-2 text-xs font-semibold disabled:opacity-50">Πρόσθεσε το Premium</button>
+                      </>
+                    )}
+                  </div>
+                ) : null}
                 {subscription ? <button type="button" disabled={saving || !billingConfigured} onClick={() => void openBillingPortal()} className="w-full rounded-lg border border-ui-border-base px-3 py-2.5 text-sm font-semibold disabled:opacity-50">Διαχείριση συνδρομής</button> : null}
               </>
             ) : null}

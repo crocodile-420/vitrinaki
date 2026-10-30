@@ -1,3 +1,4 @@
+import { isPremiumTemplateId, premiumActive } from "./vitrinaki-premium"
 import { publicProfileView } from "./vitrinaki-profile"
 import { normalizeStyle } from "./vitrinaki-storefront-style"
 
@@ -7,6 +8,7 @@ export type PublicStorefront = {
   tagline?: string
   description?: string
   template?: "atelier" | "local" | "services"
+  premiumTemplate?: string | null
   palette?: "forest" | "terracotta" | "ocean" | "plum" | "indigo" | "sage" | "graphite"
   contactEmail?: string
   contactPhone?: string
@@ -38,6 +40,11 @@ export function publicShopView(seller: any) {
       tagline: storefront.tagline || "Καλώς ήρθες στο κατάστημά μας",
       description: storefront.description || seller.description || "",
       template: storefront.template || "atelier",
+      // The chosen premium template, only while the plan or add-on pays for it;
+      // otherwise the shop shows its standard template.
+      premiumTemplate: isPremiumTemplateId(storefront.premiumTemplate) && premiumActive(seller.metadata?.vitrinaki_subscription)
+        ? storefront.premiumTemplate
+        : null,
       palette: storefront.palette || "forest",
       contactEmail: storefront.contactEmail || seller.email || "",
       contactPhone: storefront.contactPhone || seller.phone || "",

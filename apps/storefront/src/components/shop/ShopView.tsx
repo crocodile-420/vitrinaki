@@ -2,6 +2,7 @@ import { translator, type Lang } from "@/lib/i18n/vitrinaki"
 import type { ShopBookings } from "@/lib/data/bookings"
 import { rankOffers, type StoreOffer } from "@/lib/helpers/buybox"
 import { ShopBooking } from "@/components/shop/ShopBooking"
+import { GlassShopHero } from "@/components/shop/premium/GlassShopHero"
 import { ShopFooter, ShopHeader } from "@/components/shop/ShopChrome"
 import { ShopImage } from "@/components/shop/ShopImage"
 import { ShopProductCard } from "@/components/shop/ShopProductCard"
@@ -263,12 +264,30 @@ export function ShopView({
   }
 
   const centeredHero = template === "local"
+  // Premium «Γυαλί»: the hero is the glass page, linking to the sections below.
+  const glassLinks = [
+    showSection("catalog") ? { href: "#catalog", label: tr(isServices ? "Υπηρεσίες" : "Προϊόντα") } : null,
+    showSection("story") ? { href: "#about", label: tr("Η ιστορία μας") } : null,
+    bookings.enabled ? { href: "#booking", label: tr("Κράτηση") } : null,
+    { href: "#contact", label: tr("Επικοινωνία") },
+  ].filter((l): l is { href: string; label: string } => Boolean(l))
 
   return (
     <main {...styleAttrs(shopStyle(storefront.style))} style={{ background: colors.page, color: colors.ink }} className="vk-shop min-h-screen">
       <ShopHeader shop={shop} colors={colors} home={paths.home} locale={locale} lang={lang} />
 
-      {centeredHero ? (
+      {storefront.premiumTemplate === "glass" ? (
+        <GlassShopHero
+          storeName={storefront.storeName}
+          eyebrow={eyebrow}
+          tagline={storefront.tagline}
+          description={storefront.description || ""}
+          primary={primaryCta}
+          links={glassLinks}
+          footRight={storefront.contactPhone || heroFacts[0] || ""}
+          backLabel={tr("Πίσω στο γυαλί")}
+        />
+      ) : centeredHero ? (
         <section className="mx-auto max-w-6xl px-5 pt-10 sm:px-8 sm:pt-14">
           <div style={{ background: colors.soft }} className="relative overflow-hidden rounded-[2rem] px-6 py-14 text-center sm:px-12 sm:py-20">
             {seller.banner && profile ? (
