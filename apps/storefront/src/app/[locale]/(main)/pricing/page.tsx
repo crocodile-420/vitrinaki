@@ -7,8 +7,8 @@ import { getTranslator } from "@/lib/i18n/server"
 import { startHref } from "@/lib/vitrinaki-links"
 
 // «Συνδρομή»: the plans in full. Prices come from Stripe through the backend
-// (/store/vitrinaki/plans); a plan without a configured price says so instead
-// of showing a number.
+// (/store/vitrinaki/plans), or the announced prices while Stripe is not set up;
+// a plan with no price at all says so instead of showing a number.
 
 export async function generateMetadata(): Promise<Metadata> {
   const { tr } = await getTranslator()

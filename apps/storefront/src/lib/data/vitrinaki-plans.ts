@@ -32,21 +32,25 @@ export type PublicPricing = {
   premium?: { month: PlanPrice | null; activation: PlanPrice | null }
 }
 
-// Team sizes and features from packages/api/src/lib/vitrinaki-plans.ts, used
-// when the backend is unreachable so the page still lists the plans (without prices).
+const eur = (amount: number, interval: PlanPrice["interval"]): PlanPrice => ({ amount, currency: "eur", interval })
+
+// Team sizes, features and announced prices (PLAN_LIST_PRICES) from
+// packages/api/src/lib/vitrinaki-plans.ts, used when the backend is unreachable
+// so the page still lists the plans with their prices.
 const FALLBACK: PublicPricing = {
   plans: [
-    { id: "starter", memberLimit: 1, features: { products: 100, storageGb: 2, loyalty: false, promoted: "none", support: "email", premium: "addon" }, month: null, year: null },
-    { id: "growth", memberLimit: 3, features: { products: 1000, storageGb: 10, loyalty: true, promoted: "none", support: "chat", premium: "addon" }, month: null, year: null },
-    { id: "pro", memberLimit: 5, features: { products: 5000, storageGb: 30, loyalty: true, promoted: "standard", support: "priority", premium: "addon" }, month: null, year: null },
-    { id: "business", memberLimit: 15, features: { products: null, storageGb: 100, loyalty: true, promoted: "priority", support: "advisor", premium: "included" }, month: null, year: null },
+    { id: "starter", memberLimit: 1, features: { products: 100, storageGb: 2, loyalty: false, promoted: "none", support: "email", premium: "addon" }, month: eur(2500, "month"), year: eur(1900, "month"), activation: eur(10000, null) },
+    { id: "growth", memberLimit: 3, features: { products: 1000, storageGb: 10, loyalty: true, promoted: "none", support: "chat", premium: "addon" }, month: eur(4900, "month"), year: eur(3900, "month"), activation: eur(10000, null) },
+    { id: "pro", memberLimit: 5, features: { products: 5000, storageGb: 30, loyalty: true, promoted: "standard", support: "priority", premium: "addon" }, month: eur(8900, "month"), year: eur(6900, "month"), activation: eur(10000, null) },
+    { id: "business", memberLimit: 15, features: { products: null, storageGb: 100, loyalty: true, promoted: "priority", support: "advisor", premium: "included" }, month: eur(15900, "month"), year: eur(12900, "month"), activation: null },
   ],
+  setupListPrice: eur(35000, null),
   setup: { assisted: null, done_for_you: null },
   premium: { month: null, activation: null },
 }
 
-// The pricing page: plans and setup services with the prices set in Stripe.
-// A price that is not configured yet comes back as null.
+// The pricing page: plans and setup services with the prices set in Stripe,
+// or the announced plan prices where Stripe is not configured yet.
 export async function getPublicPricing(): Promise<PublicPricing> {
   const backend = (process.env.MEDUSA_BACKEND_URL || "http://localhost:9100").replace(/\/+$/, "")
   try {
