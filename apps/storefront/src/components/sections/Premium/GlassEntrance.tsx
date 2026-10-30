@@ -30,6 +30,8 @@ type Props = {
   open: boolean
   onOpen: () => void
   onStart: () => void
+  // A nav link on the glass; without it the nav links open the glass too.
+  onNav?: (index: number) => void
   // The pieces finished flying out ("open") or back together ("closed").
   onSettled: (state: "open" | "closed") => void
 }
@@ -123,7 +125,7 @@ const easeOutBack = (t: number) => 1 + 2.70158 * Math.pow(t - 1, 3) + 1.70158 * 
 function mountGlass(
   host: HTMLDivElement,
   copy: GlassCopy,
-  ev: { open: () => void; start: () => void; settled: (s: "open" | "closed") => void },
+  ev: { open: () => void; start: () => void; nav: (i: number) => boolean; settled: (s: "open" | "closed") => void },
   startOpen: boolean
 ): { ctl: Controller; dispose: () => void } {
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: "high-performance" })
@@ -553,6 +555,7 @@ function mountGlass(
     if ((e.target as HTMLElement).closest("a,button") || mode !== "rest") return
     const h = hitUnder(e)
     if (h?.k === "start" || h?.k === "link") ev.start()
+    else if (h?.k === "nav" && ev.nav(h.i ?? 0)) return
     else ev.open()
   }
   host.addEventListener("pointermove", onMove)
@@ -606,11 +609,11 @@ function mountGlass(
   }
 }
 
-export function GlassEntrance({ copy, open, onOpen, onStart, onSettled }: Props) {
+export function GlassEntrance({ copy, open, onOpen, onStart, onNav, onSettled }: Props) {
   const host = useRef<HTMLDivElement>(null)
   const ctl = useRef<Controller | null>(null)
-  const ev = useRef({ open: onOpen, start: onStart, settled: onSettled })
-  ev.current = { open: onOpen, start: onStart, settled: onSettled }
+  const ev = useRef({ open: onOpen, start: onStart, nav: onNav, settled: onSettled })
+  ev.current = { open: onOpen, start: onStart, nav: onNav, settled: onSettled }
   const openRef = useRef(open)
   openRef.current = open
   const [gl, setGl] = useState<boolean | null>(null)
@@ -624,6 +627,11 @@ export function GlassEntrance({ copy, open, onOpen, onStart, onSettled }: Props)
       mounted = mountGlass(host.current, copy, {
         open: () => ev.current.open(),
         start: () => ev.current.start(),
+        nav: (i) => {
+          if (!ev.current.nav) return false
+          ev.current.nav(i)
+          return true
+        },
         settled: (s) => ev.current.settled(s),
       }, openRef.current)
     } catch {

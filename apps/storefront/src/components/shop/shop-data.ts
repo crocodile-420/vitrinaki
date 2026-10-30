@@ -54,6 +54,8 @@ export type ShopResponse = {
     tagline: string
     description: string
     template: "atelier" | "local" | "services"
+    // A premium template, set only while the shop's plan or add-on pays for it.
+    premiumTemplate?: string | null
     palette: "forest" | "terracotta" | "ocean" | "plum" | "indigo" | "sage" | "graphite"
     contactEmail?: string | null
     contactPhone?: string | null

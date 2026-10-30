@@ -1859,6 +1859,11 @@ const en: Record<string, string> = {
   "Το θέλω": "I want this",
   "Premium πρότυπα με κίνηση": "Premium templates in motion",
   "16 premium πρότυπα με κίνηση, 3D και αλληλεπίδραση, για κάθε είδος μικρής επιχείρησης. Δες τα live και διάλεξε αυτό που σου ταιριάζει.": "16 premium templates with motion, 3D and interaction, for every kind of small business. See them live and pick the one that suits you.",
+  "/μήνα": "/month",
+  "εφάπαξ": "one-off",
+  "Με προσθήκη": "As an add-on",
+  "Όλα, δωρεάν": "All, free",
+  "Όλα τα premium πρότυπα με κίνηση": "All premium motion templates",
 }
 
 const dictionaries: Record<Lang, Record<string, string>> = { el: {}, en }

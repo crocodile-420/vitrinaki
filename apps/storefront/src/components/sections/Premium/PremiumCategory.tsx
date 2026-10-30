@@ -15,7 +15,7 @@ import { PREMIUM_TEMPLATES, type PremiumTemplate } from "./premium-templates"
 const DEMO = "/premium/demo.html?embed"
 const HEIGHT = "h-[calc(100svh-4.5rem)] min-h-[560px]"
 
-export function PremiumCategory({ startHref }: { startHref: string }) {
+export function PremiumCategory({ startHref, price }: { startHref: string; price: string | null }) {
   const { lang, tr } = useTranslator()
   const [open, setOpen] = useState(false)
   const [settled, setSettled] = useState<"open" | "closed">("closed")
@@ -57,7 +57,7 @@ export function PremiumCategory({ startHref }: { startHref: string }) {
           inert={!open}
           className={`transition-opacity ${open ? "opacity-100 delay-200 duration-700" : "opacity-0 duration-300"}`}
         >
-          <Gallery lang={lang} tr={tr} open={open} startHref={startHref} onBack={close} onDemo={setDemo} />
+          <Gallery lang={lang} tr={tr} open={open} startHref={startHref} price={price} onBack={close} onDemo={setDemo} />
         </div>
       </div>
       <div className={`absolute inset-x-0 top-0 z-10 ${HEIGHT} ${settled === "open" && open ? "pointer-events-none" : ""}`}>
@@ -70,11 +70,12 @@ export function PremiumCategory({ startHref }: { startHref: string }) {
 
 type Tr = (greek: string) => string
 
-function Gallery({ lang, tr, open, startHref, onBack, onDemo }: {
+function Gallery({ lang, tr, open, startHref, price, onBack, onDemo }: {
   lang: "el" | "en"
   tr: Tr
   open: boolean
   startHref: string
+  price: string | null
   onBack: () => void
   onDemo: (t: PremiumTemplate) => void
 }) {
@@ -112,6 +113,7 @@ function Gallery({ lang, tr, open, startHref, onBack, onDemo }: {
       <section className="mt-20 grid gap-8 rounded-[24px] bg-gradient-to-br from-[#16161b] to-[#0d0d11] p-7 shadow-[inset_0_0_0_1px_rgba(255,255,255,.1)] sm:p-10 lg:grid-cols-[1.2fr_1fr]">
         <div>
           <h3 className="text-2xl font-medium tracking-[-0.02em] text-[#e4e4e9]">{tr("Πώς χρεώνεται")}</h3>
+          {price ? <p className="mt-2 text-3xl font-medium tracking-[-0.02em] text-[#cfc6ff]">{price}</p> : null}
           <p className="mt-3 max-w-[56ch] leading-relaxed text-white/60">
             {tr("Το premium πρότυπο είναι μηνιαία προσθήκη στη συνδρομή σου, με ένα εφάπαξ κόστος ενεργοποίησης στην πρώτη πληρωμή. Το ενεργοποιείς από το Studio και το σταματάς όποτε θέλεις: η βιτρίνα σου γυρίζει σε απλό πρότυπο, χωρίς να χαθεί τίποτα.")}
           </p>

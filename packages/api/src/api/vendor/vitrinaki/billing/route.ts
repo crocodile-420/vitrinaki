@@ -1,7 +1,8 @@
 import type { AuthenticatedMedusaRequest, MedusaResponse } from "@medusajs/framework/http"
 import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 
-import { availablePlanIntervals, PLAN_IDS, PLAN_MEMBER_LIMITS } from "../../../../lib/vitrinaki-plans"
+import { premiumActive, premiumConfigured, premiumIncluded } from "../../../../lib/vitrinaki-premium"
+import { activePlanId, availablePlanIntervals, PLAN_IDS, PLAN_MEMBER_LIMITS } from "../../../../lib/vitrinaki-plans"
 
 type SellerRequest = AuthenticatedMedusaRequest & { seller_context?: { seller_id?: string } }
 
@@ -28,12 +29,18 @@ export async function GET(req: SellerRequest, res: MedusaResponse) {
       assisted: Boolean(process.env.STRIPE_PRICE_SETUP_ASSISTED),
       done_for_you: Boolean(process.env.STRIPE_PRICE_SETUP_DONE_FOR_YOU),
     },
+    premium: {
+      configured: premiumConfigured(),
+      included: (() => { const planId = activePlanId(subscription); return planId ? premiumIncluded(planId) : false })(),
+      active: premiumActive(subscription),
+    },
     subscription: subscription ? {
       planId: subscription.planId || subscription.plan_id,
       interval: subscription.interval || subscription.billing_interval,
       status: subscription.status,
       currentPeriodEnd: subscription.currentPeriodEnd || subscription.current_period_end,
       cancelAtPeriodEnd: Boolean(subscription.cancelAtPeriodEnd || subscription.cancel_at_period_end),
+      premium: Boolean(subscription.premium),
     } : null,
     setupOrders: Array.isArray(seller?.metadata?.vitrinaki_setup_orders)
       ? seller.metadata.vitrinaki_setup_orders.slice(-20).reverse()

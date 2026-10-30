@@ -25,6 +25,7 @@ export function planPoints(features: PlanFeatures, tr: (s: string) => string, ex
     tr("{n} GB για φωτογραφίες και αρχεία").replace("{n}", String(features.storageGb)),
     features.loyalty ? tr("Πόντοι επιβράβευσης πελατών") : "",
     features.promoted === "priority" ? tr("Πρώτη θέση στην προβολή της αρχικής") : features.promoted === "standard" ? tr("Προβολή στην αρχική του Vitrinaki") : "",
+    features.premium === "included" ? tr("Όλα τα premium πρότυπα με κίνηση") : "",
     `${tr("Υποστήριξη")}: ${tr(SUPPORT_LABELS[features.support]).toLowerCase()}`,
     extra ? tr(extra) : "",
   ].filter(Boolean)

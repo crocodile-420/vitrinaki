@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 
 import { PremiumCategory } from "@/components/sections/Premium/PremiumCategory"
+import { formatMoney, getPublicPricing } from "@/lib/data/vitrinaki-plans"
 import { getTranslator } from "@/lib/i18n/server"
 import { startHref } from "@/lib/vitrinaki-links"
 
@@ -20,11 +21,17 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function PremiumPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params
+  const { tr } = await getTranslator()
+  // The add-on's prices come from Stripe; without them the page names no amount.
+  const { premium } = await getPublicPricing()
+  const price = premium?.month
+    ? `${formatMoney(premium.month.amount, premium.month.currency)}${tr("/μήνα")}${premium.activation ? ` + ${formatMoney(premium.activation.amount, premium.activation.currency)} ${tr("εφάπαξ")}` : ""}`
+    : null
   return (
     <main className="overflow-x-clip bg-[#050507]">
       <link rel="preconnect" href="https://fonts.googleapis.com" />
       <link rel="stylesheet" href={FONTS} precedence="default" />
-      <PremiumCategory startHref={startHref(locale)} />
+      <PremiumCategory startHref={startHref(locale)} price={price} />
     </main>
   )
 }

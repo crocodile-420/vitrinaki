@@ -3,7 +3,8 @@ import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 import { updateSellersWorkflow } from "@mercurjs/core/workflows"
 import { randomBytes } from "node:crypto"
 
-import { availablePlanIntervals } from "../../../../lib/vitrinaki-plans"
+import { availablePlanIntervals, activePlanId } from "../../../../lib/vitrinaki-plans"
+import { isPremiumTemplateId, PREMIUM_REQUIRED_MESSAGE, premiumActive, premiumConfigured, premiumIncluded } from "../../../../lib/vitrinaki-premium"
 import { publicProfileView } from "../../../../lib/vitrinaki-profile"
 import { storageView } from "../../../../lib/vitrinaki-storage"
 import { DEFAULT_STYLE, normalizeStyle } from "../../../../lib/vitrinaki-storefront-style"
@@ -25,6 +26,7 @@ type StorefrontForm = {
   tagline?: unknown
   description?: unknown
   template?: unknown
+  premiumTemplate?: unknown
   palette?: unknown
   contactEmail?: unknown
   contactPhone?: unknown
@@ -87,6 +89,15 @@ function optionalImageUrl(value: unknown): string | null {
   }
 }
 
+function premiumView(subscription: any) {
+  const planId = activePlanId(subscription)
+  return {
+    configured: premiumConfigured(),
+    included: planId ? premiumIncluded(planId) : false,
+    active: premiumActive(subscription),
+  }
+}
+
 async function getSeller(req: SellerRequest) {
   const sellerId = req.seller_context?.seller_id
   if (!sellerId) return null
@@ -104,6 +115,7 @@ const defaults = (seller: any) => ({
   tagline: "Καλώς ήρθες στο κατάστημά μας",
   description: seller.description || "",
   template: "atelier",
+  premiumTemplate: null,
   palette: "forest",
   contactEmail: seller.email || "",
   contactPhone: seller.phone || "",
@@ -146,6 +158,9 @@ export async function GET(req: SellerRequest, res: MedusaResponse) {
     billingConfigured: Boolean(process.env.STRIPE_SECRET_KEY && process.env.STRIPE_WEBHOOK_SECRET),
     availablePlans: availablePlanIntervals(),
     setupServicesConfigured: Boolean(process.env.STRIPE_PRICE_SETUP_ASSISTED && process.env.STRIPE_PRICE_SETUP_DONE_FOR_YOU),
+    // Premium templates: whether the add-on can be bought, whether the plan
+    // includes it, and whether the shop may show one now.
+    premium: premiumView(subscription),
   })
 }
 
@@ -182,6 +197,10 @@ export async function POST(req: SellerRequest, res: MedusaResponse) {
     tagline: text(input.tagline, 160, "Καλώς ήρθες στο κατάστημά μας"),
     description: text(input.description, 1800),
     template: templates.has(String(input.template)) ? String(input.template) : String(current.template || "atelier"),
+    // Saved and previewed freely; the public site shows it only while premium is active.
+    premiumTemplate: input.premiumTemplate === undefined
+      ? (isPremiumTemplateId(current.premiumTemplate) ? current.premiumTemplate : null)
+      : isPremiumTemplateId(input.premiumTemplate) ? input.premiumTemplate : null,
     palette: palettes.has(String(input.palette)) ? String(input.palette) : String(current.palette || "forest"),
     contactEmail: text(input.contactEmail, 254),
     contactPhone: text(input.contactPhone, 50),
@@ -196,6 +215,9 @@ export async function POST(req: SellerRequest, res: MedusaResponse) {
     isPublished: action === "publish" ? true : action === "unpublish" ? false : Boolean(current.isPublished && paidStatus),
     publishedAt: action === "publish" ? current.publishedAt || new Date().toISOString() : action === "unpublish" ? null : current.publishedAt || null,
     updatedAt: new Date().toISOString(),
+  }
+  if (action === "publish" && config.premiumTemplate && !premiumActive(subscription)) {
+    return res.status(402).json({ message: PREMIUM_REQUIRED_MESSAGE })
   }
 
   const metadata = { ...(seller.metadata || {}), vitrinaki_storefront: config }
