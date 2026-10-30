@@ -11,6 +11,7 @@ import { shopRegistrationHref, startHref } from "@/lib/vitrinaki-links"
 const navigation = [
   { label: "Πώς ξεκινάς", href: "/#how-it-works" },
   { label: "Καταστήματα", href: "/#vitrina" },
+  { label: "Premium", href: "/premium" },
   // Shown from xl up; below that they stay in the mobile menu so the bar never overflows.
   { label: "Για ποιον", href: "/#for-whom", wide: true },
   { label: "Συνδρομή", href: "/pricing", wide: true },
